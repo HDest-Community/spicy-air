@@ -104,8 +104,9 @@ class SpicyAir : Actor
 						continue;
 					}
 
+					let Radsuit = WornRadsuit(plr.FindInventory('WornRadsuit'));
 					let Mask = Despicyto(plr.FindInventory('Despicyto'));
-					if (Mask && Mask.Worn && Mask.GetTotalAir() > 0)
+					if (Radsuit || Mask && Mask.Worn && Mask.GetTotalAir() > 0)
 					{
 						continue;
 					}

@@ -1,0 +1,413 @@
+version "4.5"
+
+class SpicyAirHandler : EventHandler
+{
+	int AccumulatedSpiciness[MAXPLAYERS];
+	int RealSpiciness[MAXPLAYERS];
+
+	override void CheckReplacement(ReplaceEvent e)
+	{
+		if (!e.Replacement)
+		{
+			return;
+		}
+
+		switch (e.Replacement.GetClassName())
+		{
+			case 'ClipBoxPickup':
+				if (random[desprand]() <= 12)
+				{
+					e.Replacement = "DespicytoFilter";
+				}
+				break;
+		}
+	}
+
+	override void WorldLoaded(WorldEvent e)
+	{
+		for (int i = 0; i < level.Sectors.Size(); ++i)
+		{
+			Sector CurSec = level.Sectors[i];
+			if (TexMan.GetName(CurSec.GetTexture(1)) ~== "F_SKY1")
+			{
+				double FloorZ = CurSec.floorplane.ZAtPoint(CurSec.centerspot);
+				double CeilZ = CurSec.ceilingplane.ZAtPoint(CurSec.centerspot);
+				vector3 SpawnPos = (CurSec.centerspot.x, CurSec.centerspot.y, FloorZ + (CeilZ - FloorZ) / 2);
+				let sa = SpicyAir(Actor.Spawn("SpicyAir", SpawnPos));
+				sa.Handler = self;
+			}
+		}
+	}
+
+	override void RenderUnderlay(RenderEvent e)
+	{
+		let plr = HDPlayerPawn(players[consoleplayer].mo);
+		let Mask = Despicyto(plr.FindInventory('Despicyto'));
+		if (Mask && Mask.Worn)
+		{
+			int MaskHeight = int(Screen.GetHeight() * (1.6 * 90) / plr.player.fov);
+			int MaskWidth = Screen.GetWidth() * MaskHeight / Screen.GetHeight();
+			int MaskOffX = -((MaskWidth - Screen.GetWidth()) >> 1);
+			int MaskOffY = -((MaskHeight - Screen.GetHeight()) >> 1);
+
+			Screen.DrawTexture(TexMan.CheckForTexture("despmask"), true, MaskOffX - (int(plr.hudbob.x * 0.5)), MaskOffY - (int(plr.hudbob.y * 0.5)), DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight, true);
+		}
+	}
+
+	override void WorldTick()
+	{
+		RealSpiciness[consoleplayer] += min(AccumulatedSpiciness[consoleplayer], 5);
+		AccumulatedSpiciness[consoleplayer] = 0;
+		if (RealSpiciness[consoleplayer] >= 50)
+		{
+			RealSpiciness[consoleplayer] = 0;
+			let plr = HDPlayerPawn(players[consoleplayer].mo);
+			if (plr)
+			{
+				plr.A_SetBlend(0xa7b55e, 0.15, 12);
+				plr.aggravateddamage++;
+			}
+		}
+
+		for (int i = 0; i < MAXPLAYERS; ++i)
+		{
+			if (level.time % 20 == 0 && RealSpiciness[i] > 0)
+			{
+				RealSpiciness[i]--;
+			}
+		}
+	}
+}
+
+class SpicyAir : Actor
+{
+	Default
+	{
+		+NOINTERACTION
+		+NOSECTOR
+	}
+
+	SpicyAirHandler Handler;
+
+	States
+	{
+		Spawn:
+			TNT1 A 10
+			{
+				for (int i = 0; i < MAXPLAYERS; ++i)
+				{
+					let plr = HDPlayerPawn(players[i].mo);
+					if (!plr)
+					{
+						continue;
+					}
+
+					let Mask = Despicyto(plr.FindInventory('Despicyto'));
+					if (Mask && Mask.Worn && Mask.GetTotalAir() > 0)
+					{
+						continue;
+					}
+
+					if (Distance3D(plr) < 1024)
+					{
+						Handler.AccumulatedSpiciness[i]++;
+					}
+				}
+			}
+			Loop;
+	}
+}
+
+class Despicyto : HDWeapon
+{
+	enum DEProperties
+	{
+		DEProp_Flags,
+		DEProp_UseOffset,
+		DEProp_FilterLife1,
+		DEProp_FilterLife2,
+	}
+
+	override void DoEffect()
+	{
+		if (Worn && level.time % 35 == 0)
+		{
+			if (WeaponStatus[DEProp_FilterLife1] > 0)
+			{
+				WeaponStatus[DEProp_FilterLife1]--;
+			}
+			else if (WeaponStatus[DEProp_FilterLife2] > 0)
+			{
+				WeaponStatus[DEProp_FilterLife2]--;
+			}
+		}
+
+		Super.DoEffect();
+	}
+	clearscope int GetTotalAir()
+	{
+		int F1 = WeaponStatus[DEProp_FilterLife1];
+		int F2 = WeaponStatus[DEProp_FilterLife2];
+		return (F1 >= 0 ? F1 : 0) + (F2 >= 0 ? F2 : 0);
+	}
+
+	action void A_AddOffset(int ofs)
+	{
+		invoker.WeaponStatus[DEProp_UseOffset] += ofs;
+	}
+
+	override bool Use(bool pickup)
+	{
+		if (owner && Worn)
+		{
+			owner.A_StartSound("weapons/pocket", 9);
+			owner.A_SetBlend(0x000000, 1.0, 16);
+			Worn = false;
+			return false;
+		}
+
+		return Super.Use(pickup);
+	}
+
+	override bool AddSpareWeapon(Actor newowner) {return AddSpareWeaponRegular(newowner);}
+	override HDWeapon GetSpareWeapon(Actor newowner, bool reverse, bool doselect) { return GetSpareWeaponRegular(newowner, reverse, doselect); }
+	override string, double GetPickupSprite()
+	{
+		int F1 = WeaponStatus[DEProp_FilterLife1];
+		int F2 = WeaponStatus[DEProp_FilterLife2];
+
+		string Frame = "D";
+		if (F1 >= 0 && F2 >= 0)
+		{
+			Frame = "A";
+		}
+		if (F1 >= 0 && F2 == -1)
+		{
+			Frame = "B";
+		}
+		else if (F1 == -1 && F2 >= 0)
+		{
+			Frame = "C";
+		}
+		return "DSPG"..Frame.."0", 1.5;
+	}
+	override int GetSbarNum(int flags)
+	{
+		let HDHud = HDStatusBar(StatusBar);
+
+		HDHud.SavedColour = Font.CR_DARKGRAY;
+		return GetTotalAir();
+	}
+	override string GetHelpText()
+	{
+		string BaseString = WEPHELP_RELOAD.."  Place left filter\n"
+		..WEPHELP_USE.."+"..WEPHELP_RELOAD.."  Place right filter\n"
+		..WEPHELP_UNLOAD.."  Remove left filter\n"
+		..WEPHELP_USE.."+"..WEPHELP_UNLOAD.."  Remove right filter";
+		return BaseString;
+	}
+	override double WeaponBulk() { return Worn ? 5 : 22; }
+
+	override void DrawHUDStuff(HDStatusBar sb, HDWeapon hdw, HDPlayerPawn hpl)
+	{
+		vector2 bob = hpl.hudbob * 0.3;
+		int Offset = WeaponStatus[DEProp_UseOffset];
+		bob.y += Offset;
+		
+		sb.DrawImage(GetPickupSprite(), bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, alpha: 1.0, scale:(4, 4));
+		if (WeaponStatus[DEProp_FilterLife1] >= 0)
+		{
+			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife1], 3, 3, sb.FNF_FILLZEROS), (-40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_RIGHT, Font.CR_DARKGRAY);
+		}
+		if (WeaponStatus[DEProp_FilterLife2] >= 0)
+		{
+			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife2], 3, 3, sb.FNF_FILLZEROS), (40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_LEFT, Font.CR_DARKGRAY);
+		}
+	}
+	override void InitializeWepStats(bool idfa)
+	{
+		WeaponStatus[DEProp_FilterLife1] = 600;
+		WeaponStatus[DEProp_FilterLife2] = 600;
+	}
+
+	Default
+	{
+		+INVENTORY.INVBAR
+		+HDWEAPON.FITSINBACKPACK
+		+WEAPON.WIMPY_WEAPON
+		Tag "Gas mask";
+		HDWeapon.RefId "dsp";
+		Scale 0.35;
+		Inventory.PickupSound "weapons/pocket";
+		Inventory.PickupMessage "Picked up a gas mask.";
+	}
+
+	bool Worn;
+
+	States
+	{
+		Spawn:
+			DSPG A 0 NoDelay
+			{
+				int F1 = invoker.WeaponStatus[DEProp_FilterLife1];
+				int F2 = invoker.WeaponStatus[DEProp_FilterLife2];
+				if (F1 >= 0 && F2 >= 0)
+				{
+					frame = 0;
+				}
+				else if (F1 >= 0 && F2 == -1)
+				{
+					frame = 1;
+				}
+				else if (F1 == -1 && F2 >= 0)
+				{
+					frame = 2;
+				}
+				else
+				{
+					frame = 3;
+				}
+			}
+			DSPG # -1;
+			Stop;
+		Select:
+			TNT1 A 0 A_AddOffset(200);
+			Goto Super::Select;
+		Ready:
+			TNT1 A 1
+			{
+				if (PressingUser3())
+				{
+					A_MagManager("DespicytoFilter");
+					return;
+				}
+
+				int off = invoker.WeaponStatus[DEProp_UseOffset];
+				if (off > 0)
+				{
+					invoker.WeaponStatus[DEProp_UseOffset] = off * 2 / 3;
+				}
+
+				if (PressingFire() || PressingAltfire())
+				{
+					SetWeaponState("Lower");
+					return;
+				}
+
+				A_WeaponReady(WRF_ALL | WRF_NOFIRE);
+			}
+			Goto ReadyEnd;
+		Lower:
+			TNT1 AA 1 A_AddOffset(6);
+			TNT1 AAAA 1 A_AddOffset(18);
+			TNT1 AAAAA 1 A_AddOffset(36);
+			TNT1 A 0 A_JumpIf(!PressingFire() && !PressingAltfire(), "Ready");
+			TNT1 A 1
+			{
+				if (invoker.WeaponStatus[DEProp_FilterLife1] <= 0 && invoker.WeaponStatus[DEProp_FilterLife2] <= 0)
+				{
+					SetWeaponState("Nope");
+					return;
+				}
+
+				A_StartSound("weapons/pocket", 9);
+				invoker.Worn = true;
+				A_SetBlend(0x000000, 1.0, 16);
+			}
+		Hold:
+			TNT1 A 1;
+			TNT1 A 0 A_Refire("Hold");
+			TNT1 A 0 A_SelectWeapon("HDFist");
+			Goto Deselect;
+		Unload:
+			TNT1 A 20;
+			TNT1 A 5
+			{
+				int Which = PressingUse() ? DEProp_FilterLife2 : DEProp_FilterLife1;
+				int Air = invoker.WeaponStatus[Which];
+				if (Air < 0)
+				{
+					return;
+				}
+				if (PressingUnload() || PressingReload())
+				{
+					HDMagAmmo.GiveMag(self, "DespicytoFilter", Air);
+					A_StartSound("weapons/pocket", 9);
+					A_SetTics(20);
+				}
+				else
+				{
+					HDBattery.SpawnMag(self, "DespicytoFilter", Air);
+				}
+				invoker.WeaponStatus[Which] = -1;
+			}
+			Goto ReloadEnd;
+		Reload:
+			TNT1 A 14 A_StartSound("weapons/pocket", 9);
+			TNT1 A 5
+			{
+				int Which = PressingUse() ? DEProp_FilterLife2 : DEProp_FilterLife1;
+				if (invoker.WeaponStatus[Which] >= 0)
+				{
+					return;
+				}
+
+				let Filter = HDMagAmmo(FindInventory("DespicytoFilter"));
+				if(!Filter)
+				{
+					return;
+				}
+				int Air = Filter.TakeMag(true);
+				invoker.WeaponStatus[Which] = Air;
+				A_StartSound("weapons/vulcopen1", 8, CHANF_OVERLAP);
+			}
+			Goto ReloadEnd;
+		ReloadEnd:
+			TNT1 A 6;
+			Goto ready;
+	}
+}
+
+class DespicytoFilter : HDMagAmmo
+{
+	override string, string, name, double GetMagSprite(int thismagamt)
+	{
+		return "DSPFA0", "TNT1A0", "DespicytoFilter", 0.5;
+	}
+
+	override bool Insert() { return false; }
+	override bool Extract() { return false; }
+	override void GetItemsThatUseThis()
+	{
+		ItemsThatUseThis.Push("Despicyto");
+	}
+
+	Default
+	{
+		HDMagAmmo.MustShowInMagManager true;
+		Inventory.PickupMessage "Picked up an air filter.";
+		Inventory.PickupSound "weapons/pocket";
+		Inventory.icon "DSPFA0";
+		Tag "Air filter";
+		HDMagAmmo.MaxPerUnit 600;
+		HDMagAmmo.MagBulk 2;
+		HDMagAmmo.RoundBulk 0;
+		HDPickup.RefId "dsf";
+		Scale 0.25;
+	}
+
+	States
+	{
+		Spawn:
+			DSPF A -1 NoDelay
+			{
+				if (invoker.Mags[0] == 0)
+				{
+					bROLLSPRITE = true;
+					bROLLCENTER = true;
+					roll = randompick(-90, 90);
+				}
+			}
+			Stop;
+	}
+}

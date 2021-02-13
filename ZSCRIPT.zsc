@@ -61,20 +61,22 @@ class SpicyAirHandler : EventHandler
 		if (RealSpiciness[consoleplayer] >= 50)
 		{
 			RealSpiciness[consoleplayer] = 0;
-			let plr = HDPlayerPawn(players[consoleplayer].mo);
-			if (plr)
-			{
-				plr.A_SetBlend(0xa7b55e, 0.15, 12);
-				plr.aggravateddamage++;
-			}
+			SendNetworkEvent("DSP_DealAggro");
+		}
+	}
+
+	override void NetworkProcess(ConsoleEvent e)
+	{
+		let plr = HDPlayerPawn(players[e.Player].mo);
+		if (!plr || plr.Health < 0 || e.IsManual)
+		{
+			return;
 		}
 
-		for (int i = 0; i < MAXPLAYERS; ++i)
+		if (e.Name ~== "DSP_DealAggro")
 		{
-			if (level.time % 20 == 0 && RealSpiciness[i] > 0)
-			{
-				RealSpiciness[i]--;
-			}
+			plr.A_SetBlend(0xa7b55e, 0.15, 12);
+			plr.aggravateddamage++;
 		}
 	}
 }

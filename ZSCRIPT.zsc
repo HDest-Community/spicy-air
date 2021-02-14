@@ -199,7 +199,7 @@ class Despicyto : HDWeapon
 		let HDHud = HDStatusBar(StatusBar);
 
 		HDHud.SavedColour = Font.CR_DARKGRAY;
-		return GetTotalAir();
+		return GetTotalAir() / 60;
 	}
 	override string GetHelpText()
 	{
@@ -220,17 +220,17 @@ class Despicyto : HDWeapon
 		sb.DrawImage(GetPickupSprite(), bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, alpha: 1.0, scale:(4, 4));
 		if (WeaponStatus[DEProp_FilterLife1] >= 0)
 		{
-			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife1], 3, 3, sb.FNF_FILLZEROS), (-40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_RIGHT, Font.CR_DARKGRAY);
+			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife1], 4, 4, sb.FNF_FILLZEROS), (-40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_RIGHT, Font.CR_DARKGRAY);
 		}
 		if (WeaponStatus[DEProp_FilterLife2] >= 0)
 		{
-			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife2], 3, 3, sb.FNF_FILLZEROS), (40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_LEFT, Font.CR_DARKGRAY);
+			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife2], 4, 4, sb.FNF_FILLZEROS), (40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_LEFT, Font.CR_DARKGRAY);
 		}
 	}
 	override void InitializeWepStats(bool idfa)
 	{
-		WeaponStatus[DEProp_FilterLife1] = 600;
-		WeaponStatus[DEProp_FilterLife2] = 600;
+		WeaponStatus[DEProp_FilterLife1] = 60 * 60;
+		WeaponStatus[DEProp_FilterLife2] = 60 * 60;
 	}
 
 	Default
@@ -392,8 +392,8 @@ class DespicytoFilter : HDMagAmmo
 		Inventory.PickupSound "weapons/pocket";
 		Inventory.icon "DSPFA0";
 		Tag "Air filter";
-		HDMagAmmo.MaxPerUnit 600;
-		HDMagAmmo.MagBulk 2;
+		HDMagAmmo.MaxPerUnit 60 * 60;
+		HDMagAmmo.MagBulk 16;
 		HDMagAmmo.RoundBulk 0;
 		HDPickup.RefId "dsf";
 		Scale 0.25;

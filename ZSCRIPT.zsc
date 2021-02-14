@@ -205,7 +205,7 @@ class Despicyto : HDWeapon
 		let HDHud = HDStatusBar(StatusBar);
 
 		HDHud.SavedColour = Font.CR_DARKGRAY;
-		return GetTotalAir() / 60;
+		return int(ceil(GetTotalAir() / 60.0));
 	}
 	override int DisplayAmount()
 	{
@@ -240,8 +240,36 @@ class Despicyto : HDWeapon
 	}
 	override void InitializeWepStats(bool idfa)
 	{
-		WeaponStatus[DEProp_FilterLife1] = 60 * 60;
-		WeaponStatus[DEProp_FilterLife2] = 60 * 60;
+		WeaponStatus[DEProp_FilterLife1] = DespicytoFilter.MaxAir;
+		WeaponStatus[DEProp_FilterLife2] = DespicytoFilter.MaxAir;
+	}
+	override void LoadoutConfigure(string input)
+	{
+		int Worn = GetLoadoutVar(input, "worn", 1);
+		if (Worn > 0)
+		{
+			A_WearMask();
+		}
+		int LF = GetLoadoutVar(input, "lf", 4);
+		if (LF > 0)
+		{
+			WeaponStatus[DEProp_FilterLife1] = min(LF, DespicytoFilter.MaxAir);
+		}
+		int RF = GetLoadoutVar(input, "rf", 4);
+		if (RF > 0)
+		{
+			WeaponStatus[DEProp_FilterLife2] = min(RF, DespicytoFilter.MaxAir);
+		}
+	}
+	private action void A_WearMask()
+	{
+		if (invoker.Worn)
+		{
+			return;
+		}
+		A_StartSound("weapons/pocket", 9);
+		invoker.Worn = true;
+		A_SetBlend(0x000000, 1.0, 16);
 	}
 
 	Default
@@ -325,9 +353,7 @@ class Despicyto : HDWeapon
 					return;
 				}
 
-				A_StartSound("weapons/pocket", 9);
-				invoker.Worn = true;
-				A_SetBlend(0x000000, 1.0, 16);
+				A_WearMask();
 			}
 		Hold:
 			TNT1 A 1;
@@ -397,6 +423,8 @@ class DespicytoFilter : HDMagAmmo
 		ItemsThatUseThis.Push("Despicyto");
 	}
 
+	const MaxAir = 60 * 60;
+
 	Default
 	{
 		HDMagAmmo.MustShowInMagManager true;
@@ -404,7 +432,7 @@ class DespicytoFilter : HDMagAmmo
 		Inventory.PickupSound "weapons/pocket";
 		Inventory.icon "DSPFA0";
 		Tag "Air filter";
-		HDMagAmmo.MaxPerUnit 60 * 60;
+		HDMagAmmo.MaxPerUnit MaxAir;
 		HDMagAmmo.MagBulk 16;
 		HDMagAmmo.RoundBulk 0;
 		HDPickup.RefId "dsf";

@@ -56,7 +56,7 @@ class SpicyAirHandler : EventHandler
 
 	override void WorldTick()
 	{
-		RealSpiciness[consoleplayer] += min(AccumulatedSpiciness[consoleplayer], 5);
+		RealSpiciness[consoleplayer] += min(AccumulatedSpiciness[consoleplayer], SpicyAir.MaxToxicityPerCycle);
 		AccumulatedSpiciness[consoleplayer] = 0;
 		if (RealSpiciness[consoleplayer] >= 50)
 		{
@@ -83,13 +83,15 @@ class SpicyAirHandler : EventHandler
 
 class SpicyAir : Actor
 {
+	SpicyAirHandler Handler;
+	const ToxicityRadius = 1024;
+	const MaxToxicityPerCycle = 10;
+
 	Default
 	{
 		+NOINTERACTION
 		+NOSECTOR
 	}
-
-	SpicyAirHandler Handler;
 
 	States
 	{
@@ -111,7 +113,7 @@ class SpicyAir : Actor
 						continue;
 					}
 
-					if (Distance3D(plr) < 1024)
+					if (Distance3D(plr) < ToxicityRadius)
 					{
 						Handler.AccumulatedSpiciness[i]++;
 					}
@@ -133,15 +135,19 @@ class Despicyto : HDWeapon
 
 	override void DoEffect()
 	{
-		if (Worn && level.time % 35 == 0)
+		if (Worn)
 		{
-			if (WeaponStatus[DEProp_FilterLife1] > 0)
+			Toxicity = min(owner.CountProximity("SpicyAir", SpicyAir.ToxicityRadius), SpicyAir.MaxToxicityPerCycle);
+			if (level.time % 35 == 0)
 			{
-				WeaponStatus[DEProp_FilterLife1]--;
-			}
-			else if (WeaponStatus[DEProp_FilterLife2] > 0)
-			{
-				WeaponStatus[DEProp_FilterLife2]--;
+				if (WeaponStatus[DEProp_FilterLife1] > 0)
+				{
+					WeaponStatus[DEProp_FilterLife1]--;
+				}
+				else if (WeaponStatus[DEProp_FilterLife2] > 0)
+				{
+					WeaponStatus[DEProp_FilterLife2]--;
+				}
 			}
 		}
 
@@ -201,6 +207,11 @@ class Despicyto : HDWeapon
 		HDHud.SavedColour = Font.CR_DARKGRAY;
 		return GetTotalAir() / 60;
 	}
+	override int DisplayAmount()
+	{
+		let HDHud = HDStatusBar(StatusBar);
+		return Worn ? Toxicity : ActualAmount;
+	}
 	override string GetHelpText()
 	{
 		string BaseString = WEPHELP_RELOAD.."  Place left filter\n"
@@ -246,6 +257,7 @@ class Despicyto : HDWeapon
 	}
 
 	bool Worn;
+	private int Toxicity;
 
 	States
 	{

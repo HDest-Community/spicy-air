@@ -59,6 +59,7 @@ class SpicyAirHandler : EventHandler
 	{
 		RealSpiciness[consoleplayer] += min(AccumulatedSpiciness[consoleplayer], SpicyAir.MaxToxicityPerCycle);
 		AccumulatedSpiciness[consoleplayer] = 0;
+
 		if (BreathHoldTimer[consoleplayer] > 0)
 		{
 			BreathHoldTimer[consoleplayer]--;
@@ -142,6 +143,28 @@ class Despicyto : HDWeapon
 	{
 		if (Worn)
 		{
+			if (!BreathingVolume)
+			{
+				BreathingVolume = CVar.GetCVar('spicy_breathingvolume', owner.player);
+			}
+			double BVol = clamp(BreathingVolume.GetFloat(), 0, 1);
+			if (BVol > 0)
+			{
+				let plr = HDPlayerPawn(owner);
+				int BreatheDelay = 90 - int(min(75 * (plr.fatigue / 28.0), 80));
+				int BreatheSpeed = 7 - int(min(6 * (BreatheDelay / 90.0), 6));
+				if (BreatheIndex == 0)
+				{
+					owner.A_StartSound("SpicyAir/Mask/BreatheOut"..BreatheSpeed, 35, CHANF_LOCAL, BVol, pitch: frandom(0.98, 1.0));
+				}
+				BreatheIndex++;
+				if (BreatheIndex >= BreatheDelay)
+				{
+					BreatheIndex = -BreatheDelay;
+					owner.A_StartSound("SpicyAir/Mask/BreatheIn"..BreatheSpeed, 36, CHANF_LOCAL, BVol, pitch: frandom(0.98, 1.0));
+				}
+			}
+			
 			Toxicity = min(owner.CountProximity("SpicyAir", SpicyAir.ToxicityRadius), SpicyAir.MaxToxicityPerCycle);
 			if (level.time % 35 == 0)
 			{
@@ -179,6 +202,7 @@ class Despicyto : HDWeapon
 				let Handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
 				Handler.BreathHoldTimer[owner.PlayerNumber()] = 35 * 15;
 			}
+			BreatheIndex = false;
 			owner.A_StartSound("weapons/pocket", 9);
 			owner.A_SetBlend(0x000000, 1.0, 16);
 			Worn = false;
@@ -298,8 +322,10 @@ class Despicyto : HDWeapon
 		Inventory.PickupMessage "Picked up a gas mask.";
 	}
 
+	private transient CVar BreathingVolume;
 	bool Worn;
 	private int Toxicity;
+	private int BreatheIndex;
 
 	States
 	{

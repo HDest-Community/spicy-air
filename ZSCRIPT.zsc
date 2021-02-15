@@ -119,7 +119,7 @@ class SpicyAir : Actor
 						continue;
 					}
 
-					if (Distance3D(plr) < ToxicityRadius)
+					if (Distance2D(plr) < ToxicityRadius)
 					{
 						Handler.AccumulatedSpiciness[i]++;
 					}

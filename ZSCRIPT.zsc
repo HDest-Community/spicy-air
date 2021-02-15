@@ -165,7 +165,7 @@ class Despicyto : HDWeapon
 				}
 			}
 			
-			Toxicity = min(owner.CountProximity("SpicyAir", SpicyAir.ToxicityRadius), SpicyAir.MaxToxicityPerCycle);
+			Toxicity = min(owner.CountProximity("SpicyAir", SpicyAir.ToxicityRadius, CPXF_NOZ), SpicyAir.MaxToxicityPerCycle);
 			if (level.time % 35 == 0)
 			{
 				if (WeaponStatus[DEProp_FilterLife1] > 0)

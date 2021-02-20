@@ -1,11 +1,11 @@
 ### Notes
 ---
 - The gas mask can only be found in backpacks. Filters can spawn in the wild.
-- Loadout codes are `dsp` and `dsf` for the mask and filter, respectively.
+- Loadout codes are `dsp` for two filter mask, `ds2` for single filter mask, and `dsf` for filters.
 - Configuration codes are:
 	- `worn`: Starting frag.
 	- `lf`: Air in left filter (1-3600).
-	- `rf`: Air in right filter (1-3600).
+	- `rf`: Air in right filter (1-3600). Does not apply to the single filter mask.
 - CVars are:
 	- `spicy_breathingvolume [0.0 - 1.0]`: Sets the volume for the breathing sound effect. Set to 0 to disable. 
 - Each filter gives you 10 minutes of air. The mask can take up to two filters for a maximum duration of 20 minutes.

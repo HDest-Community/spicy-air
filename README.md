@@ -3,7 +3,7 @@
 - The gas mask can only be found in backpacks. Filters can spawn in the wild.
 - Loadout codes are `dsp` and `dsf` for the mask and filter, respectively.
 - Configuration codes are:
-	- `worn`: Starting frag.
+	- `worn`: Start with the mask on.
 	- `lf`: Air in left filter (1-3600).
 	- `rf`: Air in right filter (1-3600).
 - CVars are:

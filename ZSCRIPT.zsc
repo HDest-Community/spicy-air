@@ -43,6 +43,11 @@ class SpicyAirHandler : EventHandler
 	override void RenderUnderlay(RenderEvent e)
 	{
 		let plr = HDPlayerPawn(players[consoleplayer].mo);
+		if (!plr)
+		{
+			return;
+		}
+		
 		let Mask = Despicyto(plr.FindInventory('Despicyto'));
 		if (Mask && Mask.Worn && !automapactive)
 		{

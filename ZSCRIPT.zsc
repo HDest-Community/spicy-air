@@ -100,8 +100,16 @@ class Despicyto : HDWeapon
 		DEProp_FilterLife2,
 	}
 
-	override void DoEffect()
+	override void Tick()
 	{
+		Super.Tick();
+
+		if (!owner)
+		{
+			Worn = false;
+			return;
+		}
+
 		if (Worn)
 		{
 			if (!BreathingVolume)
@@ -139,8 +147,6 @@ class Despicyto : HDWeapon
 				}
 			}
 		}
-
-		Super.DoEffect();
 	}
 	clearscope int GetTotalAir()
 	{

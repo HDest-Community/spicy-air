@@ -3,7 +3,6 @@ version "4.5"
 class SpicyAirHandler : EventHandler
 {
 	int BreathHoldTimer[MAXPLAYERS];
-	int AccumulatedSpiciness[MAXPLAYERS];
 	int RealSpiciness[MAXPLAYERS];
 
 	override void CheckReplacement(ReplaceEvent e)
@@ -24,22 +23,6 @@ class SpicyAirHandler : EventHandler
 		}
 	}
 
-	override void WorldLoaded(WorldEvent e)
-	{
-		for (int i = 0; i < level.Sectors.Size(); ++i)
-		{
-			Sector CurSec = level.Sectors[i];
-			if (TexMan.GetName(CurSec.GetTexture(1)) ~== "F_SKY1")
-			{
-				double FloorZ = CurSec.floorplane.ZAtPoint(CurSec.centerspot);
-				double CeilZ = CurSec.ceilingplane.ZAtPoint(CurSec.centerspot);
-				vector3 SpawnPos = (CurSec.centerspot.x, CurSec.centerspot.y, FloorZ + (CeilZ - FloorZ) / 2);
-				let sa = SpicyAir(Actor.Spawn("SpicyAir", SpawnPos));
-				sa.Handler = self;
-			}
-		}
-	}
-
 	override void RenderUnderlay(RenderEvent e)
 	{
 		let plr = HDPlayerPawn(players[consoleplayer].mo);
@@ -51,28 +34,40 @@ class SpicyAirHandler : EventHandler
 		let Mask = Despicyto(plr.FindInventory('Despicyto'));
 		if (Mask && Mask.Worn && !automapactive)
 		{
-			int MaskHeight = int(Screen.GetHeight() * (1.6 * 90) / plr.player.fov);
-			int MaskWidth = Screen.GetWidth() * MaskHeight / Screen.GetHeight();
+			int MaskHeight = int(Screen.GetHeight() * ((1.6 * 90) / plr.player.fov));
+			int MaskWidth = int(Screen.GetWidth() * MaskHeight * 1.2) / Screen.GetHeight();
 			int MaskOffX = -((MaskWidth - Screen.GetWidth()) >> 1);
 			int MaskOffY = -((MaskHeight - Screen.GetHeight()) >> 1);
 
-			Screen.DrawTexture(TexMan.CheckForTexture("despmask"), true, MaskOffX - (int(plr.hudbob.x * 0.5)), MaskOffY - (int(plr.hudbob.y * 0.5)), DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight, true);
+			Screen.DrawTexture(TexMan.CheckForTexture("despmask"), true, MaskOffX - (int(plr.hudbob.x * 0.5)), MaskOffY - (int(plr.hudbob.y * 0.5)), DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
 		}
 	}
 
 	override void WorldTick()
 	{
-		RealSpiciness[consoleplayer] += min(AccumulatedSpiciness[consoleplayer], SpicyAir.MaxToxicityPerCycle);
-		AccumulatedSpiciness[consoleplayer] = 0;
-
-		if (BreathHoldTimer[consoleplayer] > 0)
+		let plr = HDPlayerPawn(players[consoleplayer].mo);
+		if (!plr)
 		{
-			BreathHoldTimer[consoleplayer]--;
+			return;
 		}
-		else if (RealSpiciness[consoleplayer] >= 50)
+
+		let Mask = Despicyto(plr.FindInventory('Despicyto'));
+		if (!plr.CurSector.WasSecret() && (!Mask || !Mask.Worn))
+		{
+			RealSpiciness[consoleplayer] += 1;
+			if (BreathHoldTimer[consoleplayer] > 0)
+			{
+				BreathHoldTimer[consoleplayer]--;
+			}
+			else if (RealSpiciness[consoleplayer] >= 70)
+			{
+				RealSpiciness[consoleplayer] = 0;
+				SendNetworkEvent("DSP_DealAggro");
+			}
+		}
+		else
 		{
 			RealSpiciness[consoleplayer] = 0;
-			SendNetworkEvent("DSP_DealAggro");
 		}
 	}
 
@@ -89,48 +84,6 @@ class SpicyAirHandler : EventHandler
 			plr.A_SetBlend(0xa7b55e, 0.15, 12);
 			plr.aggravateddamage++;
 		}
-	}
-}
-
-class SpicyAir : Actor
-{
-	SpicyAirHandler Handler;
-	const ToxicityRadius = 1024;
-	const MaxToxicityPerCycle = 10;
-
-	Default
-	{
-		+NOINTERACTION
-		+NOSECTOR
-	}
-
-	States
-	{
-		Spawn:
-			TNT1 A 10
-			{
-				for (int i = 0; i < MAXPLAYERS; ++i)
-				{
-					let plr = HDPlayerPawn(players[i].mo);
-					if (!plr)
-					{
-						continue;
-					}
-
-					let Radsuit = WornRadsuit(plr.FindInventory('WornRadsuit'));
-					let Mask = Despicyto(plr.FindInventory('Despicyto'));
-					if (Radsuit || Mask && Mask.Worn && Mask.GetTotalAir() > 0 || Handler.BreathHoldTimer[i] > 0)
-					{
-						continue;
-					}
-
-					if (Distance2D(plr) < ToxicityRadius)
-					{
-						Handler.AccumulatedSpiciness[i]++;
-					}
-				}
-			}
-			Loop;
 	}
 }
 
@@ -170,7 +123,7 @@ class Despicyto : HDWeapon
 				}
 			}
 			
-			Toxicity = min(owner.CountProximity("SpicyAir", SpicyAir.ToxicityRadius, CPXF_NOZ), SpicyAir.MaxToxicityPerCycle);
+			Toxicity = !owner.CurSector.WasSecret();
 			if (level.time % 35 == 0)
 			{
 				if (WeaponStatus[DEProp_FilterLife1] > 0)
@@ -329,8 +282,8 @@ class Despicyto : HDWeapon
 
 	private transient CVar BreathingVolume;
 	bool Worn;
-	private int Toxicity;
 	private int BreatheIndex;
+	private bool Toxicity;
 
 	States
 	{

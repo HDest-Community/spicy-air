@@ -231,6 +231,7 @@ class Despicyto : HDWeapon
 		return BaseString;
 	}
 	override double WeaponBulk() { return Worn ? 5 : 22; }
+	override bool IsBeingWorn() { return Worn; }
 
 	override void DrawHUDStuff(HDStatusBar sb, HDWeapon hdw, HDPlayerPawn hpl)
 	{
@@ -297,6 +298,7 @@ class Despicyto : HDWeapon
 		Scale 0.35;
 		Inventory.PickupSound "weapons/pocket";
 		Inventory.PickupMessage "Picked up a gas mask.";
+		HDWeapon.WornLayer STRIP_RADSUIT + 1;
 	}
 
 	private transient CVar BreathingVolume;

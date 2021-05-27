@@ -60,7 +60,7 @@ class SpicyAirHandler : EventHandler
 		}
 
 		let Mask = Despicyto(plr.FindInventory('Despicyto'));
-		if (!plr.CurSector.WasSecret() && (!Mask || !Mask.Worn) && BreathHoldTimer[consoleplayer] <= 0)
+		if (!plr.CurSector.WasSecret() && (!Mask || !Mask.Worn || Mask.A_GetTotalAir() == 0) && BreathHoldTimer[consoleplayer] <= 0)
 		{
 			if (++RealSpiciness[consoleplayer] >= 70)
 			{
@@ -378,16 +378,7 @@ class Despicyto : HDWeapon
 			TNT1 AAAA 1 A_AddOffset(18);
 			TNT1 AAAAA 1 A_AddOffset(36);
 			TNT1 A 0 A_JumpIf(!PressingFire() && !PressingAltfire(), "Ready");
-			TNT1 A 1
-			{
-				if (invoker.WeaponStatus[DEProp_FilterLife1] <= 0 && invoker.WeaponStatus[DEProp_FilterLife2] <= 0)
-				{
-					SetWeaponState("Nope");
-					return;
-				}
-
-				A_WearMask();
-			}
+			TNT1 A 1 A_WearMask();
 		Hold:
 			TNT1 A 1;
 			TNT1 A 0 A_Refire("Hold");

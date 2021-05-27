@@ -11,4 +11,4 @@
 - Each filter gives you 60 minutes of air. The mask can take up to two filters for a maximum duration of 2 hours.
 - All air is toxic except that in secret sectors. If your screen flashes, that's a point of aggro. Put on your mask.
 - While the mask is worn, the number on the HUD that would normally indicate amount will indicate if the air is toxic.
-- Removing the mask while you still have air will hold your breath for 15 seconds, giving you time to change filters without breathing in deadly toxins.
+- Removing the mask while you still have air will take up to 15 seconds of air, giving you time to change filters without breathing in deadly toxins.

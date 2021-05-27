@@ -148,10 +148,10 @@ class Despicyto : HDWeapon
 			}
 		}
 	}
-	clearscope int GetTotalAir()
+	clearscope action int A_GetTotalAir()
 	{
-		int F1 = WeaponStatus[DEProp_FilterLife1];
-		int F2 = WeaponStatus[DEProp_FilterLife2];
+		int F1 = invoker.WeaponStatus[DEProp_FilterLife1];
+		int F2 = invoker.WeaponStatus[DEProp_FilterLife2];
 		return (F1 >= 0 ? F1 : 0) + (F2 >= 0 ? F2 : 0);
 	}
 	clearscope int GetBreathDelay()
@@ -164,7 +164,7 @@ class Despicyto : HDWeapon
 		return 7 - int(min(6 * (GetBreathDelay() / 90.0), 6));
 	}
 
-	action void A_AddOffset(int ofs)
+	private action void A_AddOffset(int ofs)
 	{
 		invoker.WeaponStatus[DEProp_UseOffset] += ofs;
 	}
@@ -173,16 +173,7 @@ class Despicyto : HDWeapon
 	{
 		if (owner && Worn)
 		{
-			if (GetTotalAir() > 0)
-			{
-				let Handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
-				Handler.BreathHoldTimer[owner.PlayerNumber()] = 35 * 15;
-				owner.A_StartSound("SpicyAir/Mask/BreatheIn1", 36, CHANF_LOCAL, clamp(BreathingVolume.GetFloat(), 0, 1), pitch: frandom(0.98, 1.0));
-			}
-			BreathIndex = 0;
-			owner.A_StartSound("weapons/pocket", 9);
-			owner.A_SetBlend(0x000000, 1.0, 16);
-			Worn = false;
+			A_UnwearMask();
 			return false;
 		}
 
@@ -216,7 +207,7 @@ class Despicyto : HDWeapon
 		let HDHud = HDStatusBar(StatusBar);
 
 		HDHud.SavedColour = Font.CR_DARKGRAY;
-		return int(ceil(GetTotalAir() / 60.0));
+		return int(ceil(A_GetTotalAir() / 60.0));
 	}
 	override int DisplayAmount()
 	{
@@ -233,7 +224,6 @@ class Despicyto : HDWeapon
 	}
 	override double WeaponBulk() { return Worn ? 5 : 22; }
 	override bool IsBeingWorn() { return Worn; }
-
 	override void DrawHUDStuff(HDStatusBar sb, HDWeapon hdw, HDPlayerPawn hpl)
 	{
 		vector2 bob = hpl.hudbob * 0.3;
@@ -273,6 +263,7 @@ class Despicyto : HDWeapon
 			WeaponStatus[DEProp_FilterLife2] = min(RF, DespicytoFilter.MaxAir);
 		}
 	}
+
 	private action void A_WearMask()
 	{
 		if (invoker.Worn)
@@ -286,6 +277,28 @@ class Despicyto : HDWeapon
 		A_StartSound("weapons/pocket", 9);
 		invoker.Worn = true;
 		A_SetBlend(0x000000, 1.0, 16);
+	}
+	private action void A_UnwearMask()
+	{
+		if (A_GetTotalAir() > 0)
+		{
+			int ToTake = 15;
+			int F1 = invoker.WeaponStatus[DEProp_FilterLife1];
+			int F2 = invoker.WeaponStatus[DEProp_FilterLife2];
+
+			invoker.WeaponStatus[DEProp_FilterLife1] -= min(ToTake, F1);
+			ToTake -= min(ToTake, F1);
+			invoker.WeaponStatus[DEProp_FilterLife2] -= min(ToTake, F2);
+			ToTake -= min(ToTake, F2);
+
+			let Handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
+			Handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 35 * (15 - ToTake);
+			invoker.owner.A_StartSound("SpicyAir/Mask/BreatheIn1", 36, CHANF_LOCAL, clamp(invoker.BreathingVolume.GetFloat(), 0, 1), pitch: frandom(0.98, 1.0));
+		}
+		invoker.BreathIndex = 0;
+		invoker.owner.A_StartSound("weapons/pocket", 9);
+		invoker.owner.A_SetBlend(0x000000, 1.0, 16);
+		invoker.Worn = false;
 	}
 
 	Default

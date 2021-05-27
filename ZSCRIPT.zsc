@@ -54,15 +54,15 @@ class SpicyAirHandler : EventHandler
 			return;
 		}
 
-		let Mask = Despicyto(plr.FindInventory('Despicyto'));
-		if (!plr.CurSector.WasSecret() && (!Mask || !Mask.Worn))
+		if (BreathHoldTimer[consoleplayer] > 0)
 		{
-			RealSpiciness[consoleplayer] += 1;
-			if (BreathHoldTimer[consoleplayer] > 0)
-			{
-				BreathHoldTimer[consoleplayer]--;
-			}
-			else if (RealSpiciness[consoleplayer] >= 70)
+			BreathHoldTimer[consoleplayer]--;
+		}
+
+		let Mask = Despicyto(plr.FindInventory('Despicyto'));
+		if (!plr.CurSector.WasSecret() && (!Mask || !Mask.Worn) && BreathHoldTimer[consoleplayer] <= 0)
+		{
+			if (RealSpiciness[consoleplayer] >= 70)
 			{
 				RealSpiciness[consoleplayer] = 0;
 				SendNetworkEvent("DSP_DealAggro");

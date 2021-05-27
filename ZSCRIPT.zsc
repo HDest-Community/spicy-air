@@ -177,6 +177,7 @@ class Despicyto : HDWeapon
 			{
 				let Handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
 				Handler.BreathHoldTimer[owner.PlayerNumber()] = 35 * 15;
+				owner.A_StartSound("SpicyAir/Mask/BreatheIn1", 36, CHANF_LOCAL, clamp(BreathingVolume.GetFloat(), 0, 1), pitch: frandom(0.98, 1.0));
 			}
 			BreathIndex = 0;
 			owner.A_StartSound("weapons/pocket", 9);

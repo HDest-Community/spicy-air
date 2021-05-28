@@ -134,7 +134,7 @@ class Despicyto : HDWeapon
 				}
 			}
 			
-			Toxicity = !owner.CurSector.WasSecret();
+			IsToxic = !owner.CurSector.WasSecret();
 			if (level.time % 35 == 0)
 			{
 				if (WeaponStatus[DEProp_FilterLife1] > 0)
@@ -212,7 +212,7 @@ class Despicyto : HDWeapon
 	override int DisplayAmount()
 	{
 		let HDHud = HDStatusBar(StatusBar);
-		return Worn ? Toxicity : ActualAmount;
+		return Worn ? IsToxic : ActualAmount;
 	}
 	override string GetHelpText()
 	{
@@ -286,15 +286,18 @@ class Despicyto : HDWeapon
 			int F1 = invoker.WeaponStatus[DEProp_FilterLife1];
 			int F2 = invoker.WeaponStatus[DEProp_FilterLife2];
 
-			if (F1 > 0)
+			if (IsToxic)
 			{
-				invoker.WeaponStatus[DEProp_FilterLife1] -= min(ToTake, F1);
-				ToTake -= min(ToTake, F1);
-			}
-			if (F2 > 0)
-			{
-				invoker.WeaponStatus[DEProp_FilterLife2] -= min(ToTake, F2);
-				ToTake -= min(ToTake, F2);
+				if (F1 > 0)
+				{
+					invoker.WeaponStatus[DEProp_FilterLife1] -= min(ToTake, F1);
+					ToTake -= min(ToTake, F1);
+				}
+				if (F2 > 0)
+				{
+					invoker.WeaponStatus[DEProp_FilterLife2] -= min(ToTake, F2);
+					ToTake -= min(ToTake, F2);
+				}
 			}
 
 			let Handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
@@ -324,7 +327,7 @@ class Despicyto : HDWeapon
 	private transient CVar BreathingVolume;
 	bool Worn;
 	int BreathIndex;
-	private bool Toxicity;
+	private bool IsToxic;
 
 	States
 	{

@@ -286,7 +286,7 @@ class Despicyto : HDWeapon
 			int F1 = invoker.WeaponStatus[DEProp_FilterLife1];
 			int F2 = invoker.WeaponStatus[DEProp_FilterLife2];
 
-			if (IsToxic)
+			if (invoker.IsToxic)
 			{
 				if (F1 > 0)
 				{

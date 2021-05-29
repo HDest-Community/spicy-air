@@ -54,23 +54,34 @@ class SpicyAirHandler : EventHandler
 			return;
 		}
 
-		if (BreathHoldTimer[consoleplayer] > 0)
+		if (plr.CurSector.WasSecret())
 		{
-			BreathHoldTimer[consoleplayer]--;
-		}
-
-		let Mask = Despicyto(plr.FindInventory('Despicyto'));
-		if (!plr.CurSector.WasSecret() && (!Mask || !Mask.Worn || Mask.A_GetTotalAir() == 0) && BreathHoldTimer[consoleplayer] <= 0)
-		{
-			if (++RealSpiciness[consoleplayer] >= 70)
-			{
-				RealSpiciness[consoleplayer] = 0;
-				SendNetworkEvent("DSP_DealAggro");
-			}
+			BreathHoldTimer[consoleplayer] = 35 * 15;
+			RealSpiciness[consoleplayer] = 0;
 		}
 		else
 		{
-			RealSpiciness[consoleplayer] = 0;
+			if (BreathHoldTimer[consoleplayer] > 0)
+			{
+				RealSpiciness[consoleplayer] = 0;
+				BreathHoldTimer[consoleplayer]--;
+			}
+			else
+			{
+				let Mask = Despicyto(plr.FindInventory('Despicyto'));
+				if ((!Mask || !Mask.Worn || Mask.A_GetTotalAir() == 0))
+				{
+					if (++RealSpiciness[consoleplayer] >= 70)
+					{
+						RealSpiciness[consoleplayer] = 0;
+						SendNetworkEvent("DSP_DealAggro");
+					}
+				}
+				else
+				{
+					RealSpiciness[consoleplayer] = 0;
+				}
+			}
 		}
 	}
 

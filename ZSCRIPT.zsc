@@ -34,7 +34,7 @@ class SpicyAirHandler : EventHandler
 		let Mask = Despicyto(plr.FindInventory('Despicyto'));
 		if (Mask && Mask.Worn && !automapactive)
 		{
-			int MaskHeight = int(Screen.GetHeight() * ((1.6 * 90) / plr.player.fov));
+			int MaskHeight = int(Screen.GetHeight() * 1.3);
 			int MaskWidth = int(Screen.GetWidth() * MaskHeight * 1.2) / Screen.GetHeight();
 			int MaskOffX = -((MaskWidth - Screen.GetWidth()) >> 1);
 			int MaskOffY = -((MaskHeight - Screen.GetHeight()) >> 1);

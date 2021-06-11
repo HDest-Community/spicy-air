@@ -54,7 +54,7 @@ class SpicyAirHandler : EventHandler
 			return;
 		}
 
-		if (plr.CurSector.WasSecret())
+		if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1)
 		{
 			BreathHoldTimer[consoleplayer] = 35 * 15;
 			RealSpiciness[consoleplayer] = 0;
@@ -145,7 +145,7 @@ class Despicyto : HDWeapon
 				}
 			}
 			
-			IsToxic = !owner.CurSector.WasSecret();
+			IsToxic = !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1;
 			if (level.time % 35 == 0)
 			{
 				if (WeaponStatus[DEProp_FilterLife1] > 0)

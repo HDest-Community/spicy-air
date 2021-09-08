@@ -41,8 +41,17 @@ class SpicyAirHandler : EventHandler
 
 			double BreathFactor = Mask.BreathIndex / double(Mask.GetBreathDelay());
 			BreathFactor = min(1.0, abs(BreathFactor > 0 ? BreathFactor * 2.25 : BreathFactor));
+
+			let goggles = PortableLiteAmp(plr.FindInventory('PortableLiteAmp'));
+			if (goggles && goggles.worn)
+			{
+				BreathFactor *= 0.06;
+			}
 			Screen.DrawTexture(TexMan.CheckForTexture("DESPMOIS"), true, MaskOffX - (int(plr.hudbob.x * 0.5)), MaskOffY - (int(plr.hudbob.y * 0.5)), DTA_Alpha, BreathFactor, DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
-			Screen.DrawTexture(TexMan.CheckForTexture("DESPMASK"), true, MaskOffX - (int(plr.hudbob.x * 0.5)), MaskOffY - (int(plr.hudbob.y * 0.5)), DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
+			if (!goggles || !goggles.worn)
+			{
+				Screen.DrawTexture(TexMan.CheckForTexture("DESPMASK"), true, MaskOffX - (int(plr.hudbob.x * 0.5)), MaskOffY - (int(plr.hudbob.y * 0.5)), DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
+			}
 		}
 	}
 

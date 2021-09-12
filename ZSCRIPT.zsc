@@ -434,6 +434,7 @@ class Despicyto : HDWeapon
 					HDBattery.SpawnMag(self, "DespicytoFilter", Air);
 				}
 				invoker.WeaponStatus[Which] = -1;
+				invoker.Icon = TexMan.CheckForTexture(invoker.GetPickupSprite(), TexMan.Type_Any);
 			}
 			Goto ReloadEnd;
 		Reload:
@@ -454,6 +455,7 @@ class Despicyto : HDWeapon
 				int Air = Filter.TakeMag(true);
 				invoker.WeaponStatus[Which] = Air;
 				A_StartSound("weapons/vulcopen1", 8, CHANF_OVERLAP);
+				invoker.Icon = TexMan.CheckForTexture(invoker.GetPickupSprite(), TexMan.Type_Any);
 			}
 			Goto ReloadEnd;
 		ReloadEnd:

@@ -65,7 +65,7 @@ class SpicyAirHandler : EventHandler
 
 		if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1)
 		{
-			BreathHoldTimer[consoleplayer] = 35 * 15;
+			BreathHoldTimer[consoleplayer] = 35 * 30;
 			RealSpiciness[consoleplayer] = 0;
 		}
 		else
@@ -298,7 +298,7 @@ class Despicyto : HDWeapon
 	{
 		if (A_GetTotalAir() > 0)
 		{
-			int ToTake = 15;
+			int ToTake = 10;
 			int F1 = invoker.WeaponStatus[DEProp_FilterLife1];
 			int F2 = invoker.WeaponStatus[DEProp_FilterLife2];
 
@@ -317,7 +317,7 @@ class Despicyto : HDWeapon
 			}
 
 			let Handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
-			Handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 35 * (15 - ToTake);
+			Handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 35 * (3 * (10 - ToTake));
 			invoker.owner.A_StartSound("SpicyAir/Mask/BreatheIn1", 36, CHANF_LOCAL, clamp(invoker.BreathingVolume.GetFloat(), 0, 1), pitch: frandom(0.98, 1.0));
 		}
 		invoker.BreathIndex = 0;

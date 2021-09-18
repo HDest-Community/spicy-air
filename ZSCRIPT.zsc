@@ -151,27 +151,23 @@ class Despicyto : HDWeapon
 				{
 					BreathIndex = -BreathDelay;
 					owner.A_StartSound("SpicyAir/Mask/BreatheIn"..BreathSpeed, 36, CHANF_LOCAL, BVol, pitch: frandom(0.98, 1.0));
+					if (WeaponStatus[DEProp_FilterLife1] > 0)
+					{
+						WeaponStatus[DEProp_FilterLife1]--;
+					}
+					else if (WeaponStatus[DEProp_FilterLife2] > 0)
+					{
+						WeaponStatus[DEProp_FilterLife2]--;
+					}
 				}
 			}
-			
 			IsToxic = !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1;
-			if (level.time % 35 == 0)
-			{
-				if (WeaponStatus[DEProp_FilterLife1] > 0)
-				{
-					WeaponStatus[DEProp_FilterLife1]--;
-				}
-				else if (WeaponStatus[DEProp_FilterLife2] > 0)
-				{
-					WeaponStatus[DEProp_FilterLife2]--;
-				}
-			}
 		}
 	}
 	clearscope action int A_GetTotalAir()
 	{
-		int F1 = invoker.WeaponStatus[DEProp_FilterLife1];
-		int F2 = invoker.WeaponStatus[DEProp_FilterLife2];
+		int F1 = int((invoker.WeaponStatus[DEProp_FilterLife1] / double(DespicytoFilter.MaxAir)) * 50);
+		int F2 = int((invoker.WeaponStatus[DEProp_FilterLife2] / double(DespicytoFilter.MaxAir)) * 50);
 		return (F1 >= 0 ? F1 : 0) + (F2 >= 0 ? F2 : 0);
 	}
 	clearscope int GetBreathDelay()
@@ -227,7 +223,7 @@ class Despicyto : HDWeapon
 		let HDHud = HDStatusBar(StatusBar);
 
 		HDHud.SavedColour = Font.CR_DARKGRAY;
-		return int(ceil(A_GetTotalAir() / 60.0));
+		return A_GetTotalAir();
 	}
 	override int DisplayAmount()
 	{
@@ -253,11 +249,11 @@ class Despicyto : HDWeapon
 		sb.DrawImage(GetPickupSprite(), bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, alpha: 1.0, scale:(4, 4));
 		if (WeaponStatus[DEProp_FilterLife1] >= 0)
 		{
-			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife1], 4, 4, sb.FNF_FILLZEROS), (-40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_RIGHT, Font.CR_DARKGRAY);
+			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife1], 3, 3, sb.FNF_FILLZEROS), (-40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_RIGHT, Font.CR_DARKGRAY);
 		}
 		if (WeaponStatus[DEProp_FilterLife2] >= 0)
 		{
-			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife2], 4, 4, sb.FNF_FILLZEROS), (40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_LEFT, Font.CR_DARKGRAY);
+			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife2], 3, 3, sb.FNF_FILLZEROS), (40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_LEFT, Font.CR_DARKGRAY);
 		}
 	}
 	override void InitializeWepStats(bool idfa)
@@ -478,7 +474,7 @@ class DespicytoFilter : HDMagAmmo
 		ItemsThatUseThis.Push("Despicyto");
 	}
 
-	const MaxAir = 60 * 40;
+	const MaxAir = 60 * 15;
 
 	Default
 	{

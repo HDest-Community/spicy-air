@@ -140,17 +140,17 @@ class Despicyto : HDWeapon
 			if (BVol > 0)
 			{
 				let plr = HDPlayerPawn(owner);
-				int BreathDelay = GetBreathDelay();
-				int BreathSpeed = GetBreathSpeed();
+				int bDelay = GetBreathDelay();
+				int bSpeed = GetBreathSpeed();
 				if (BreathIndex == 0)
 				{
-					owner.A_StartSound("SpicyAir/Mask/BreatheOut"..BreathSpeed, 35, CHANF_LOCAL, BVol, pitch: frandom(0.98, 1.0));
+					owner.A_StartSound("SpicyAir/Mask/BreatheOut"..bSpeed, 35, CHANF_LOCAL, BVol, pitch: frandom(0.98, 1.0));
 				}
 				BreathIndex++;
-				if (BreathIndex >= BreathDelay)
+				if (BreathIndex >= bDelay)
 				{
-					BreathIndex = -BreathDelay;
-					owner.A_StartSound("SpicyAir/Mask/BreatheIn"..BreathSpeed, 36, CHANF_LOCAL, BVol, pitch: frandom(0.98, 1.0));
+					BreathIndex = -bDelay;
+					owner.A_StartSound("SpicyAir/Mask/BreatheIn"..bSpeed, 36, CHANF_LOCAL, BVol, pitch: frandom(0.98, 1.0));
 					if (WeaponStatus[DEProp_FilterLife1] > 0)
 					{
 						WeaponStatus[DEProp_FilterLife1]--;
@@ -173,11 +173,11 @@ class Despicyto : HDWeapon
 	clearscope int GetBreathDelay()
 	{
 		let plr = HDPlayerPawn(owner);
-		return 90 - int(min(75 * (plr.fatigue / 28.0), 80));
+		return 90 - int(min(plr.fatigue * 2, 80));
 	}
 	clearscope int GetBreathSpeed()
 	{
-		return 7 - int(min(6 * (GetBreathDelay() / 90.0), 6));
+		return 3 - int(min(GetBreathDelay() / 35, 2));
 	}
 
 	private action void A_AddOffset(int ofs)

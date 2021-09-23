@@ -15,7 +15,7 @@ class SpicyAirHandler : EventHandler
 		switch (e.Replacement.GetClassName())
 		{
 			case 'ClipBoxPickup':
-				if (random[desprand]() <= 16)
+				if (random[desprand]() <= 24)
 				{
 					e.Replacement = "DespicytoFilter";
 				}

@@ -78,7 +78,7 @@ class SpicyAirHandler : EventHandler
 			else
 			{
 				let Mask = Despicyto(plr.FindInventory('Despicyto'));
-				if ((!Mask || !Mask.Worn || Mask.A_GetTotalAir() == 0))
+				if ((!Mask || !Mask.Worn || Mask.A_GetTotalAir(false) == 0))
 				{
 					if (++RealSpiciness[consoleplayer] >= 70)
 					{
@@ -164,10 +164,10 @@ class Despicyto : HDWeapon
 			IsToxic = !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1;
 		}
 	}
-	clearscope action int A_GetTotalAir()
+	clearscope action int A_GetTotalAir(bool percentage)
 	{
-		int F1 = int((invoker.WeaponStatus[DEProp_FilterLife1] / double(DespicytoFilter.MaxAir)) * 50);
-		int F2 = int((invoker.WeaponStatus[DEProp_FilterLife2] / double(DespicytoFilter.MaxAir)) * 50);
+		int F1 = percentage ? int(ceil((invoker.WeaponStatus[DEProp_FilterLife1] / double(DespicytoFilter.MaxAir)) * 50)) : invoker.WeaponStatus[DEProp_FilterLife1];
+		int F2 = percentage ? int(ceil((invoker.WeaponStatus[DEProp_FilterLife2] / double(DespicytoFilter.MaxAir)) * 50)) : invoker.WeaponStatus[DEProp_FilterLife2];
 		return (F1 >= 0 ? F1 : 0) + (F2 >= 0 ? F2 : 0);
 	}
 	clearscope int GetBreathDelay()
@@ -223,7 +223,7 @@ class Despicyto : HDWeapon
 		let HDHud = HDStatusBar(StatusBar);
 
 		HDHud.SavedColour = Font.CR_DARKGRAY;
-		return A_GetTotalAir();
+		return A_GetTotalAir(true);
 	}
 	override int DisplayAmount()
 	{
@@ -296,7 +296,7 @@ class Despicyto : HDWeapon
 	}
 	private action void A_UnwearMask()
 	{
-		if (A_GetTotalAir() > 0)
+		if (A_GetTotalAir(false) > 0)
 		{
 			int ToTake = 10;
 			int F1 = invoker.WeaponStatus[DEProp_FilterLife1];

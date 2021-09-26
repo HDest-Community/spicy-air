@@ -80,7 +80,7 @@ class SpicyAirHandler : EventHandler
 				let Mask = Despicyto(plr.FindInventory('Despicyto'));
 				if ((!Mask || !Mask.Worn || Mask.A_GetTotalAir(false) == 0))
 				{
-					if (++RealSpiciness[consoleplayer] >= 70)
+					if (++RealSpiciness[consoleplayer] >= 70 * (plr.FindInventory('WornRadsuit') ? 30 : 1))
 					{
 						RealSpiciness[consoleplayer] = 0;
 						SendNetworkEvent("DSP_DealAggro");

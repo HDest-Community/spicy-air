@@ -45,7 +45,7 @@ class SpicyAirHandler : EventHandler
 			let goggles = PortableLiteAmp(plr.FindInventory('PortableLiteAmp'));
 			if (goggles && goggles.worn)
 			{
-				BreathFactor *= 0.16 - (goggles.amplitude / PortableLiteAmp.NITEVIS_MAX) * 0.12;
+				BreathFactor *= 0.08 - (goggles.amplitude / PortableLiteAmp.NITEVIS_MAX) * 0.04;
 			}
 			Screen.DrawTexture(TexMan.CheckForTexture("DESPMOIS"), true, MaskOffX - (int(plr.hudbob.x * 0.5)), MaskOffY - (int(plr.hudbob.y * 0.5)), DTA_Alpha, BreathFactor, DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
 			if (!goggles || !goggles.worn)

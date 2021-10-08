@@ -414,6 +414,8 @@ class Despicyto : HDWeapon
 			TNT1 A 5
 			{
 				int Which = PressingUse() ? DEProp_FilterLife2 : DEProp_FilterLife1;
+
+				// [Ace] You think that's air you're breathing now?
 				int Air = invoker.WeaponStatus[Which];
 				if (Air < 0)
 				{

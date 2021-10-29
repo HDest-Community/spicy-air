@@ -249,11 +249,11 @@ class Despicyto : HDWeapon
 		sb.DrawImage(GetPickupSprite(), bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, alpha: 1.0, scale:(4, 4));
 		if (WeaponStatus[DEProp_FilterLife1] >= 0)
 		{
-			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife1], 3, 3, sb.FNF_FILLZEROS), (-40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_RIGHT, Font.CR_DARKGRAY);
+			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife1], 4, 4, sb.FNF_FILLZEROS), (-40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_RIGHT, Font.CR_DARKGRAY);
 		}
 		if (WeaponStatus[DEProp_FilterLife2] >= 0)
 		{
-			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife2], 3, 3, sb.FNF_FILLZEROS), (40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_LEFT, Font.CR_DARKGRAY);
+			sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife2], 4, 4, sb.FNF_FILLZEROS), (40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_LEFT, Font.CR_DARKGRAY);
 		}
 	}
 	override void InitializeWepStats(bool idfa)

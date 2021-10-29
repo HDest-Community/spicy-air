@@ -485,7 +485,7 @@ class DespicytoFilter : HDMagAmmo
 		ItemsThatUseThis.Push("Despicyto");
 	}
 
-	const MaxAir = 60 * 15;
+	const MaxAir = 1400;
 
 	Default
 	{

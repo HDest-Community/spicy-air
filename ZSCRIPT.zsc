@@ -161,7 +161,7 @@ class Despicyto : HDWeapon
 					}
 				}
 			}
-			IsToxic = !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1;
+			IsToxic = !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1 && !(level.MapName ~== "LOTSAGUN");
 		}
 	}
 	clearscope action int A_GetTotalAir(bool percentage)

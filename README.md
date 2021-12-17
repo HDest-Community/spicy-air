@@ -4,8 +4,8 @@
 - Loadout codes are `dsp` and `dsf` for the mask and filter, respectively.
 - Configuration codes are:
 	- `worn`: Start with the mask on.
-	- `lf`: Air in left filter (1-3600).
-	- `rf`: Air in right filter (1-3600).
+	- `lf`: Air in left filter (1-1400).
+	- `rf`: Air in right filter (1-1400).
 - CVars are:
 	- `spicy_breathingvolume [0.0 - 1.0]`: Sets the volume for the breathing sound effect. Set to 0 to disable. 
 - Each filter gives you 900 breaths of air. Air is depleted each time you breathe in.

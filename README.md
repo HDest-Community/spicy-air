@@ -9,7 +9,7 @@
 - CVars are:
 	- `spicy_enabled [true/false]`: What says on the tin. 
 	- `spicy_breathingvolume [0.0 - 1.0]`: Sets the volume for the breathing sound effect. Set to 0 to disable. 
-- Each filter gives you 900 breaths of air. Air is depleted each time you breathe in.
+- Air is depleted each time you breathe in.
 - All air is toxic except that in secret sectors. If your screen flashes, that's a point of aggro. Put on your mask.
 - While the mask is worn, the number on the HUD that would normally indicate amount will indicate if the air is toxic.
 - Removing the mask while you still have air will take up to 10 breaths of air, giving you up to 30 seconds to change filters without breathing in deadly toxins.

@@ -4,6 +4,7 @@ class SpicyAirHandler : EventHandler
 {
 	int BreathHoldTimer[MAXPLAYERS];
 	int RealSpiciness[MAXPLAYERS];
+	private transient CVar Enabled;
 
 	override void CheckReplacement(ReplaceEvent e)
 	{
@@ -59,6 +60,16 @@ class SpicyAirHandler : EventHandler
 	{
 		let plr = HDPlayerPawn(players[consoleplayer].mo);
 		if (!plr)
+		{
+			return;
+		}
+
+		if (!Enabled)
+		{
+			Enabled = CVar.GetCVar('spicy_enabled');
+		}
+
+		if (!Enabled.GetBool())
 		{
 			return;
 		}
@@ -130,6 +141,11 @@ class Despicyto : HDWeapon
 			return;
 		}
 
+		if (!Enabled)
+		{
+			Enabled = CVar.GetCVar('spicy_enabled');
+		}
+
 		if (Worn)
 		{
 			if (!BreathingVolume)
@@ -161,7 +177,7 @@ class Despicyto : HDWeapon
 					}
 				}
 			}
-			IsToxic = !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1 && !(level.MapName ~== "LOTSAGUN");
+			IsToxic = Enabled.GetBool() && !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1 && !(level.MapName ~== "LOTSAGUN");
 		}
 	}
 	clearscope action int A_GetTotalAir(bool percentage)
@@ -287,8 +303,8 @@ class Despicyto : HDWeapon
 			return;
 		}
 
-		let Handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
-		Handler.BreathHoldTimer[PlayerNumber()] = 0;
+		let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
+		handler.BreathHoldTimer[PlayerNumber()] = 0;
 
 		A_StartSound("weapons/pocket", 9);
 		invoker.Worn = true;
@@ -316,8 +332,8 @@ class Despicyto : HDWeapon
 				}
 			}
 
-			let Handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
-			Handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 35 * (3 * (10 - ToTake));
+			let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
+			handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 35 * (3 * (10 - ToTake));
 			invoker.owner.A_StartSound("SpicyAir/Mask/BreatheIn1", 36, CHANF_LOCAL, clamp(invoker.BreathingVolume.GetFloat(), 0, 1), pitch: frandom(0.98, 1.0));
 		}
 		invoker.BreathIndex = 0;
@@ -341,6 +357,7 @@ class Despicyto : HDWeapon
 	}
 
 	private transient CVar BreathingVolume;
+	private transient CVar Enabled;
 	bool Worn;
 	int BreathIndex;
 	private bool IsToxic;

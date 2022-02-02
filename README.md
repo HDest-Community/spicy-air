@@ -7,6 +7,7 @@
 	- `lf`: Air in left filter (1-1400).
 	- `rf`: Air in right filter (1-1400).
 - CVars are:
+	- `spicy_enabled [true/false]`: What says on the tin. 
 	- `spicy_breathingvolume [0.0 - 1.0]`: Sets the volume for the breathing sound effect. Set to 0 to disable. 
 - Each filter gives you 900 breaths of air. Air is depleted each time you breathe in.
 - All air is toxic except that in secret sectors. If your screen flashes, that's a point of aggro. Put on your mask.

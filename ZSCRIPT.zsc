@@ -41,12 +41,12 @@ class SpicyAirHandler : EventHandler
 			int MaskOffY = -((MaskHeight - Screen.GetHeight()) >> 1);
 
 			double BreathFactor = Mask.BreathIndex / double(Mask.GetBreathDelay());
-			BreathFactor = min(1.0, abs(BreathFactor > 0 ? BreathFactor * 2.25 : BreathFactor)) * 0.85;
+			BreathFactor = 0.1 + min(1.0, abs(BreathFactor > 0 ? BreathFactor * 2.25 : BreathFactor)) * 0.6;
 
 			let goggles = PortableLiteAmp(plr.FindInventory('PortableLiteAmp'));
 			if (goggles && goggles.worn)
 			{
-				BreathFactor *= 0.08 - (goggles.amplitude / PortableLiteAmp.NITEVIS_MAX) * 0.04;
+				BreathFactor *= 0.1 - (goggles.amplitude / PortableLiteAmp.NITEVIS_MAX) * 0.05;
 			}
 			Screen.DrawTexture(TexMan.CheckForTexture("DESPMOIS"), true, MaskOffX - (int(plr.hudbob.x * 0.5)), MaskOffY - (int(plr.hudbob.y * 0.5)), DTA_Alpha, BreathFactor, DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
 			if (!goggles || !goggles.worn)

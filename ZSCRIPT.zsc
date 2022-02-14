@@ -74,7 +74,7 @@ class SpicyAirHandler : EventHandler
 			return;
 		}
 
-		if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1 || level.MapName ~== "LOTSAGUN")
+		if (!IsAirToxic())
 		{
 			BreathHoldTimer[consoleplayer] = 35 * 30;
 			RealSpiciness[consoleplayer] = 0;
@@ -88,8 +88,8 @@ class SpicyAirHandler : EventHandler
 			}
 			else
 			{
-				let Mask = Despicyto(plr.FindInventory('Despicyto'));
-				if ((!Mask || !Mask.Worn || Mask.A_GetTotalAir(false) == 0))
+				let mask = Despicyto(plr.FindInventory('Despicyto'));
+				if ((!mask || !mask.Worn || mask.A_GetTotalAir(false) == 0))
 				{
 					if (++RealSpiciness[consoleplayer] >= 70 * (plr.FindInventory('WornRadsuit') ? 30 : 1))
 					{
@@ -103,6 +103,13 @@ class SpicyAirHandler : EventHandler
 				}
 			}
 		}
+	}
+
+	bool IsAirToxic()
+	{
+		let plr = HDPlayerPawn(players[consoleplayer].mo);
+		double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
+		return plr && Enabled.GetBool() && !plr.CurSector.WasSecret() && plr.CurSector.GetUDMFInt('user_nonspicysector') != 1 && killPercent > 0.9;
 	}
 
 	override void NetworkProcess(ConsoleEvent e)
@@ -135,15 +142,15 @@ class Despicyto : HDWeapon
 	{
 		Super.Tick();
 
+		if (!Handler)
+		{
+			Handler = SpicyAirHandler(EventHandler.Find('SpicyAirHandler'));
+		}
+
 		if (!owner)
 		{
 			Worn = false;
 			return;
-		}
-
-		if (!Enabled)
-		{
-			Enabled = CVar.GetCVar('spicy_enabled');
 		}
 
 		if (Worn)
@@ -177,8 +184,10 @@ class Despicyto : HDWeapon
 					}
 				}
 			}
-			IsToxic = Enabled.GetBool() && !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1 && !(level.MapName ~== "LOTSAGUN");
 		}
+
+		// [Ace] I can't make the method clearscope so this is the only way to access it from DisplayAmount.
+		IsAirToxic = Handler.IsAirToxic();
 	}
 	clearscope action int A_GetTotalAir(bool percentage)
 	{
@@ -244,7 +253,7 @@ class Despicyto : HDWeapon
 	override int DisplayAmount()
 	{
 		let HDHud = HDStatusBar(StatusBar);
-		return Worn ? IsToxic : ActualAmount;
+		return Worn ? IsAirToxic : ActualAmount;
 	}
 	override string GetHelpText()
 	{
@@ -318,7 +327,7 @@ class Despicyto : HDWeapon
 			int F1 = invoker.WeaponStatus[DEProp_FilterLife1];
 			int F2 = invoker.WeaponStatus[DEProp_FilterLife2];
 
-			if (invoker.IsToxic)
+			if (invoker.IsAirToxic)
 			{
 				if (F1 > 0)
 				{
@@ -358,10 +367,11 @@ class Despicyto : HDWeapon
 
 	private transient CVar BreathingVolume;
 	private transient CVar Enabled;
+	private SpicyAirHandler Handler;
+	private bool IsAirToxic;
+	private int WhichFilter;
 	bool Worn;
 	int BreathIndex;
-	private bool IsToxic;
-	private int WhichFilter;
 
 	States
 	{

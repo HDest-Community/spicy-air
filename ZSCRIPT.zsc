@@ -109,7 +109,7 @@ class SpicyAirHandler : EventHandler
 	{
 		let plr = HDPlayerPawn(players[consoleplayer].mo);
 		double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
-		return plr && Enabled.GetBool() && !plr.CurSector.WasSecret() && plr.CurSector.GetUDMFInt('user_nonspicysector') != 1 && killPercent > 0.9;
+		return Enabled.GetBool() && !plr.CurSector.WasSecret() && plr.CurSector.GetUDMFInt('user_nonspicysector') != 1 && killPercent < 0.9;
 	}
 
 	override void NetworkProcess(ConsoleEvent e)
@@ -366,7 +366,6 @@ class Despicyto : HDWeapon
 	}
 
 	private transient CVar BreathingVolume;
-	private transient CVar Enabled;
 	private SpicyAirHandler Handler;
 	private bool IsAirToxic;
 	private int WhichFilter;

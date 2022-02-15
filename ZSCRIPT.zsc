@@ -69,7 +69,7 @@ class SpicyAirHandler : EventHandler
 			Enabled = CVar.GetCVar('spicy_enabled');
 		}
 
-		if (!Enabled.GetBool())
+		if (!Enabled.GetBool() || plr.Health <= 0)
 		{
 			return;
 		}

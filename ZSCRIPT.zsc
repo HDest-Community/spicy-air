@@ -153,6 +153,12 @@ class Despicyto : HDWeapon
 			return;
 		}
 
+		if (owner.Health <= 0)
+		{
+			BreathIndex = 0;
+			return;
+		}
+
 		if (Worn)
 		{
 			if (!BreathingVolume)

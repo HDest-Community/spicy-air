@@ -159,29 +159,29 @@ class Despicyto : HDWeapon
 			{
 				BreathingVolume = CVar.GetCVar('spicy_breathingvolume', owner.player);
 			}
-			double BVol = clamp(BreathingVolume.GetFloat(), 0, 1);
-			if (BVol > 0)
+			double vol = clamp(BreathingVolume.GetFloat(), 0, 1);
+			let plr = HDPlayerPawn(owner);
+			int bDelay = GetBreathDelay();
+			int bSpeed = GetBreathSpeed();
+			if (BreathIndex == 0 && vol > 0)
 			{
-				let plr = HDPlayerPawn(owner);
-				int bDelay = GetBreathDelay();
-				int bSpeed = GetBreathSpeed();
-				if (BreathIndex == 0)
+				owner.A_StartSound("SpicyAir/Mask/BreatheOut"..bSpeed, 35, CHANF_LOCAL, vol, pitch: frandom(0.97, 1.0));
+			}
+			BreathIndex++;
+			if (BreathIndex >= bDelay)
+			{
+				BreathIndex = -bDelay;
+				if (vol > 0)
 				{
-					owner.A_StartSound("SpicyAir/Mask/BreatheOut"..bSpeed, 35, CHANF_LOCAL, BVol, pitch: frandom(0.97, 1.0));
+					owner.A_StartSound("SpicyAir/Mask/BreatheIn"..bSpeed, 36, CHANF_LOCAL, vol, pitch: frandom(0.97, 1.0));
 				}
-				BreathIndex++;
-				if (BreathIndex >= bDelay)
+				if (WeaponStatus[DEProp_FilterLife1] > 0)
 				{
-					BreathIndex = -bDelay;
-					owner.A_StartSound("SpicyAir/Mask/BreatheIn"..bSpeed, 36, CHANF_LOCAL, BVol, pitch: frandom(0.97, 1.0));
-					if (WeaponStatus[DEProp_FilterLife1] > 0)
-					{
-						WeaponStatus[DEProp_FilterLife1]--;
-					}
-					else if (WeaponStatus[DEProp_FilterLife2] > 0)
-					{
-						WeaponStatus[DEProp_FilterLife2]--;
-					}
+					WeaponStatus[DEProp_FilterLife1]--;
+				}
+				else if (WeaponStatus[DEProp_FilterLife2] > 0)
+				{
+					WeaponStatus[DEProp_FilterLife2]--;
 				}
 			}
 		}

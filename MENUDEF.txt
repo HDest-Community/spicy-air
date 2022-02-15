@@ -1,0 +1,15 @@
+AddOptionMenu "OptionsMenu"
+{
+	Submenu "Spicy Air", "SpicyAirOptions"
+}
+
+OptionMenu "SpicyAirOptions"
+{
+	Title "Spicy Air Options"
+	StaticText " "
+
+	Option "Spicy Air", "spicy_enabled", "OnOff"
+	StaticText "This allows you to disable the mod mid-game without having to take it off the load order.", "White"
+	StaticText " "
+	Slider "Breathing volume", "spicy_breathingvolume", 0.0, 1.0, 0.05, 2
+}

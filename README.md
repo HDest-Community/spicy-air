@@ -6,9 +6,6 @@
 	- `worn`: Start with the mask on.
 	- `lf`: Air in left filter (1-1400).
 	- `rf`: Air in right filter (1-1400).
-- CVars are:
-	- `spicy_enabled [true/false]`: What says on the tin. 
-	- `spicy_breathingvolume [0.0 - 1.0]`: Sets the volume for the breathing sound effect. Set to 0 to disable. 
 - Air is depleted each time you breathe in.
 - All air is toxic except that in secret sectors. If your screen flashes, that's a point of aggro. Put on your mask.
 - Killing 90% of monsters in the level will make the air non-toxic.

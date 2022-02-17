@@ -75,7 +75,7 @@ class SpicyAirHandler : EventHandler
 		}
 
 		double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
-		if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1 || killPercent > 0.9)
+		if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1 || killPercent >= 0.9)
 		{
 			BreathHoldTimer[consoleplayer] = 35 * 30;
 			RealSpiciness[consoleplayer] = 0;

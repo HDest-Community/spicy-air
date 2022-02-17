@@ -74,7 +74,7 @@ class SpicyAirHandler : EventHandler
 			return;
 		}
 
-		if (!IsAirToxic())
+		if (!IsAirToxic(players[consoleplayer].mo))
 		{
 			BreathHoldTimer[consoleplayer] = 35 * 30;
 			RealSpiciness[consoleplayer] = 0;
@@ -105,9 +105,8 @@ class SpicyAirHandler : EventHandler
 		}
 	}
 
-	bool IsAirToxic()
+	bool IsAirToxic(PlayerPawn plr)
 	{
-		let plr = HDPlayerPawn(players[consoleplayer].mo);
 		double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
 		return Enabled.GetBool() && !plr.CurSector.WasSecret() && plr.CurSector.GetUDMFInt('user_nonspicysector') != 1 && killPercent < 0.9;
 	}
@@ -193,7 +192,7 @@ class Despicyto : HDWeapon
 		}
 
 		// [Ace] I can't make the method clearscope so this is the only way to access it from DisplayAmount.
-		IsAirToxic = Handler.IsAirToxic();
+		IsAirToxic = Handler.IsAirToxic(PlayerPawn(owner));
 	}
 	clearscope action int A_GetTotalAir(bool percentage)
 	{

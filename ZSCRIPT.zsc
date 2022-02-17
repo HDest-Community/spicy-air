@@ -74,7 +74,8 @@ class SpicyAirHandler : EventHandler
 			return;
 		}
 
-		if (!IsAirToxic(players[consoleplayer].mo))
+		double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
+		if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1 || killPercent > 0.9)
 		{
 			BreathHoldTimer[consoleplayer] = 35 * 30;
 			RealSpiciness[consoleplayer] = 0;
@@ -103,12 +104,6 @@ class SpicyAirHandler : EventHandler
 				}
 			}
 		}
-	}
-
-	bool IsAirToxic(PlayerPawn plr)
-	{
-		double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
-		return Enabled.GetBool() && !plr.CurSector.WasSecret() && plr.CurSector.GetUDMFInt('user_nonspicysector') != 1 && killPercent < 0.9;
 	}
 
 	override void NetworkProcess(ConsoleEvent e)
@@ -141,15 +136,15 @@ class Despicyto : HDWeapon
 	{
 		Super.Tick();
 
-		if (!Handler)
-		{
-			Handler = SpicyAirHandler(EventHandler.Find('SpicyAirHandler'));
-		}
-
 		if (!owner)
 		{
 			Worn = false;
 			return;
+		}
+
+		if (!Enabled)
+		{
+			Enabled = CVar.GetCVar('spicy_enabled');
 		}
 
 		if (owner.Health <= 0)
@@ -191,8 +186,8 @@ class Despicyto : HDWeapon
 			}
 		}
 
-		// [Ace] I can't make the method clearscope so this is the only way to access it from DisplayAmount.
-		IsAirToxic = Handler.IsAirToxic(PlayerPawn(owner));
+		double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
+		IsAirToxic = Enabled.GetBool() && !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1 && killPercent < 0.9;
 	}
 	clearscope action int A_GetTotalAir(bool percentage)
 	{
@@ -371,7 +366,7 @@ class Despicyto : HDWeapon
 	}
 
 	private transient CVar BreathingVolume;
-	private SpicyAirHandler Handler;
+	private transient CVar Enabled;
 	private bool IsAirToxic;
 	private int WhichFilter;
 	bool Worn;

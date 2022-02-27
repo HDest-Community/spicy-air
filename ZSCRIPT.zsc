@@ -26,7 +26,7 @@ class SpicyAirHandler : EventHandler
 
 	override void RenderUnderlay(RenderEvent e)
 	{
-		let plr = HDPlayerPawn(players[consoleplayer].mo);
+		let plr = HDPlayerPawn(e.Camera);
 		if (!plr)
 		{
 			return;

@@ -136,7 +136,8 @@ class Despicyto : HDWeapon
 	{
 		Super.Tick();
 
-		if (!owner)
+		// [Ace] If the player gets morphed to something else that's not HDPlayerPawn, the mask won't function and will abort. This prevents that.
+		if (!owner || !HDPlayerPawn(owner))
 		{
 			Worn = false;
 			return;

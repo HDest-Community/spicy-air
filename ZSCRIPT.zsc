@@ -16,7 +16,7 @@ class SpicyAirHandler : EventHandler
 		switch (e.Replacement.GetClassName())
 		{
 			case 'PortableHealingItem':
-				if (random[desprand]() <= 12)
+				if (random[desprand]() <= 18)
 				{
 					e.Replacement = "DespicytoFilter";
 				}
@@ -516,6 +516,7 @@ class DespicytoFilter : HDMagAmmo
 
 	Default
 	{
+		+HDPICKUP.CHEATNOGIVE
 		HDMagAmmo.MustShowInMagManager true;
 		Inventory.PickupMessage "Picked up an air filter.";
 		Inventory.PickupSound "weapons/pocket";

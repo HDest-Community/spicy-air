@@ -4,7 +4,18 @@ class SpicyAirHandler : EventHandler
 {
 	int BreathHoldTimer[MAXPLAYERS];
 	int RealSpiciness[MAXPLAYERS];
+	double CleanAirPercentage;
 	private transient CVar Enabled;
+
+	override void WorldLoaded(WorldEvent e)
+	{
+		if (e.IsReopen)
+		{
+			return;
+		}
+
+		CleanAirPercentage = frandom[desprand](0.75, 0.96);
+	}
 
 	override void CheckReplacement(ReplaceEvent e)
 	{
@@ -75,7 +86,7 @@ class SpicyAirHandler : EventHandler
 		}
 
 		double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
-		if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1 || killPercent >= 0.9)
+		if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1 || killPercent >= CleanAirPercentage)
 		{
 			BreathHoldTimer[consoleplayer] = 35 * 30;
 			RealSpiciness[consoleplayer] = 0;
@@ -136,6 +147,11 @@ class Despicyto : HDWeapon
 	{
 		Super.Tick();
 
+		if (!Handler)
+		{
+			Handler = SpicyAirHandler(EventHandler.Find('SpicyAirHandler'));
+		}
+
 		// [Ace] If the player gets morphed to something else that's not HDPlayerPawn, the mask won't function and will abort. This prevents that.
 		if (!owner || !HDPlayerPawn(owner))
 		{
@@ -166,7 +182,7 @@ class Despicyto : HDWeapon
 			int bSpeed = GetBreathSpeed();
 			if (BreathIndex == 0 && vol > 0)
 			{
-				owner.A_StartSound("SpicyAir/Mask/BreatheOut"..bSpeed, 35, CHANF_LOCAL, vol, pitch: frandom(0.97, 1.0));
+				owner.A_StartSound("SpicyAir/Mask/BreatheOut"..bSpeed, 35, CHANF_LOCAL, vol, pitch: frandom[breathrand](0.97, 1.0));
 			}
 			BreathIndex++;
 			if (BreathIndex >= bDelay)
@@ -174,7 +190,7 @@ class Despicyto : HDWeapon
 				BreathIndex = -bDelay;
 				if (vol > 0)
 				{
-					owner.A_StartSound("SpicyAir/Mask/BreatheIn"..bSpeed, 36, CHANF_LOCAL, vol, pitch: frandom(0.97, 1.0));
+					owner.A_StartSound("SpicyAir/Mask/BreatheIn"..bSpeed, 36, CHANF_LOCAL, vol, pitch: frandom[breathrand](0.97, 1.0));
 				}
 				if (WeaponStatus[DEProp_FilterLife1] > 0)
 				{
@@ -188,7 +204,7 @@ class Despicyto : HDWeapon
 		}
 
 		double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
-		IsAirToxic = Enabled.GetBool() && !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1 && killPercent < 0.9;
+		IsAirToxic = Enabled.GetBool() && !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1 && killPercent < Handler.CleanAirPercentage;
 	}
 	clearscope action int A_GetTotalAir(bool percentage)
 	{
@@ -344,7 +360,7 @@ class Despicyto : HDWeapon
 
 			let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
 			handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 35 * (3 * (10 - ToTake));
-			invoker.owner.A_StartSound("SpicyAir/Mask/BreatheIn1", 36, CHANF_LOCAL, clamp(invoker.BreathingVolume.GetFloat(), 0, 1), pitch: frandom(0.98, 1.0));
+			invoker.owner.A_StartSound("SpicyAir/Mask/BreatheIn1", 36, CHANF_LOCAL, clamp(invoker.BreathingVolume.GetFloat(), 0, 1), pitch: frandom[breathrand](0.98, 1.0));
 		}
 		invoker.BreathIndex = 0;
 		invoker.owner.A_StartSound("weapons/pocket", 9);
@@ -368,6 +384,7 @@ class Despicyto : HDWeapon
 
 	private transient CVar BreathingVolume;
 	private transient CVar Enabled;
+	private SpicyAirHandler Handler;
 	private bool IsAirToxic;
 	private int WhichFilter;
 	bool Worn;

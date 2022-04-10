@@ -367,6 +367,11 @@ class Despicyto : HDWeapon
 		invoker.owner.A_SetBlend(0x000000, 1.0, 16);
 		invoker.Worn = false;
 	}
+	override void DetachFromOwner()
+	{
+		A_UnwearMask();
+		Super.DetachFromOwner();
+	}
 
 	Default
 	{

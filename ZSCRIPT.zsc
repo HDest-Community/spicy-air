@@ -38,7 +38,7 @@ class SpicyAirHandler : EventHandler
 	override void RenderUnderlay(RenderEvent e)
 	{
 		let plr = HDPlayerPawn(e.Camera);
-		if (!plr)
+		if (!plr || plr.bINVISIBLE || plr.bSHADOW)
 		{
 			return;
 		}

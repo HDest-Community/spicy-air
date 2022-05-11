@@ -69,67 +69,56 @@ class SpicyAirHandler : EventHandler
 
 	override void WorldTick()
 	{
-		let plr = HDPlayerPawn(players[consoleplayer].mo);
-		if (!plr)
-		{
-			return;
-		}
-
 		if (!Enabled)
 		{
 			Enabled = CVar.GetCVar('spicy_enabled');
 		}
 
-		if (!Enabled.GetBool() || plr.Health <= 0)
+		if (!Enabled.GetBool())
 		{
 			return;
 		}
 
-		double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
-		if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1 || killPercent >= CleanAirPercentage)
+		for (int i = 0; i < MAXPLAYERS; ++i)
 		{
-			BreathHoldTimer[consoleplayer] = 35 * 30;
-			RealSpiciness[consoleplayer] = 0;
-		}
-		else
-		{
-			if (BreathHoldTimer[consoleplayer] > 0)
+			let plr = HDPlayerPawn(players[i].mo);
+			if (!plr || plr.Health <= 0)
 			{
-				RealSpiciness[consoleplayer] = 0;
-				BreathHoldTimer[consoleplayer]--;
+				continue;
+			}
+
+			double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
+			if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1 || killPercent >= CleanAirPercentage)
+			{
+				BreathHoldTimer[i] = 35 * 30;
+				RealSpiciness[i] = 0;
 			}
 			else
 			{
-				let mask = Despicyto(plr.FindInventory('Despicyto'));
-				if ((!mask || !mask.Worn || mask.A_GetTotalAir(false) == 0))
+				if (BreathHoldTimer[i] > 0)
 				{
-					if (++RealSpiciness[consoleplayer] >= 70 * (plr.FindInventory('WornRadsuit') ? 30 : 1))
-					{
-						RealSpiciness[consoleplayer] = 0;
-						SendNetworkEvent("DSP_DealAggro");
-					}
+					RealSpiciness[i] = 0;
+					BreathHoldTimer[i]--;
 				}
 				else
 				{
-					RealSpiciness[consoleplayer] = 0;
+					let mask = Despicyto(plr.FindInventory('Despicyto'));
+					if ((!mask || !mask.Worn || mask.A_GetTotalAir(false) == 0))
+					{
+						if (++RealSpiciness[i] >= 70 * (plr.FindInventory('WornRadsuit') ? 30 : 1))
+						{
+							RealSpiciness[i] = 0;
+							plr.A_SetBlend(0xa7b55e, 0.15, 12);
+							plr.aggravateddamage++;
+						}
+					}
+					else
+					{
+						RealSpiciness[i] = 0;
+					}
 				}
 			}
-		}
-	}
-
-	override void NetworkProcess(ConsoleEvent e)
-	{
-		let plr = HDPlayerPawn(players[e.Player].mo);
-		if (!plr || plr.Health < 0 || e.IsManual)
-		{
-			return;
-		}
-
-		if (e.Name ~== "DSP_DealAggro")
-		{
-			plr.A_SetBlend(0xa7b55e, 0.15, 12);
-			plr.aggravateddamage++;
-		}
+		}	
 	}
 }
 

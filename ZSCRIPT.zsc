@@ -27,11 +27,20 @@ class SpicyAirHandler : EventHandler
 		switch (e.Replacement.GetClassName())
 		{
 			case 'PortableHealingItem':
-				if (random[desprand]() <= 18)
+				if (random[desprand]() <= 18 && spicy_enabled)
 				{
 					e.Replacement = "DespicytoFilter";
 				}
 				break;
+		}
+	}
+
+	override void WorldThingSpawned(WorldEvent e)
+	{
+		if (e.Thing is 'HDBackpack' && !spicy_enabled)
+		{
+			HDBackpack(e.Thing).RemoveClass('DespicytoFilter', true);
+			HDBackpack(e.Thing).RemoveClass('Despicyto', true);
 		}
 	}
 

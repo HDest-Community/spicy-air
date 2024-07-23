@@ -1,106 +1,91 @@
 class Despicyto : HDWeapon
 {
-    enum DEProperties
-    {
+    enum DEProperties {
         DEProp_Flags,
         DEProp_UseOffset,
         DEProp_FilterLife1,
         DEProp_FilterLife2,
     }
 
-    override void Tick()
-    {
+    override void Tick() {
         Super.Tick();
 
-        if (!Handler)
-        {
+        if (!Handler) {
             Handler = SpicyAirHandler(EventHandler.Find('SpicyAirHandler'));
         }
 
         // [Ace] If the player gets morphed to something else that's not HDPlayerPawn, the mask won't function and will abort. This prevents that.
-        if (!owner || !owner.player || !HDPlayerPawn(owner))
-        {
+        if (!owner || !owner.player || !HDPlayerPawn(owner)) {
             AutowearTicker = 0;
             Worn = false;
             return;
         }
 
-        if (!Enabled)
-        {
+        if (!Enabled) {
             Enabled = CVar.GetCVar('spicy_enabled');
         }
 
-        if (owner.Health <= 0)
-        {
+        if (owner.Health <= 0) {
             BreathIndex = 0;
             return;
         }
 
-        if (Worn)
-        {
-            if (!BreathingVolume)
-            {
+        if (Worn) {
+            if (!BreathingVolume) {
                 BreathingVolume = CVar.GetCVar('spicy_breathingvolume', owner.player);
             }
+
             double vol = clamp(BreathingVolume.GetFloat(), 0, 1);
             let plr = HDPlayerPawn(owner);
             int bDelay = GetBreathDelay();
             int bSpeed = GetBreathSpeed();
-            if (BreathIndex == 0 && vol > 0)
-            {
+            
+            if (BreathIndex == 0 && vol > 0) {
                 owner.A_StartSound("SpicyAir/Mask/BreatheOut"..bSpeed, 35, CHANF_LOCAL, vol, pitch: frandom[breathrand](0.97, 1.0));
             }
+
             BreathIndex++;
-            if (BreathIndex >= bDelay)
-            {
+            if (BreathIndex >= bDelay) {
                 BreathIndex = -bDelay;
-                if (vol > 0)
-                {
+                if (vol > 0) {
                     owner.A_StartSound("SpicyAir/Mask/BreatheIn"..bSpeed, 36, CHANF_LOCAL, vol, pitch: frandom[breathrand](0.97, 1.0));
                 }
-                if (WeaponStatus[DEProp_FilterLife1] > 0)
-                {
+
+                if (WeaponStatus[DEProp_FilterLife1] > 0) {
                     WeaponStatus[DEProp_FilterLife1]--;
-                }
-                else if (WeaponStatus[DEProp_FilterLife2] > 0)
-                {
+                } else if (WeaponStatus[DEProp_FilterLife2] > 0) {
                     WeaponStatus[DEProp_FilterLife2]--;
                 }
             }
-        }
-        else if (++AutowearTicker == 4 && owner.player.cmd.buttons & BT_USE)
-        {
+        } else if (++AutowearTicker == 4 && owner.player.cmd.buttons & BT_USE) {
             A_WearMask();
         }
 
         double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
         IsAirToxic = Enabled.GetBool() && !owner.CurSector.WasSecret() && owner.CurSector.GetUDMFInt('user_nonspicysector') != 1 && killPercent < Handler.CleanAirPercentage;
     }
-    clearscope action int A_GetTotalAir(bool percentage)
-    {
+
+    clearscope action int A_GetTotalAir(bool percentage) {
         int F1 = percentage ? int(ceil((invoker.WeaponStatus[DEProp_FilterLife1] / double(DespicytoFilter.MaxAir)) * 50)) : invoker.WeaponStatus[DEProp_FilterLife1];
         int F2 = percentage ? int(ceil((invoker.WeaponStatus[DEProp_FilterLife2] / double(DespicytoFilter.MaxAir)) * 50)) : invoker.WeaponStatus[DEProp_FilterLife2];
         return (F1 >= 0 ? F1 : 0) + (F2 >= 0 ? F2 : 0);
     }
-    clearscope int GetBreathDelay()
-    {
+
+    clearscope int GetBreathDelay() {
         let plr = HDPlayerPawn(owner);
         return 90 - int(min(max(plr.fatigue * 2, plr.bloodpressure / 1.3, 110 * (1.0 - plr.beatmax / 35.0)), 80));
     }
-    clearscope int GetBreathSpeed()
-    {
+
+    clearscope int GetBreathSpeed() {
         return 3 - int(min(GetBreathDelay() / 35, 2));
     }
 
-    private action void A_AddOffset(int ofs)
-    {
+    private action void A_AddOffset(int ofs) {
         invoker.WeaponStatus[DEProp_UseOffset] += ofs;
     }
 
-    override bool Use(bool pickup)
-    {
-        if (owner && Worn)
-        {
+    override bool Use(bool pickup) {
+        if (owner && Worn) {
             A_UnwearMask();
             return false;
         }
@@ -108,99 +93,98 @@ class Despicyto : HDWeapon
         return Super.Use(pickup);
     }
 
-    override bool AddSpareWeapon(Actor newowner) {return AddSpareWeaponRegular(newowner);}
-    override HDWeapon GetSpareWeapon(Actor newowner, bool reverse, bool doselect) { return GetSpareWeaponRegular(newowner, reverse, doselect); }
-    override string, double GetPickupSprite()
-    {
+    override bool AddSpareWeapon(Actor newowner) {
+        return AddSpareWeaponRegular(newowner);
+    }
+    
+    override HDWeapon GetSpareWeapon(Actor newowner, bool reverse, bool doselect) {
+        return GetSpareWeaponRegular(newowner, reverse, doselect);
+    }
+    
+    override string, double GetPickupSprite() {
         int F1 = WeaponStatus[DEProp_FilterLife1];
         int F2 = WeaponStatus[DEProp_FilterLife2];
 
         string Frame = "D";
-        if (F1 >= 0 && F2 >= 0)
-        {
+        if (F1 >= 0 && F2 >= 0) {
             Frame = "A";
-        }
-        if (F1 >= 0 && F2 == -1)
-        {
+        } else if (F1 >= 0 && F2 == -1) {
             Frame = "B";
-        }
-        else if (F1 == -1 && F2 >= 0)
-        {
+        } else if (F1 == -1 && F2 >= 0) {
             Frame = "C";
         }
+
         return "DSPG"..Frame.."0", 1.0;
     }
-    override int GetSbarNum(int flags)
-    {
+
+    override int GetSbarNum(int flags) {
         let HDHud = HDStatusBar(StatusBar);
 
         HDHud.SavedColour = Font.CR_DARKGRAY;
         return A_GetTotalAir(true);
     }
-    override int DisplayAmount()
-    {
+
+    override int DisplayAmount() {
         let HDHud = HDStatusBar(StatusBar);
         return Worn ? IsAirToxic : ActualAmount;
     }
-    override string GetHelpText()
-    {
+
+    override string GetHelpText() {
         return WEPHELP_RELOAD.."  Place left filter\n"
         ..WEPHELP_USE.."+"..WEPHELP_RELOAD.."  Place right filter\n"
         ..WEPHELP_UNLOAD.."  Remove left filter\n"
         ..WEPHELP_USE.."+"..WEPHELP_UNLOAD.."  Remove right filter";
     }
-    override double WeaponBulk() { return Worn ? 5 : 22; }
-    override bool IsBeingWorn() { return Worn; }
-    override void DrawHUDStuff(HDStatusBar sb, HDWeapon hdw, HDPlayerPawn hpl)
-    {
+
+    override double WeaponBulk() {
+        return Worn ? 5 : 22;
+    }
+
+    override bool IsBeingWorn() {
+        return Worn;
+    }
+
+    override void DrawHUDStuff(HDStatusBar sb, HDWeapon hdw, HDPlayerPawn hpl) {
 		vector2 bob = hpl.wepbob * 0.3;
         int Offset = WeaponStatus[DEProp_UseOffset];
         bob.y += Offset;
         
         sb.DrawImage(GetPickupSprite(), bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, alpha: 1.0, scale:(4, 4));
-        if (WeaponStatus[DEProp_FilterLife1] >= 0)
-        {
+        if (WeaponStatus[DEProp_FilterLife1] >= 0) {
             sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife1], 4, 4, sb.FNF_FILLZEROS), (-40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_RIGHT, Font.CR_DARKGRAY);
         }
-        if (WeaponStatus[DEProp_FilterLife2] >= 0)
-        {
+        if (WeaponStatus[DEProp_FilterLife2] >= 0) {
             sb.DrawString(sb.mAmountFont, sb.FormatNumber(WeaponStatus[DEProp_FilterLife2], 4, 4, sb.FNF_FILLZEROS), (40, 44) + bob, sb.DI_SCREEN_CENTER | sb.DI_TEXT_ALIGN_LEFT, Font.CR_DARKGRAY);
         }
     }
-    override void InitializeWepStats(bool idfa)
-    {
+
+    override void InitializeWepStats(bool idfa) {
         WeaponStatus[DEProp_FilterLife1] = DespicytoFilter.MaxAir;
         WeaponStatus[DEProp_FilterLife2] = DespicytoFilter.MaxAir;
     }
-    override void LoadoutConfigure(string input)
-    {
+
+    override void LoadoutConfigure(string input) {
         int Worn = GetLoadoutVar(input, "worn", 1);
-        if (Worn > 0)
-        {
+        if (Worn > 0) {
             A_WearMask();
         }
         int LF = GetLoadoutVar(input, "lf", 4);
-        if (LF > 0)
-        {
+        if (LF > 0) {
             WeaponStatus[DEProp_FilterLife1] = min(LF, DespicytoFilter.MaxAir);
         }
         int RF = GetLoadoutVar(input, "rf", 4);
-        if (RF > 0)
-        {
+        if (RF > 0) {
             WeaponStatus[DEProp_FilterLife2] = min(RF, DespicytoFilter.MaxAir);
         }
     }
 
-    private action void A_WearMask()
-    {
-        if (invoker.Worn)
-        {
+    private action void A_WearMask() {
+        if (invoker.Worn) {
             return;
         }
 
         // [Ace] Necessary because LoadoutConfigure will call this before it's attached to the owner.
-        if (invoker.owner)
-        {
+        if (invoker.owner) {
             let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
             handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 0;
 
@@ -209,28 +193,24 @@ class Despicyto : HDWeapon
         }
         invoker.Worn = true;
     }
-    private action void A_UnwearMask()
-    {
-        if (!invoker.Worn)
-        {
+
+    private action void A_UnwearMask() {
+        if (!invoker.Worn) {
             return;
         }
 
-        if (A_GetTotalAir(false) > 0)
-        {
+        if (A_GetTotalAir(false) > 0) {
             int toTake = 10;
             int F1 = invoker.WeaponStatus[DEProp_FilterLife1];
             int F2 = invoker.WeaponStatus[DEProp_FilterLife2];
 
-            if (invoker.IsAirToxic)
-            {
-                if (F1 > 0)
-                {
+            if (invoker.IsAirToxic) {
+                if (F1 > 0) {
                     invoker.WeaponStatus[DEProp_FilterLife1] -= min(toTake, F1);
                     toTake -= min(toTake, F1);
                 }
-                if (F2 > 0)
-                {
+
+                if (F2 > 0) {
                     invoker.WeaponStatus[DEProp_FilterLife2] -= min(toTake, F2);
                     toTake -= min(toTake, F2);
                 }
@@ -240,27 +220,29 @@ class Despicyto : HDWeapon
             handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 35 * (3 * (10 - toTake));
             invoker.owner.A_StartSound("SpicyAir/Mask/BreatheIn1", 36, CHANF_LOCAL, clamp(invoker.BreathingVolume.GetFloat(), 0, 1), pitch: frandom[breathrand](0.98, 1.0));
         }
+
         invoker.BreathIndex = 0;
         invoker.owner.A_StartSound("weapons/pocket", 9);
         invoker.owner.A_SetBlend(0x000000, 1.0, 16);
         invoker.Worn = false;
     }
     
-    override void DetachFromOwner()
-    {
+    override void DetachFromOwner() {
         A_UnwearMask();
         Super.DetachFromOwner();
     }
 
-    Default
-    {
+    Default {
         +INVENTORY.INVBAR
         +HDWEAPON.FITSINBACKPACK
         +WEAPON.WIMPY_WEAPON
+
         Tag "$TAG_GASMASK";
-        HDWeapon.RefId "dsp";
+
+        HDWeapon.RefId HDLD_GASMASK;
         Inventory.Icon "DSPGA0";
         Scale 0.35;
+
         Inventory.PickupSound "weapons/pocket";
         Inventory.PickupMessage "$PICKUP_GASMASK";
         HDWeapon.WornLayer STRIP_RADSUIT + 1;
@@ -275,27 +257,19 @@ class Despicyto : HDWeapon
     bool Worn;
     int BreathIndex;
 
-    States
-    {
+    States {
         Spawn:
-            DSPG A 0 NoDelay
-            {
+            DSPG A 0 NoDelay {
                 int F1 = invoker.WeaponStatus[DEProp_FilterLife1];
                 int F2 = invoker.WeaponStatus[DEProp_FilterLife2];
-                if (F1 >= 0 && F2 >= 0)
-                {
+
+                if (F1 >= 0 && F2 >= 0) {
                     frame = 0;
-                }
-                else if (F1 >= 0 && F2 == -1)
-                {
+                } else if (F1 >= 0 && F2 == -1) {
                     frame = 1;
-                }
-                else if (F1 == -1 && F2 >= 0)
-                {
+                } else if (F1 == -1 && F2 >= 0) {
                     frame = 2;
-                }
-                else
-                {
+                } else {
                     frame = 3;
                 }
             }
@@ -305,22 +279,18 @@ class Despicyto : HDWeapon
             TNT1 A 0 A_AddOffset(200);
             Goto Super::Select;
         Ready:
-            TNT1 A 1
-            {
-                if (PressingUser3())
-                {
+            TNT1 A 1 {
+                if (PressingUser3()) {
                     A_MagManager("DespicytoFilter");
                     return;
                 }
 
                 int off = invoker.WeaponStatus[DEProp_UseOffset];
-                if (off > 0)
-                {
+                if (off > 0) {
                     invoker.WeaponStatus[DEProp_UseOffset] = off * 2 / 3;
                 }
 
-                if (PressingFire() || PressingAltfire())
-                {
+                if (PressingFire() || PressingAltfire()) {
                     SetWeaponState("Lower");
                     return;
                 }
@@ -340,29 +310,23 @@ class Despicyto : HDWeapon
             TNT1 A 0 A_SelectWeapon("HDFist");
             Goto Deselect;
         Unload:
-            TNT1 A 20
-            {
+            TNT1 A 20 {
                 invoker.WhichFilter = PressingUse() ? DEProp_FilterLife2 : DEProp_FilterLife1;
 
                 // [Ace] You think that's air you're breathing now?
                 int air = invoker.WeaponStatus[invoker.WhichFilter];
-                if (air < 0)
-                {
+                if (air < 0) {
                     SetWeaponState('ReloadEnd');
                     return;
                 }
             }
-            TNT1 A 5
-            {
+            TNT1 A 5 {
                 int air = invoker.WeaponStatus[invoker.WhichFilter];
-                if (PressingUnload() || PressingReload())
-                {
+                if (PressingUnload() || PressingReload()) {
                     HDMagAmmo.GiveMag(self, "DespicytoFilter", Air);
                     A_StartSound("weapons/pocket", 9);
                     A_SetTics(20);
-                }
-                else
-                {
+                } else {
                     HDBattery.SpawnMag(self, "DespicytoFilter", Air);
                 }
                 invoker.WeaponStatus[invoker.WhichFilter] = -1;
@@ -370,27 +334,21 @@ class Despicyto : HDWeapon
             }
             Goto ReloadEnd;
         Reload:
-            TNT1 A 14
-            {
+            TNT1 A 14 {
                 invoker.WhichFilter = PressingUse() ? DEProp_FilterLife2 : DEProp_FilterLife1;
-                if (invoker.WeaponStatus[invoker.WhichFilter] >= 0 || !CheckInventory('DespicytoFilter', 1))
-                {
+                if (invoker.WeaponStatus[invoker.WhichFilter] >= 0 || !CheckInventory('DespicytoFilter', 1)) {
                     SetWeaponState('ReloadEnd');
                     return;
                 }
 
                 A_StartSound("weapons/pocket", 9);
             }
-            TNT1 A 5
-            {
+            TNT1 A 5 {
                 let filter = HDMagAmmo(FindInventory("DespicytoFilter"));
-                if(!filter)
-                {
-                    return;
-                }
-                int Air = filter.TakeMag(true);
-                invoker.WeaponStatus[invoker.WhichFilter] = Air;
-                A_StartSound("weapons/vulcopen1", 8, CHANF_OVERLAP);
+                if(!filter) return;
+                
+                invoker.WeaponStatus[invoker.WhichFilter] = filter.TakeMag(true);
+                A_StartSound("SpicyAir/Mask/Remove", 8, CHANF_OVERLAP);
                 invoker.Icon = TexMan.CheckForTexture(invoker.GetPickupSprite(), TexMan.Type_Any);
             }
             Goto ReloadEnd;

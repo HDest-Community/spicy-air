@@ -5,54 +5,20 @@ class SpicyAirHandler : EventHandler
     double CleanAirPercentage;
     private transient CVar Enabled;
 
-    override void WorldLoaded(WorldEvent e)
-    {
-        if (e.IsReopen)
-        {
-            return;
-        }
+    override void WorldLoaded(WorldEvent e) {
+        if (e.IsReopen) return;
 
         CleanAirPercentage = frandom[desprand](0.75, 0.96);
     }
 
-    // override void CheckReplacement(ReplaceEvent e)
-    // {
-    //     if (!e.Replacement)
-    //     {
-    //         return;
-    //     }
-
-    //     switch (e.Replacement.GetClassName())
-    //     {
-    //         case 'PortableHealingItem':
-    //             if (random[desprand]() <= 18 && spicy_enabled)
-    //             {
-    //                 e.Replacement = "DespicytoFilter";
-    //             }
-    //             break;
-    //     }
-    // }
-
-    // override void WorldThingSpawned(WorldEvent e)
-    // {
-    //     if (e.Thing is 'HDBackpack' && !spicy_enabled)
-    //     {
-    //         HDBackpack(e.Thing).RemoveClass('DespicytoFilter', true);
-    //         HDBackpack(e.Thing).RemoveClass('Despicyto', true);
-    //     }
-    // }
-
-    override void RenderUnderlay(RenderEvent e)
-    {
+    override void RenderUnderlay(RenderEvent e) {
         let plr = HDPlayerPawn(e.Camera);
-        if (!plr || plr.bINVISIBLE || plr.bSHADOW)
-        {
+        if (!plr || plr.bINVISIBLE || plr.bSHADOW) {
             return;
         }
         
         let Mask = Despicyto(plr.FindInventory('Despicyto'));
-        if (Mask && Mask.Worn && !automapactive)
-        {
+        if (Mask && Mask.Worn && !automapactive) {
             int MaskHeight = int(Screen.GetHeight() * 2.2);
             int MaskWidth = int(Screen.GetWidth() * MaskHeight * 1.2) / Screen.GetHeight();
             int MaskOffX = -((MaskWidth - Screen.GetWidth()) >> 1);
@@ -62,65 +28,50 @@ class SpicyAirHandler : EventHandler
             BreathFactor = 0.1 + min(1.0, abs(BreathFactor > 0 ? BreathFactor * 2.25 : BreathFactor)) * 0.6;
 
             let goggles = PortableLiteAmp(plr.FindInventory('PortableLiteAmp'));
-            if (goggles && goggles.worn)
-            {
+            if (goggles && goggles.worn) {
                 BreathFactor *= 0.1 - (goggles.amplitude / PortableLiteAmp.NITEVIS_MAX) * 0.05;
             }
+
 			Screen.DrawTexture(TexMan.CheckForTexture("DESPMOIS"), true, MaskOffX - (int(plr.wepbob.x * 0.5)), MaskOffY - (int(plr.wepbob.y * 0.5)), DTA_Alpha, BreathFactor, DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
-            if (!goggles || !goggles.worn)
-            {
+            
+            if (!goggles || !goggles.worn) {
 				Screen.DrawTexture(TexMan.CheckForTexture("DESPMASK"), true, MaskOffX - (int(plr.wepbob.x * 0.5)), MaskOffY - (int(plr.wepbob.y * 0.5)), DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
             }
         }
     }
 
-    override void WorldTick()
-    {
-        if (!Enabled)
-        {
+    override void WorldTick() {
+        if (!Enabled) {
             Enabled = CVar.GetCVar('spicy_enabled');
         }
 
-        if (!Enabled.GetBool() || level.MapName == 'RANGE' || level.MapName == 'ReloadingRoom')
-        {
+        if (!Enabled.GetBool() || level.MapName == 'RANGE' || level.MapName == 'ReloadingRoom') {
             return;
         }
 
-        for (int i = 0; i < MAXPLAYERS; ++i)
-        {
+        for (int i = 0; i < MAXPLAYERS; ++i) {
             let plr = HDPlayerPawn(players[i].mo);
-            if (!plr || plr.Health <= 0)
-            {
+            if (!plr || plr.Health <= 0) {
                 continue;
             }
 
             double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
-            if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1 || killPercent >= CleanAirPercentage)
-            {
+            if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1 || killPercent >= CleanAirPercentage) {
                 BreathHoldTimer[i] = 35 * 30;
                 RealSpiciness[i] = 0;
-            }
-            else
-            {
-                if (BreathHoldTimer[i] > 0)
-                {
+            } else {
+                if (BreathHoldTimer[i] > 0) {
                     RealSpiciness[i] = 0;
                     BreathHoldTimer[i]--;
-                }
-                else
-                {
+                } else {
                     let mask = Despicyto(plr.FindInventory('Despicyto'));
-                    if ((!mask || !mask.Worn || mask.A_GetTotalAir(false) == 0))
-                    {
-                        if (++RealSpiciness[i] >= 70 * (plr.FindInventory('WornRadsuit') ? 30 : 1))
-                        {
+                    if ((!mask || !mask.Worn || mask.A_GetTotalAir(false) == 0)) {
+                        if (++RealSpiciness[i] >= 70 * (plr.FindInventory('WornRadsuit') ? 30 : 1)) {
                             RealSpiciness[i] = 0;
                             plr.A_SetBlend(0xa7b55e, 0.15, 12);
                             plr.aggravateddamage++;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         RealSpiciness[i] = 0;
                     }
                 }

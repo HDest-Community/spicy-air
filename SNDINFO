@@ -5,3 +5,5 @@ SpicyAir/Mask/BreatheIn3 "Sounds/BreatheIn3.ogg"
 SpicyAir/Mask/BreatheOut1 "Sounds/BreatheOut1.ogg"
 SpicyAir/Mask/BreatheOut2 "Sounds/BreatheOut2.ogg"
 SpicyAir/Mask/BreatheOut3 "Sounds/BreatheOut3.ogg"
+
+$alias SpicyAir/Mask/RemoveFilter "weapons/vulcopen1"

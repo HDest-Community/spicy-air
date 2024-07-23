@@ -1,11 +1,4 @@
-class Despicyto : HDWeapon
-{
-    enum DEProperties {
-        DEProp_Flags,
-        DEProp_UseOffset,
-        DEProp_FilterLife1,
-        DEProp_FilterLife2,
-    }
+class Despicyto : HDWeapon {
 
     override void Tick() {
         Super.Tick();
@@ -356,4 +349,11 @@ class Despicyto : HDWeapon
             TNT1 A 6;
             Goto ready;
     }
+}
+
+enum DEProperties {
+    DEProp_Flags,
+    DEProp_UseOffset,
+    DEProp_FilterLife1,
+    DEProp_FilterLife2,
 }

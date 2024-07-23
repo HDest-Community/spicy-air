@@ -1,0 +1,107 @@
+// general functions that are nice to have
+class SpicyAirService : Service {
+
+    override int GetIntUI(
+        String request,
+        String stringArg,
+        int intArg,
+        double doubleArg,
+        Object objectArg
+    ) {
+        return HandleGetInt(request, stringArg, intArg, doubleArg, objectArg);
+    }
+
+    override int GetInt(
+        String request,
+        String stringArg,
+        int intArg,
+        double doubleArg,
+        Object objectArg
+    ) {
+        return HandleGetInt(request, stringArg, intArg, doubleArg, objectArg);
+    }
+
+    clearscope int HandleGetInt(
+        String request,
+        String stringArg,
+        int intArg,
+        double doubleArg,
+        Object objectArg
+    ) {
+        int retVal = 0;
+
+        // Requires: objectArg (Actor)
+        if (request == "IsGasMaskWorn") {
+            retVal = IsGasMaskWorn(Despicyto(objectArg));
+        } else if (request == "GetTotalAir") {
+            retVal = GetTotalAir(Despicyto(objectArg));
+        } else {
+            Console.PrintF("SpicyAirService: Invalid request "..request.."! Please fix :[");
+        }
+
+        return retVal;
+    }
+
+    override string GetStringUI(
+        String request,
+        String stringArg,
+        int intArg,
+        double doubleArg,
+        Object objectArg
+    ) {
+        return HandleGetString(request, stringArg, intArg, doubleArg, objectArg);
+    }
+
+    override string GetString(
+        String request,
+        String stringArg,
+        int intArg,
+        double doubleArg,
+        Object objectArg
+    ) {
+        return HandleGetString(request, stringArg, intArg, doubleArg, objectArg);
+    }
+
+    clearscope string HandleGetString(
+        String request,
+        String stringArg,
+        int intArg,
+        double doubleArg,
+        Object objectArg
+    ) {
+        string retVal = "";
+
+        // Requires: objectArg (Actor)
+        if (request == "GetGasMaskSpriteIndex") {
+            retVal = GetGasMaskSpriteIndex(Despicyto(objectArg));
+        } else {
+            Console.PrintF("SpicyAirService: Invalid request "..request.."! Please fix :[");
+        }
+
+        return retVal;
+    }
+
+    static clearscope bool IsGasMaskWorn(Despicyto mask) {
+        return mask && mask.Worn;
+    }
+
+    static clearscope int GetTotalAir(Despicyto mask) {
+        return mask ? mask.A_GetTotalAir(true) : 0;
+    }
+
+    static clearscope string GetGasMaskSpriteIndex(Despicyto mask) {
+        
+        int f1 = mask.weaponStatus[DEProp_FilterLife1];
+        int f2 = mask.weaponStatus[DEProp_FilterLife2];
+
+        if (f1 >= 0 && f2 >= 0) {
+            return "A";
+        } else if (f1 >= 0 && f2 < 0) {
+            return "B";
+        } else if (f2 >= 0 && f1 < 0) {
+            return "C";
+        } else {
+            return "D";
+        }
+    }
+}

@@ -9,3 +9,5 @@ const HDLD_GASMASKFILTER = "dsf";
 #include "zscript/accensus/spicyAir/handlers/SpicyAirHandler.zsc"
 
 #include "zscript/accensus/spicyAir/handlers/SpawnHandler.zsc"
+
+#include "zscript/accensus/spicyAir/services/SpicyAirService.zsc"

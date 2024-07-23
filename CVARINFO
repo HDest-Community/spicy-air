@@ -1,0 +1,13 @@
+server bool spicy_enabled                             = true;
+
+user float spicy_breathingvolume                      = 1.0;
+
+server bool spicy_gasmask_allowBackpacks              = true;
+// TODO: Add more Gasmask Spawn Slots
+// server bool spicy_gasmask_persistent_spawning         = false;
+
+server bool spicy_gasmaskfilter_allowBackpacks        = true;
+server int spicy_gasmaskfilter_stimpack_spawn_bias    = 14;
+server int spicy_gasmaskfilter_healthbonus_spawn_bias = -1;
+server int spicy_gasmaskfilter_armorbonus_spawn_bias  = -1;
+server bool spicy_gasmaskfilter_persistent_spawning   = false;

@@ -1,2 +1,0 @@
-server bool spicy_enabled = true;
-user float spicy_breathingvolume = 1.0;

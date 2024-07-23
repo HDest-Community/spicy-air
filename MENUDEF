@@ -1,0 +1,89 @@
+// Spawn Bias (for items that do replace)
+OptionValue "SpawnBias" {
+	-1,    "Disabled"
+	0,    "Replace All"
+	2,    "1 in 3"
+	4,    "1 in 5"
+	9,    "1 in 10"
+	14,   "1 in 15"
+	19,   "1 in 20"
+	24,   "1 in 25"
+	49,   "1 in 50"
+	99,   "1 in 100"
+	149,  "1 in 150"
+	199,  "1 in 200"
+}
+
+OptionMenu "SpicyAirMenu"{
+	Title "$SPICYAIR_MENU"
+	StaticText ""
+
+	Option "$SPICYAIR_ENABLED", "spicy_enabled", "OnOff"
+	// StaticText "This allows you to disable the mod mid-game without having to take it off the load order.", "White"
+	StaticText ""
+	Slider "Breathing volume", "spicy_breathingvolume", 0.0, 1.0, 0.05, 2, "spicy_enabled"
+
+	StaticText ""
+	StaticText ""
+	StaticText "$MENU_ITEMS_TITLE", "Olive"
+	StaticText ""
+	Submenu "$TAG_GASMASK", "GasMaskSpawning", 0, 1
+	StaticText ""
+	StaticText ""
+	
+	StaticText "$MENU_RESETOPTIONS_TITLE", "Red"
+	StaticText ""
+	SafeCommand "$SPICYAIR_RESETALLOPTIONS", "SpicyAir_Reset_Cvars"
+}
+
+AddOptionMenu "OptionsMenu" {
+	Submenu "$SPICYAIR_MENU", "SpicyAirMenu"
+}
+
+AddOptionMenu "HDAddonMenu" {
+	Submenu "$SPICYAIR_MENU", "SpicyAirMenu"
+}
+
+OptionMenu "gasmaskSpawning" {
+	Title "$MENU_GASMASK_TITLE"
+	StaticText ""
+
+	StaticText "$MENU_NOTICE", "Olive"
+	StaticText "$MENU_SPAWNRATE_TEXT1", "White"
+	StaticText "$MENU_SPAWNRATE_TEXT2", "White"
+	StaticText ""
+
+	StaticText "$MENU_SPAWNOPTIONS", "Olive"
+	StaticText ""
+
+	StaticText "$MENU_GASMASK_BACKPACKS", "White"
+	Option "$MENU_BACKPACKSALLOWED", "spicy_gasmask_allowBackpacks", "OnOff"
+	StaticText ""
+
+	StaticText "$MENU_GASMASKFILTER_SPAWNOPTIONS", "Olive"
+	StaticText "$MENU_GASMASKFILTER_STIMPACK_SPAWNTEXT", "White"
+	Option "$MENU_GASMASKFILTER_SPAWNRATE", "spicy_gasmaskfilter_stimpack_spawn_bias", "SpawnBias"
+	SafeCommand "$MENU_RESETOPTIONS", "resetcvar spicy_gasmaskfilter_stimpack_spawn_bias"
+	StaticText "$MENU_GASMASKFILTER_HEALTHBONUS_SPAWNTEXT", "White"
+	Option "$MENU_GASMASKFILTER_SPAWNRATE", "spicy_gasmaskfilter_healthbonus_spawn_bias", "SpawnBias"
+	SafeCommand "$MENU_RESETOPTIONS", "resetcvar spicy_gasmaskfilter_healthbonus_spawn_bias"
+	StaticText "$MENU_GASMASKFILTER_ARMORBONUS_SPAWNTEXT", "White"
+	Option "$MENU_GASMASKFILTER_SPAWNRATE", "spicy_gasmaskfilter_armorbonus_spawn_bias", "SpawnBias"
+	SafeCommand "$MENU_RESETOPTIONS", "resetcvar spicy_gasmaskfilter_armorbonus_spawn_bias"
+	StaticText ""
+
+	StaticText "$MENU_GASMASKFILTER_BACKPACKS", "White"
+	Option "$MENU_BACKPACKSALLOWED", "spicy_gasmaskfilter_allowBackpacks", "OnOff"
+	StaticText ""
+
+	StaticText "$MENU_PERSISTENCYOPTIONS", "Olive"
+	StaticText "$MENU_PERSISTENCY_TEXT", "White"
+	// Option "$MENU_GASMASK_PERSISTENCY", "spicy_gasmask_persistent_spawning", "OnOff"
+	Option "$MENU_GASMASKFILTER_PERSISTENCY", "spicy_gasmaskfilter_persistent_spawning", "OnOff"
+	SafeCommand "$MENU_RESETPERSISTENCY", "spicy_gasmaskfilter_persistent_spawning"
+	StaticText ""
+	StaticText ""
+
+	StaticText "$MENU_RESETOPTIONS", "Olive"
+	SafeCommand "$MENU_RESETALLOPTIONS", "spicy_reset_cvars"
+}

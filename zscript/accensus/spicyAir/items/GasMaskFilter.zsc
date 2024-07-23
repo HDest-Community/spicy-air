@@ -1,0 +1,46 @@
+class DespicytoFilter : HDMagAmmo
+{
+    override string, string, name, double GetMagSprite(int thismagamt)
+    {
+        return "DSPFA0", "TNT1A0", "DespicytoFilter", 0.5;
+    }
+
+    override bool Insert() { return false; }
+    override bool Extract() { return false; }
+    override void GetItemsThatUseThis()
+    {
+        ItemsThatUseThis.Push("Despicyto");
+    }
+
+    const MaxAir = 1200;
+
+    Default
+    {
+        +HDPICKUP.CHEATNOGIVE
+        HDMagAmmo.MustShowInMagManager true;
+        Inventory.PickupMessage "$PICKUP_GASMASKFILTER";
+        Inventory.PickupSound "weapons/pocket";
+        Inventory.icon "DSPFA0";
+        Tag "$TAG_GASMASKFILTER";
+        HDMagAmmo.MaxPerUnit MaxAir;
+        HDMagAmmo.MagBulk 16;
+        HDMagAmmo.RoundBulk 0;
+        HDPickup.RefId "dsf";
+        Scale 0.25;
+    }
+
+    States
+    {
+        Spawn:
+            DSPF A -1 NoDelay
+            {
+                if (invoker.Mags[0] == 0)
+                {
+                    bROLLSPRITE = true;
+                    bROLLCENTER = true;
+                    roll = randompick(-90, 90);
+                }
+            }
+            Stop;
+    }
+}

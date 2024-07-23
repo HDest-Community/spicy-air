@@ -1,3 +1,7 @@
+# Spicy Air
+
+_Originally made by Accensus_
+
 ### Notes
 ---
 - The gas mask can only be found in backpacks. Filters can spawn in the wild.

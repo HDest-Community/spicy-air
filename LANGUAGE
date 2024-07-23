@@ -1,0 +1,61 @@
+[enu default]
+
+// Options Menu Titles
+SPICYAIR_MENU                            = "\c[Olive]Ⓢ\c- Spicy Air";
+
+SPICYAIR_ENABLED                         = "Spicy Air Enabled: ";
+
+MENU_ITEMS_TITLE                         = "--- Items ---";
+MENU_RESETOPTIONS_TITLE                  = "--- Reset Options ---";
+
+// Menu Section Headers
+MENU_SPAWNOPTIONS                        = "Spawn Options";
+MENU_PERSISTENCYOPTIONS                  = "Spawn Persistence Options";
+MENU_RESETOPTIONS                        = "Reset Options";
+MENU_RESETALLOPTIONS                     = "Reset all Options";
+
+// Menu Static Text
+MENU_SPAWNRATE_TEXT1                     = "Setting 'spawn rate' to Replace All will suppress";
+MENU_SPAWNRATE_TEXT2                     = "spawns of that given type.";
+MENU_PERSISTENCY_TEXT                    = "Control whether replacements happen after a mapload:";
+
+// Menu Option Labels
+MENU_NOTICE                              = "Notice:";
+MENU_BACKPACKSALLOWED                    = "Allowed in Ammo Boxes and/or Backpacks: ";
+MENU_SPAWNRATE                           = "Spawn Rate: ";
+MENU_PERSISTENCY                         = "Persistent Spawns: ";
+
+// Menu Command Text
+MENU_RESETWEP                            = "Reset Weapon Options";
+MENU_RESETMAG                            = "Reset Magazine Options";
+MENU_RESETPERSISTENCY                    = "Reset Persistence Options";
+SPICYAIR_RESETALLOPTIONS                 = "Reset all options for Spicy Air.";
+
+// Blackhawk Options Text
+MENU_GASMASK_TITLE                       = "------ Gas Mask Options ------";
+MENU_GASMASK_BACKPACKS                   = "Control whether the Gas Mask spawns in Backpacks:";
+
+MENU_GASMASKFILTER_SPAWNOPTIONS          = "Air Filter Spawn Options";
+MENU_GASMASKFILTER_STIMPACK_SPAWNTEXT    = "Control the spawn rate of the Air Filters on Stimpacks:";
+MENU_GASMASKFILTER_HEALTHBONUS_SPAWNTEXT = "Control the spawn rate of the Air Filters on Health Bonuses:";
+MENU_GASMASKFILTER_ARMORBONUS_SPAWNTEXT  = "Control the spawn rate of the Air Filters on Armor Bonuses:";
+MENU_GASMASKFILTER_BACKPACKS             = "Control whether Air Filters spawn in Backpacks:";
+
+MENU_GASMASK_SPAWNRATE                   = "Gas Mask Spawn Rate: ";
+MENU_GASMASKFILTER_SPAWNRATE             = "Air Filter Spawn Rate: ";
+
+MENU_GASMASK_PERSISTENCY                 = "Persistent Gas Mask Spawns: ";
+MENU_GASMASKFILTER_PERSISTENCY           = "Persistent Air Filter Spawns: ";
+
+MENU_GASMASK_RESETOPTIONS                = "Reset Gas Mask Options";
+MENU_GASMASKFILTER_RESETOPTIONS          = "Reset Air Filter Options";
+
+
+// Item Tags
+TAG_GASMASK                             = "Gas Mask";
+TAG_GASMASKFILTER                       = "Air Filter";
+
+
+// Pickup Messages
+PICKUP_GASMASK                          = "Picked up a gas mask.";
+PICKUP_GASMASKFILTER                    = "Picked up an air filter.";

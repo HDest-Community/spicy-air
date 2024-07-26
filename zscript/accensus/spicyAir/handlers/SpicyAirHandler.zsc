@@ -222,9 +222,7 @@ class SpicyAirHandler : EventHandler {
     bool IsAirFiltered(HDPlayerPawn plr) {
         let mask = Despicyto(plr.FindInventory('Despicyto'));
 
-        return mask
-            && mask.Worn
-            && mask.A_GetTotalAir(false) > 0;
+        return mask && mask.Worn && mask.A_GetTotalAir(false) > 0;
     }
 
     clearscope int GetBreathDelay(HDPlayerPawn plr) {

@@ -4,6 +4,16 @@
 SPICYAIR_MENU                            = "\c[Olive]Ⓢ\c- Spicy Air";
 
 SPICYAIR_ENABLED                         = "Spicy Air Enabled: ";
+SPICYAIR_DAMAGE_THRESHOLD                = "Seconds before air is too spicy: ";
+SPICYAIR_RADSUIT_PROTECTION              = "Radsuit Multiplier to Protection from spicy air: ";
+SPICYAIR_HHELMET_PROTECTION              = "Hideous Helmet Multiplier to protection from spicy air: ";
+SPICYAIR_CLEAN_SECRETS                   = "Secrets have clean air: ";
+SPICYAIR_MONSTERS_SPICY                  = "Monsters cause spicy air: ";
+SPICYAIR_FRAG_SPICY                      = "Frage causes spicy air: ";
+SPICYAIR_MIN_KILLS                       = "Minimum Kill % range to clean air: ";
+SPICYAIR_MAX_KILLS                       = "Maximum Kill % range to clean air: ";
+SPICYAIR_BREATHING_VOLUME                = "Breathing Volume: ";
+SPICYAIR_BREATH_ALPHA                    = "Breath Alpha: ";
 
 MENU_ITEMS_TITLE                         = "--- Items ---";
 MENU_RESETOPTIONS_TITLE                  = "--- Reset Options ---";

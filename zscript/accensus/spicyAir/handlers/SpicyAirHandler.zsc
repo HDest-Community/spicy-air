@@ -1,19 +1,39 @@
-class SpicyAirHandler : EventHandler
-{
+class SpicyAirHandler : EventHandler {
+
+    int BreathIndex[MAXPLAYERS];
     int BreathHoldTimer[MAXPLAYERS];
     int RealSpiciness[MAXPLAYERS];
     double CleanAirPercentage;
-    private transient CVar Enabled;
+
+    private transient Service _HHFunc;
+
+    private transient CVar _enabled;
+    private transient CVar _breathingVolume;
+
+    private transient CVar _secretsClean;
+
+    private transient CVar _spicyAirFromMonsters;
+    private transient CVar _spicyAirFromFrag;
+    private transient CVar _minKillReq;
+    private transient CVar _maxKillReq;
+
+    private transient CVar _damageThreshold;
+    private transient CVar _radsuitProtection;
+    private transient CVar _hhelmetProtection;
 
     override void WorldLoaded(WorldEvent e) {
+
+        InitCvars();
+
         if (e.IsReopen) return;
 
         // Initialize  Status
-        CleanAirPercentage = frandom[desprand](0.75, 0.96);
+        CleanAirPercentage = frandom[desprand](_minKillReq.GetFloat(), _maxKillReq.GetFloat());
         
         for (int i = 0; i < MAXPLAYERS; i++) {
-            BreathHoldTimer[i] = 35 * 30;
+            BreathIndex[i] = 0;
             RealSpiciness[i] = 0;
+            BreathHoldTimer[i] = Level.AirSupply; // * players[i].mo.AirCapacity;
         }
     }
 
@@ -23,65 +43,211 @@ class SpicyAirHandler : EventHandler
             return;
         }
         
-        let Mask = Despicyto(plr.FindInventory('Despicyto'));
-        if (Mask && Mask.Worn && !automapactive) {
+        let mask = Despicyto(plr.FindInventory('Despicyto'));
+        bool hasHelmet = _HHFunc && _HHFunc.GetIntUI("GetShowHUD", objectArg: plr);
+
+        if (
+            (
+                (mask && mask.Worn)
+                || (hasHelmet && _hhelmetProtection.GetInt() > 0)
+            )
+            && !automapactive
+        ) {
             int MaskHeight = int(Screen.GetHeight() * 2.2);
             int MaskWidth = int(Screen.GetWidth() * MaskHeight * 1.2) / Screen.GetHeight();
             int MaskOffX = -((MaskWidth - Screen.GetWidth()) >> 1);
             int MaskOffY = -((MaskHeight - Screen.GetHeight()) >> 1);
 
-            double BreathFactor = Mask.BreathIndex / double(Mask.GetBreathDelay());
-            BreathFactor = 0.1 + min(1.0, abs(BreathFactor > 0 ? BreathFactor * 2.25 : BreathFactor)) * 0.6;
-
             let goggles = PortableLiteAmp(plr.FindInventory('PortableLiteAmp'));
-            if (goggles && goggles.worn) {
-                BreathFactor *= 0.1 - (goggles.amplitude / PortableLiteAmp.NITEVIS_MAX) * 0.05;
+
+            // Only handle breathing animation if Spicy Air is enabled
+            if (_enabled.GetBool()) {
+                double breathFactor = BreathIndex[plr.PlayerNumber()] / double(GetBreathDelay(plr));
+                double breathAlpha = clamp(CVar.GetCVar('spicy_breathalpha', players[plr.PlayerNumber()]).GetFloat(), 0.0, 1.0);
+                breathFactor = 0.1 + min(1.0, abs(breathFactor > 0 ? breathFactor * 2.25 : breathFactor)) * breathAlpha;
+
+                if (goggles && goggles.worn) {
+                    breathFactor *= 0.1 - (goggles.amplitude / PortableLiteAmp.NITEVIS_MAX) * 0.05;
+                }
+
+                if (breathFactor > 0.0) {
+                    Screen.DrawTexture(TexMan.CheckForTexture("DESPMOIS"), true, MaskOffX - (int(plr.wepbob.x * 0.5)), MaskOffY - (int(plr.wepbob.y * 0.5)), DTA_Alpha, breathFactor, DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
+                }
             }
 
-			Screen.DrawTexture(TexMan.CheckForTexture("DESPMOIS"), true, MaskOffX - (int(plr.wepbob.x * 0.5)), MaskOffY - (int(plr.wepbob.y * 0.5)), DTA_Alpha, BreathFactor, DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
-            
-            if (!goggles || !goggles.worn) {
+            // Rendering the Overlay can happen even if the mod is disabled,
+            // as the gas mask feels a bit pointless otherwise.
+            if ((mask && mask.Worn) && !(goggles && goggles.worn)) {
 				Screen.DrawTexture(TexMan.CheckForTexture("DESPMASK"), true, MaskOffX - (int(plr.wepbob.x * 0.5)), MaskOffY - (int(plr.wepbob.y * 0.5)), DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
             }
         }
     }
 
     override void WorldTick() {
-        if (!Enabled) {
-            Enabled = CVar.GetCVar('spicy_enabled');
-        }
 
-        if (!Enabled.GetBool() || level.MapName == 'RANGE' || level.MapName == 'ReloadingRoom') {
-            return;
-        }
+        if (!_enabled.GetBool()) return;
 
-        for (int i = 0; i < MAXPLAYERS; ++i) {
+        // TODO: Refactor following logic into separate functions
+        for (int i = 0; i < MAXPLAYERS; i++) {
             let plr = HDPlayerPawn(players[i].mo);
-            if (!plr || plr.Health <= 0) {
-                continue;
-            }
 
-            double killPercent = level.total_monsters > 0 ? level.killed_monsters / double(level.total_monsters) : 1.0;
-            if (plr.CurSector.WasSecret() || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1 || killPercent >= CleanAirPercentage) {
-                BreathHoldTimer[i] = 35 * 30;
-                RealSpiciness[i] = 0;
-            } else {
-                if (BreathHoldTimer[i] > 0) {
-                    RealSpiciness[i] = 0;
-                    BreathHoldTimer[i]--;
-                } else {
-                    let mask = Despicyto(plr.FindInventory('Despicyto'));
-                    if ((!mask || !mask.Worn || mask.A_GetTotalAir(false) == 0)) {
-                        if (++RealSpiciness[i] >= 70 * (plr.FindInventory('WornRadsuit') ? 30 : 1)) {
-                            RealSpiciness[i] = 0;
-                            plr.A_SetBlend(0xa7b55e, 0.15, 12);
-                            plr.aggravateddamage++;
+            if (!plr || plr.Health <= 0) continue;
+
+            // Handle Player Breathing
+            let mask = Despicyto(plr.FindInventory('Despicyto'));
+            bool hasHelmet = _HHFunc && _HHFunc.GetInt("GetShowHUD", objectArg: plr);
+
+            if ((mask && mask.Worn) || (hasHelmet && _hhelmetProtection.GetInt() > 0)) {
+                int bDelay = GetBreathDelay(plr);
+                int bSpeed = GetBreathSpeed(plr);
+
+                double vol = clamp(CVar.GetCVar('spicy_breathingvolume', players[i]).GetFloat(), 0, 1);
+                
+                if (BreathIndex[i] == 0 && vol > 0) {
+                    plr.A_StartSound("SpicyAir/Mask/BreatheOut"..bSpeed, 35, CHANF_LOCAL, vol, pitch: frandom[breathrand](0.97, 1.0));
+                }
+
+                BreathIndex[i]++;
+                if (BreathIndex[i] >= bDelay) {
+                    BreathIndex[i] = -bDelay;
+
+                    if (vol > 0) {
+                        plr.A_StartSound("SpicyAir/Mask/BreatheIn"..bSpeed, 36, CHANF_LOCAL, vol, pitch: frandom[breathrand](0.97, 1.0));
+                    }
+
+                    if (mask && mask.Worn) {
+                        if (mask.weaponStatus[DEProp_FilterLife1] > 0) {
+                            mask.weaponStatus[DEProp_FilterLife1]--;
+                        } else if (mask.weaponStatus[DEProp_FilterLife2] > 0) {
+                            mask.weaponStatus[DEProp_FilterLife2]--;
                         }
-                    } else {
-                        RealSpiciness[i] = 0;
                     }
                 }
             }
-        }	
+
+            // Handle Air Toxicity Logic
+            if (IsAirClean(plr)) {
+
+                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is clean!");
+
+                RealSpiciness[i] = 0;
+                BreathHoldTimer[i] = Level.AirSupply * plr.AirCapacity;
+            } else if (IsAirFiltered(plr)) {
+
+                if (hd_debug && !(Level.time % 35))  Console.PrintF("[Player #"..(i + 1).."] Air is filtered!");
+
+                RealSpiciness[i] = 0;
+            } else if (BreathHoldTimer[i] > 0) {
+
+                if (hd_debug && !(Level.time % 35))  Console.PrintF("[Player #"..(i + 1).."] Air is spicy, holding breath! BreathHoldTimer: "..BreathHoldTimer[i]);
+
+                RealSpiciness[i] = 0;
+                BreathHoldTimer[i]--;
+
+                // TODO: Add a bit of randomness to breath timer, possibly based on how spicy the air is?
+                // ORiginal idea below would scale down the chances of decreasing the timer based on the amount of monsters remaining
+                // Not perfect, but it's a start...
+
+                // The more monsters killed, the less chance of counting down
+                // let rand = random[desprand](1.0 - CleanAirPercentage, 1.0) < ((Level.total_monsters - Level.killed_monsters) / double(level.total_monsters));
+
+                // if (rand) BreathHoldTimer[i]--;
+            } else {
+
+                if (hd_debug && !(Level.time % 35))  Console.PrintF("[Player #"..(i + 1).."] Air is spicy, too spicy!");
+
+                if (++RealSpiciness[i] >= 35 * GetAggroThreshold(plr)) {
+                    RealSpiciness[i] = 0;
+                    plr.A_SetBlend(0xa7b55e, 0.15, 12);
+                    plr.aggravateddamage++;
+                }
+            }
+        }
+    }
+
+    private void InitCvars() {
+        if (!_HHFunc) _HHFunc                             = ServiceIterator.Find("HHFunc").Next();
+        if (!_enabled) _enabled                           = CVar.GetCVar('spicy_enabled');
+
+        if (!_damageThreshold) _damageThreshold           = CVar.GetCVar('spicy_damagethreshold');
+        if (!_radsuitProtection) _radsuitProtection       = CVar.GetCVar('spicy_radsuitprotection');
+        if (!_hhelmetProtection) _hhelmetProtection       = CVar.GetCVar('spicy_hhelmetprotection');
+
+        if (!_secretsClean) _secretsClean                 = CVar.GetCVar('spicy_secrets_clean');
+
+        if (!_spicyAirFromFrag) _spicyAirFromFrag         = CVar.GetCVar('spicy_frag');
+        if (!_spicyAirFromMonsters) _spicyAirFromMonsters = CVar.GetCVar('spicy_monsters');
+
+        if (!_minKillReq) _minKillReq                     = CVar.GetCVar('spicy_min_kill_req');
+        if (!_maxKillReq) _maxKillReq                     = CVar.GetCVar('spicy_max_kill_req');
+    }
+
+    // The air is considered clean if:
+    //  - The current map is the Firing Range or Reloading Room
+    //  - Secrets are considered clean and the player is currently inside of one
+    //  - The player is currently inside of a sector marked as non-spicy
+    //  - Monsters are set to not cause spicy air or the players have killed enough of them
+    //  - Frage is set to not cause spicy air or there currently isn't any present
+    bool IsAirClean(HDPlayerPawn plr) {
+
+        if (level.MapName == 'RANGE' || level.MapName == 'ReloadingRoom') return true;
+
+        let killPercent = level.total_monsters > 0
+            ? level.killed_monsters / double(level.total_monsters)
+            : 1.0;
+
+        bool spicyFrag = _spicyAirFromFrag.GetBool();
+        bool spicyMonsters = _spicyAirFromMonsters.GetBool();
+
+        bool clean = !(spicyMonsters|spicyFrag) || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1;
+
+        if (_secretsClean.GetBool()) {
+            clean |= plr.CurSector.WasSecret();
+        }
+
+        bool noSpicyFrag = !ThinkerIterator.Create("BFGNecroShard").Next();
+        bool noSpicyMonsters = killPercent >= CleanAirPercentage;
+
+        if (!spicyFrag && spicyMonsters) {
+            clean |= noSpicyMonsters;
+        } else if (spicyFrag && !spicyMonsters) {
+            clean |= noSpicyFrag;
+        } else if (spicyFrag && spicyMonsters) {
+            clean |= noSpicyFrag && noSpicyMonsters;
+        }
+
+        return clean;
+    }
+
+    bool IsAirFiltered(HDPlayerPawn plr) {
+        let mask = Despicyto(plr.FindInventory('Despicyto'));
+
+        return mask
+            && mask.Worn
+            && mask.A_GetTotalAir(false) > 0;
+    }
+
+    clearscope int GetBreathDelay(HDPlayerPawn plr) {
+        return 90 - int(min(max(plr.fatigue * 2, plr.bloodpressure / 1.3, 110 * (1.0 - plr.beatmax / 35.0)), 80));
+    }
+
+    clearscope int GetBreathSpeed(HDPlayerPawn plr) {
+        return 3 - int(min(GetBreathDelay(plr) / 35, 2));
+    }
+
+    private int GetAggroThreshold(HDPlayerPawn plr) {
+        bool hasHelmet = _HHFunc && _HHFunc.GetInt("GetShowHUD", objectArg: plr);
+
+        let threshold = _damageThreshold.GetInt();
+        let radsuitBonus = _radsuitProtection.GetInt();
+        let hhelmetBonus = _hhelmetProtection.GetInt();
+
+        if (radsuitBonus > 0 && plr.FindInventory('WornRadsuit')) {
+            return threshold * radsuitBonus;
+        } else if (hhelmetBonus > 0 && hasHelmet) {
+            return threshold * hhelmetBonus;
+        } else {
+            return threshold;
+        }
     }
 }

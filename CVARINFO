@@ -1,6 +1,18 @@
 server bool spicy_enabled                             = true;
 
+server int spicy_damagethreshold                      = 2;
+server int spicy_radsuitprotection                    = 30;
+server int spicy_hhelmetprotection                    = 10;
+
+server bool spicy_secrets_clean                       = true;
+server bool spicy_monsters                            = true;
+server bool spicy_frag                                = false;
+
+server float spicy_min_kill_req                       = 0.75;
+server float spicy_max_kill_req                       = 0.96;
+
 user float spicy_breathingvolume                      = 1.0;
+user float spicy_breathalpha                          = 0.6;
 
 server bool spicy_gasmask_allowBackpacks              = true;
 // TODO: Add more Gasmask Spawn Slots

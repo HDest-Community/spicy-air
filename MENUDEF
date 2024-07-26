@@ -29,8 +29,8 @@ OptionMenu "SpicyAirMenu"{
 	StaticText ""
 
 	Slider "$SPICYAIR_DAMAGE_THRESHOLD", "spicy_damagethreshold", 1.0, 10.0, 1.0, 0, "spicy_enabled"
-	Slider "$SPICYAIR_RADSUIT_PROTECTION", "spicy_radsuitprotection", 0.0, 100.0, 0.1, 1, "spicy_enabled"
-	Slider "$SPICYAIR_HHELMET_PROTECTION", "spicy_hhelmetprotection", 0.0, 100.0, 0.1, 1, "spicy_enabled"
+	Slider "$SPICYAIR_RADSUIT_PROTECTION", "spicy_radsuitprotection", 0, 100, 1, 0, "spicy_enabled"
+	Slider "$SPICYAIR_HHELMET_PROTECTION", "spicy_hhelmetprotection", 0, 100, 1, 0, "spicy_enabled"
 	StaticText ""
 	Slider "$SPICYAIR_MIN_KILLS", "spicy_min_kill_req", 0.0, 1.0, 0.01, 2, "spicy_enabled"
 	Slider "$SPICYAIR_MAX_KILLS", "spicy_max_kill_req", 0.0, 1.0, 0.01, 2, "spicy_enabled"

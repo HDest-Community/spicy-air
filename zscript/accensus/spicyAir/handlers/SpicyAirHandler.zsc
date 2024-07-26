@@ -242,12 +242,16 @@ class SpicyAirHandler : EventHandler {
         let radsuitBonus = _radsuitProtection.GetInt();
         let hhelmetBonus = _hhelmetProtection.GetInt();
 
+        let totalBonus = 1.0;
+
         if (radsuitBonus > 0 && plr.FindInventory('WornRadsuit')) {
-            return threshold * radsuitBonus;
-        } else if (hhelmetBonus > 0 && hasHelmet) {
-            return threshold * hhelmetBonus;
-        } else {
-            return threshold;
+            totalBonus += radsuitBonus;
         }
+
+        if (hhelmetBonus > 0 && hasHelmet) {
+            totalBonus += hhelmetBonus;
+        }
+
+        return threshold * totalBonus;
     }
 }

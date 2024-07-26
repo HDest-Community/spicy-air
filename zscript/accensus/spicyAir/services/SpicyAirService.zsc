@@ -35,6 +35,8 @@ class SpicyAirService : Service {
             retVal = IsGasMaskWorn(Despicyto(objectArg));
         } else if (request == "GetTotalAir") {
             retVal = GetTotalAir(Despicyto(objectArg));
+        } else if (request == "GetBreathHoldTimer") {
+            retVal = GetBreathHoldTimer(HDPlayerPawn(objectArg));
         } else {
             Console.PrintF("SpicyAirService: Invalid request "..request.."! Please fix :[");
         }
@@ -87,6 +89,13 @@ class SpicyAirService : Service {
 
     static clearscope int GetTotalAir(Despicyto mask) {
         return mask ? mask.A_GetTotalAir(true) : 0;
+    }
+
+    static clearscope int GetBreathHoldTimer(HDPlayerPawn plr) {
+        
+        let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
+
+        return handler.BreathHoldTimer[plr.PlayerNumber()];
     }
 
     static clearscope string GetGasMaskSpriteIndex(Despicyto mask) {

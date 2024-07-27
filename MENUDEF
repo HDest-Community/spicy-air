@@ -24,8 +24,8 @@ OptionMenu "SpicyAirMenu"{
 	StaticText ""
 
 	Option "$SPICYAIR_CLEAN_SECRETS", "spicy_secrets_clean", "OnOff", "spicy_enabled"
-	Option "$SPICYAIR_MONSTERS_SPICY", "spicy_monsters", "OnOff", "spicy_enabled"
-	Option "$SPICYAIR_FRAG_SPICY", "spicy_frag", "OnOff", "spicy_enabled"
+	FlagOption "$SPICYAIR_MONSTERS_SPICY", "spicy_sources", "OnOff", 0, "spicy_enabled"
+	FlagOption "$SPICYAIR_FRAG_SPICY", "spicy_sources", "OnOff", 1, "spicy_enabled"
 	StaticText ""
 
 	Slider "$SPICYAIR_DAMAGE_THRESHOLD", "spicy_damagethreshold", 1.0, 10.0, 1.0, 0, "spicy_enabled"

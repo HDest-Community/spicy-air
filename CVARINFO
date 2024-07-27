@@ -5,8 +5,7 @@ server int spicy_radsuitprotection                    = 30;
 server int spicy_hhelmetprotection                    = 10;
 
 server bool spicy_secrets_clean                       = true;
-server bool spicy_monsters                            = true;
-server bool spicy_frag                                = false;
+server int spicy_sources                              = 1;
 
 server float spicy_min_kill_req                       = 0.75;
 server float spicy_max_kill_req                       = 0.96;

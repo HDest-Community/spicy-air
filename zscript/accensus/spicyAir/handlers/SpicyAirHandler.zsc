@@ -12,8 +12,8 @@ class SpicyAirHandler : EventHandler {
 
     private transient CVar _secretsClean;
 
-    private transient CVar _spicyAirFromMonsters;
-    private transient CVar _spicyAirFromFrag;
+    private transient CVar _spicySources;
+
     private transient CVar _minKillReq;
     private transient CVar _maxKillReq;
 
@@ -175,12 +175,11 @@ class SpicyAirHandler : EventHandler {
         if (!_radsuitProtection) _radsuitProtection       = CVar.GetCVar('spicy_radsuitprotection');
         if (!_hhelmetProtection) _hhelmetProtection       = CVar.GetCVar('spicy_hhelmetprotection');
 
-        if (!_secretsClean) _secretsClean                 = CVar.GetCVar('spicy_secrets_clean');
+        if (!_secretsClean) _secretsClean           = CVar.GetCVar('spicy_secrets_clean');
 
-        if (!_spicyAirFromFrag) _spicyAirFromFrag         = CVar.GetCVar('spicy_frag');
-        if (!_spicyAirFromMonsters) _spicyAirFromMonsters = CVar.GetCVar('spicy_monsters');
+        if (!_spicySources) _spicySources           = CVar.GetCVar('spicy_sources');
 
-        if (!_minKillReq) _minKillReq                     = CVar.GetCVar('spicy_min_kill_req');
+        if (!_minKillReq) _minKillReq               = CVar.GetCVar('spicy_min_kill_req');
         if (!_maxKillReq) _maxKillReq                     = CVar.GetCVar('spicy_max_kill_req');
     }
 
@@ -198,8 +197,9 @@ class SpicyAirHandler : EventHandler {
             ? level.killed_monsters / double(level.total_monsters)
             : 1.0;
 
-        bool spicyFrag = _spicyAirFromFrag.GetBool();
-        bool spicyMonsters = _spicyAirFromMonsters.GetBool();
+        int spicySources = _spicySources.GetInt();
+        bool spicyFrag = spicySources&SASF_FRAG;
+        bool spicyMonsters = spicySources&SASF_MONSTERS;
 
         bool clean = !(spicyMonsters|spicyFrag) || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1;
 
@@ -254,4 +254,10 @@ class SpicyAirHandler : EventHandler {
 
         return threshold * totalBonus;
     }
+}
+
+enum SPICY_SOURCE_FLAGS {
+    SASF_MONSTERS = 1,
+    SASF_FRAG     = 2,
+    SASF_BARRELS  = 4
 }

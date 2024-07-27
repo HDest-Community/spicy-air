@@ -28,7 +28,10 @@ OptionMenu "SpicyAirMenu"{
 	FlagOption "$SPICYAIR_FRAG_SPICY", "spicy_sources", "OnOff", 1, "spicy_enabled"
 	StaticText ""
 
-	Slider "$SPICYAIR_DAMAGE_THRESHOLD", "spicy_damagethreshold", 1.0, 10.0, 1.0, 0, "spicy_enabled"
+	Slider "$SPICYAIR_MAX_SPICINESS", "spicy_max_spiciness", 1, 10, 1, 0, "spicy_enabled"
+	StaticText ""
+
+	Slider "$SPICYAIR_DAMAGE_THRESHOLD", "spicy_damagethreshold", 1, 10, 1, 0, "spicy_enabled"
 	Slider "$SPICYAIR_RADSUIT_PROTECTION", "spicy_radsuitprotection", 0, 100, 1, 0, "spicy_enabled"
 	Slider "$SPICYAIR_HHELMET_PROTECTION", "spicy_hhelmetprotection", 0, 100, 1, 0, "spicy_enabled"
 	StaticText ""

@@ -8,7 +8,8 @@ class SpicyAirHandler : EventHandler {
     private transient Service _HHFunc;
 
     private transient CVar _enabled;
-    private transient CVar _breathingVolume;
+
+    private transient CVar _maxSpiciness;
 
     private transient CVar _secretsClean;
 
@@ -127,23 +128,25 @@ class SpicyAirHandler : EventHandler {
                 }
             }
 
+            let aggroTime = 35 * GetAggroThreshold(plr);
+
             // Handle Air Toxicity Logic
             if (IsAirClean(plr)) {
 
                 if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is clean!");
 
-                RealSpiciness[i] = 0;
+                RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, 1);
                 BreathHoldTimer[i] = Level.AirSupply * plr.AirCapacity;
             } else if (IsAirFiltered(plr)) {
 
-                if (hd_debug && !(Level.time % 35))  Console.PrintF("[Player #"..(i + 1).."] Air is filtered!");
+                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is filtered!");
 
-                RealSpiciness[i] = 0;
+                RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, 1);
             } else if (BreathHoldTimer[i] > 0) {
 
-                if (hd_debug && !(Level.time % 35))  Console.PrintF("[Player #"..(i + 1).."] Air is spicy, holding breath! BreathHoldTimer: "..BreathHoldTimer[i]);
+                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy! "..(BreathHoldTimer[i] / 35).."s");
 
-                RealSpiciness[i] = 0;
+                // RealSpiciness[i] = 0;
                 BreathHoldTimer[i]--;
 
                 // TODO: Add a bit of randomness to breath timer, possibly based on how spicy the air is?
@@ -156,31 +159,37 @@ class SpicyAirHandler : EventHandler {
                 // if (rand) BreathHoldTimer[i]--;
             } else {
 
-                if (hd_debug && !(Level.time % 35))  Console.PrintF("[Player #"..(i + 1).."] Air is spicy, too spicy!");
+                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy, too spicy!");
 
-                if (++RealSpiciness[i] >= 35 * GetAggroThreshold(plr)) {
-                    RealSpiciness[i] = 0;
-                    plr.A_SetBlend(0xa7b55e, 0.15, 12);
-                    plr.aggravateddamage++;
-                }
+                RealSpiciness[i]++;
+            }
+
+            RealSpiciness[i] = clamp(RealSpiciness[i], 0, aggroTime * _maxSpiciness.GetInt());
+
+            if (RealSpiciness[i] && !(RealSpiciness[i] % aggroTime)) {
+                plr.A_SetBlend(0xa7b55e, 0.15, 12);
+                plr.aggravateddamage += RealSpiciness[i] / aggroTime;
             }
         }
     }
 
     private void InitCvars() {
-        if (!_HHFunc) _HHFunc                             = ServiceIterator.Find("HHFunc").Next();
-        if (!_enabled) _enabled                           = CVar.GetCVar('spicy_enabled');
+        if (!_HHFunc) _HHFunc                       = ServiceIterator.Find("HHFunc").Next();
 
-        if (!_damageThreshold) _damageThreshold           = CVar.GetCVar('spicy_damagethreshold');
-        if (!_radsuitProtection) _radsuitProtection       = CVar.GetCVar('spicy_radsuitprotection');
-        if (!_hhelmetProtection) _hhelmetProtection       = CVar.GetCVar('spicy_hhelmetprotection');
+        if (!_enabled) _enabled                     = CVar.GetCVar('spicy_enabled');
+
+        if (!_maxSpiciness) _maxSpiciness           = CVar.GetCVar('spicy_max_spiciness');
+
+        if (!_damageThreshold) _damageThreshold     = CVar.GetCVar('spicy_damagethreshold');
+        if (!_radsuitProtection) _radsuitProtection = CVar.GetCVar('spicy_radsuitprotection');
+        if (!_hhelmetProtection) _hhelmetProtection = CVar.GetCVar('spicy_hhelmetprotection');
 
         if (!_secretsClean) _secretsClean           = CVar.GetCVar('spicy_secrets_clean');
 
         if (!_spicySources) _spicySources           = CVar.GetCVar('spicy_sources');
 
         if (!_minKillReq) _minKillReq               = CVar.GetCVar('spicy_min_kill_req');
-        if (!_maxKillReq) _maxKillReq                     = CVar.GetCVar('spicy_max_kill_req');
+        if (!_maxKillReq) _maxKillReq               = CVar.GetCVar('spicy_max_kill_req');
     }
 
     // The air is considered clean if:

@@ -1,5 +1,7 @@
 server bool spicy_enabled                             = true;
 
+server int spicy_max_spiciness                        = 1;
+
 server int spicy_damagethreshold                      = 2;
 server int spicy_radsuitprotection                    = 30;
 server int spicy_hhelmetprotection                    = 10;

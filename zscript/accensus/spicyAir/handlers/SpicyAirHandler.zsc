@@ -85,6 +85,8 @@ class SpicyAirHandler : EventHandler {
 
     override void WorldTick() {
 
+        if (!_enabled) InitCvars();
+
         if (!_enabled.GetBool()) return;
 
         // TODO: Refactor following logic into separate functions

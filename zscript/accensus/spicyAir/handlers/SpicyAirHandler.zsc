@@ -78,8 +78,9 @@ class SpicyAirHandler : EventHandler {
 
             // Rendering the Overlay can happen even if the mod is disabled,
             // as the gas mask feels a bit pointless otherwise.
-            if ((mask && mask.Worn) && !(goggles && goggles.worn)) {
-				Screen.DrawTexture(TexMan.CheckForTexture("DESPMASK"), true, MaskOffX - (int(plr.wepbob.x * 0.5)), MaskOffY - (int(plr.wepbob.y * 0.5)), DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
+            double maskAlpha = clamp(CVar.GetCVar('spicy_gasmaskalpha', players[plr.PlayerNumber()]).GetFloat(), 0.0, 1.0);
+            if ((mask && mask.Worn) && !(goggles && goggles.worn) && maskAlpha > 0.0) {
+				Screen.DrawTexture(TexMan.CheckForTexture("DESPMASK"), true, MaskOffX - (int(plr.wepbob.x * 0.5)), MaskOffY - (int(plr.wepbob.y * 0.5)), DTA_Alpha, maskAlpha, DTA_DestWidth, MaskWidth, DTA_DestHeight, MaskHeight);
             }
         }
     }

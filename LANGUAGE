@@ -19,7 +19,9 @@ SPICYAIR_MIN_KILLS                       = "Minimum Kill % range to clean air: "
 SPICYAIR_MAX_KILLS                       = "Maximum Kill % range to clean air: ";
 
 SPICYAIR_BREATHING_VOLUME                = "Breathing Volume: ";
+
 SPICYAIR_BREATH_ALPHA                    = "Breath Alpha: ";
+SPICYAIR_GASMASK_ALPHA                   = "Gas Mask Alpha: ";
 
 MENU_ITEMS_TITLE                         = "--- Items ---";
 MENU_RESETOPTIONS_TITLE                  = "--- Reset Options ---";

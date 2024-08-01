@@ -14,6 +14,7 @@ server float spicy_max_kill_req                       = 0.96;
 
 user float spicy_breathingvolume                      = 1.0;
 user float spicy_breathalpha                          = 0.6;
+user float spicy_gasmaskalpha                         = 1.0;
 
 server bool spicy_gasmask_allowBackpacks              = true;
 // TODO: Add more Gasmask Spawn Slots

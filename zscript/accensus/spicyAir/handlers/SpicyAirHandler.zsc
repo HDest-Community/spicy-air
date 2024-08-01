@@ -3,6 +3,7 @@ class SpicyAirHandler : EventHandler {
     int BreathIndex[MAXPLAYERS];
     int BreathHoldTimer[MAXPLAYERS];
     int RealSpiciness[MAXPLAYERS];
+    int SpicyLevel[MAXPLAYERS];
     double CleanAirPercentage;
 
     private transient Service _HHFunc;
@@ -12,8 +13,10 @@ class SpicyAirHandler : EventHandler {
     private transient CVar _maxSpiciness;
 
     private transient CVar _secretsClean;
+    private transient CVar _outdoorsClean;
 
     private transient CVar _spicySources;
+    private transient CVar _spicySourceDistance;
 
     private transient CVar _minKillReq;
     private transient CVar _maxKillReq;
@@ -34,6 +37,7 @@ class SpicyAirHandler : EventHandler {
         for (int i = 0; i < MAXPLAYERS; i++) {
             BreathIndex[i] = 0;
             RealSpiciness[i] = 0;
+            SpicyLevel[i] = 0;
             BreathHoldTimer[i] = Level.AirSupply; // * players[i].mo.AirCapacity;
         }
     }
@@ -137,7 +141,7 @@ class SpicyAirHandler : EventHandler {
                 if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is clean!");
 
                 RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, 1);
-                BreathHoldTimer[i] = Level.AirSupply * plr.AirCapacity;
+                BreathHoldTimer[i] = clamp(BreathHoldTimer[i] + 1, 0, Level.AirSupply * plr.AirCapacity);
             } else if (IsAirFiltered(plr)) {
 
                 if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is filtered!");
@@ -148,7 +152,7 @@ class SpicyAirHandler : EventHandler {
                 if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy! "..(BreathHoldTimer[i] / 35).."s");
 
                 // RealSpiciness[i] = 0;
-                BreathHoldTimer[i]--;
+                BreathHoldTimer[i] = clamp(BreathHoldTimer[i] - 1, 0, Level.AirSupply * plr.AirCapacity);
 
                 // TODO: Add a bit of randomness to breath timer, possibly based on how spicy the air is?
                 // ORiginal idea below would scale down the chances of decreasing the timer based on the amount of monsters remaining
@@ -160,16 +164,19 @@ class SpicyAirHandler : EventHandler {
                 // if (rand) BreathHoldTimer[i]--;
             } else {
 
-                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy, too spicy!");
+                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy, too spicy! "..RealSpiciness[i]);
 
                 RealSpiciness[i]++;
             }
 
             RealSpiciness[i] = clamp(RealSpiciness[i], 0, aggroTime * _maxSpiciness.GetInt());
 
-            if (RealSpiciness[i] && !(RealSpiciness[i] % aggroTime)) {
+            if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Spiciness Level: "..(RealSpiciness[i] / aggroTime));
+
+            if (RealSpiciness[i] && !(Level.time % aggroTime)) {
+                SpicyLevel[i] = clamp(RealSpiciness[i] / aggroTime, 0, _maxSpiciness.GetInt());
                 plr.A_SetBlend(0xa7b55e, 0.15, 12);
-                plr.aggravateddamage += RealSpiciness[i] / aggroTime;
+                plr.aggravateddamage += SpicyLevel[i];
             }
         }
     }
@@ -185,9 +192,12 @@ class SpicyAirHandler : EventHandler {
         if (!_radsuitProtection) _radsuitProtection = CVar.GetCVar('spicy_radsuitprotection');
         if (!_hhelmetProtection) _hhelmetProtection = CVar.GetCVar('spicy_hhelmetprotection');
 
+        if (!_outdoorsClean) _outdoorsClean         = CVar.GetCVar('spicy_outdoors_clean');
         if (!_secretsClean) _secretsClean           = CVar.GetCVar('spicy_secrets_clean');
 
         if (!_spicySources) _spicySources           = CVar.GetCVar('spicy_sources');
+
+        if (!_spicySourceDistance) _spicySourceDistance = CVar.GetCVar('spicy_source_distance');
 
         if (!_minKillReq) _minKillReq               = CVar.GetCVar('spicy_min_kill_req');
         if (!_maxKillReq) _maxKillReq               = CVar.GetCVar('spicy_max_kill_req');
@@ -203,32 +213,34 @@ class SpicyAirHandler : EventHandler {
 
         if (level.MapName == 'RANGE' || level.MapName == 'ReloadingRoom') return true;
 
-        let killPercent = level.total_monsters > 0
-            ? level.killed_monsters / double(level.total_monsters)
-            : 1.0;
+        bool clean = plr.CurSector.GetUDMFInt('user_nonspicysector') == 1;
 
-        int spicySources = _spicySources.GetInt();
-        bool spicyFrag = spicySources&SASF_FRAG;
-        bool spicyMonsters = spicySources&SASF_MONSTERS;
-
-        bool clean = !(spicyMonsters|spicyFrag) || plr.CurSector.GetUDMFInt('user_nonspicysector') == 1;
+        if (hd_debug && !(Level.time % 35)) Console.PrintF("Current Sector Spicy? "..!clean);
 
         if (_secretsClean.GetBool()) {
+            if (hd_debug && !(Level.time % 35) && plr.CurSector.WasSecret()) Console.PrintF("Current Sector is Clean: Secret");
+
             clean |= plr.CurSector.WasSecret();
         }
 
-        bool noSpicyFrag = !ThinkerIterator.Create("BFGNecroShard").Next();
-        bool noSpicyMonsters = killPercent >= CleanAirPercentage;
+        if (_outdoorsClean.GetBool()) {
+            if (hd_debug && !(Level.time % 35) && plr.CurSector.GetTexture(1) == skyflatnum) Console.PrintF("Current Sector is Clean: Outdoors");
 
-        if (!spicyFrag && spicyMonsters) {
-            clean |= noSpicyMonsters;
-        } else if (spicyFrag && !spicyMonsters) {
-            clean |= noSpicyFrag;
-        } else if (spicyFrag && spicyMonsters) {
-            clean |= noSpicyFrag && noSpicyMonsters;
+            clean |= plr.CurSector.GetTexture(1) == skyflatnum;
         }
 
-        return clean;
+        int spicySources = _spicySources.GetInt();
+        int activeSources = IsNearSpicySource(plr, 'HDMobBase')
+            + (IsNearSpicySource(plr, 'BFGNecroShard') << 1)
+            + (IsNearSpicySource(plr, 'HDBarrel') << 2);
+
+        if (hd_debug && !(Level.time % 35)) {
+            Console.PrintF("Clean Air Percent: "..CleanAirPercentage);
+            Console.PrintF("Spicy Sources: "..spicySources..", Active Sources: "..activeSources..", Are Sources Spicy? "..(spicySources&activeSources));
+            Console.PrintF("Is Air Clean? "..clean|!(spicySources&activeSources));
+        }
+
+        return clean |= !(spicySources&activeSources);
     }
 
     bool IsAirFiltered(HDPlayerPawn plr) {
@@ -263,6 +275,25 @@ class SpicyAirHandler : EventHandler {
         }
 
         return threshold * totalBonus;
+    }
+
+    private bool IsNearSpicySource(HDPlayerPawn plr, Name sourceName) {
+        let value = 0.0;
+
+        let iter = ThinkerIterator.create(sourceName);
+
+        Actor mo;
+        while (mo = Actor(iter.next())) {
+            if (mo.health > 0) {
+                let dist = max(HDCONST_ONEMETRE, plr.Distance3D(mo));
+
+                value += (_spicySourceDistance.GetFloat() * HDCONST_ONEMETRE) / (dist * dist);
+            }
+        }
+
+        if (hd_debug && !(Level.time % 35)) Console.PrintF("Proximity to '"..sourceName.."': "..(value * 1000.0));
+
+        return (value * 1000.0) >= (1.0 - CleanAirPercentage);
     }
 }
 

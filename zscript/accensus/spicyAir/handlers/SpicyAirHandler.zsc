@@ -6,6 +6,15 @@ class SpicyAirHandler : EventHandler {
     int SpicyLevel[MAXPLAYERS];
     double CleanAirPercentage;
 
+    Array<Name> monsterClasses;
+    Array<Name> monsterExceptions;
+
+    Array<Name> fragClasses;
+    Array<Name> fragExceptions;
+
+    Array<Name> barrelClasses;
+    Array<Name> barrelExceptions;
+
     private transient Service _HHFunc;
 
     private transient CVar _enabled;
@@ -28,6 +37,7 @@ class SpicyAirHandler : EventHandler {
     override void WorldLoaded(WorldEvent e) {
 
         InitCvars();
+        InitArrays();
 
         if (e.IsReopen) return;
 
@@ -94,6 +104,8 @@ class SpicyAirHandler : EventHandler {
         if (!_enabled) InitCvars();
 
         if (!_enabled.GetBool()) return;
+        
+        InitArrays();
 
         // TODO: Refactor following logic into separate functions
         for (int i = 0; i < MAXPLAYERS; i++) {
@@ -203,6 +215,32 @@ class SpicyAirHandler : EventHandler {
         if (!_maxKillReq) _maxKillReq               = CVar.GetCVar('spicy_max_kill_req');
     }
 
+    private void InitArrays() {
+        if (!monsterClasses.Size()) {
+            monsterClasses.push('HDMobBase');
+        }
+
+        if (!monsterExceptions.Size()) {
+            monsterExceptions.push('HDBarrel');
+        }
+        
+        if (!fragClasses.Size()) {
+            fragClasses.push('BFGNecroShard');
+        }
+
+        // if (!fragExceptions.Size()) {
+        //     fragExceptions.push('');
+        // }
+        
+        if (!barrelClasses.Size()) {
+            barrelClasses.push('HDBarrel');
+        }
+
+        // if (!barrelExceptions.Size()) {
+        //     barrelExceptions.push('');
+        // }
+    }
+
     // The air is considered clean if:
     //  - The current map is the Firing Range or Reloading Room
     //  - Secrets are considered clean and the player is currently inside of one
@@ -230,9 +268,9 @@ class SpicyAirHandler : EventHandler {
         }
 
         int spicySources = _spicySources.GetInt();
-        int activeSources = IsNearSpicySource(plr, 'HDMobBase')
-            + (IsNearSpicySource(plr, 'BFGNecroShard') << 1)
-            + (IsNearSpicySource(plr, 'HDBarrel') << 2);
+        int activeSources = IsNearSpicySource(plr, monsterClasses, monsterExceptions)
+            + (IsNearSpicySource(plr, fragClasses, fragExceptions) << 1)
+            + (IsNearSpicySource(plr, barrelClasses, barrelExceptions) << 2);
 
         if (hd_debug && !(Level.time % 35)) {
             Console.PrintF("Clean Air Percent: "..CleanAirPercentage);
@@ -277,23 +315,31 @@ class SpicyAirHandler : EventHandler {
         return threshold * totalBonus;
     }
 
-    private bool IsNearSpicySource(HDPlayerPawn plr, Name sourceName) {
+    private bool IsNearSpicySource(HDPlayerPawn plr, Array<Name> whitelist, Array<Name> blacklist) {
         let value = 0.0;
 
-        let iter = ThinkerIterator.create(sourceName);
+        foreach (sourceName : whitelist) {
+            let iter = ThinkerIterator.create(sourceName);
 
-        Actor mo;
-        while (mo = Actor(iter.next())) {
-            if (mo.health > 0) {
-                let dist = max(HDCONST_ONEMETRE, plr.Distance3D(mo));
+            Actor mo;
+            while (mo = Actor(iter.next())) {
 
-                value += (_spicySourceDistance.GetFloat() * HDCONST_ONEMETRE) / (dist * dist);
+                if (mo.health > 0 && !IsSourceAnException(mo, blacklist)) {
+                    let dist = max(1, plr.Distance3D(mo));
+
+                    value += mo.SpawnHealth() * mo.scale.x * _spicySourceDistance.GetFloat() / (dist * dist);
+                }
             }
+
+            if (hd_debug && !(Level.time % 35)) Console.PrintF("Proximity to '"..sourceName.."': "..(value * HDCONST_ONEMETRE));
         }
 
-        if (hd_debug && !(Level.time % 35)) Console.PrintF("Proximity to '"..sourceName.."': "..(value * 1000.0));
+        return value * HDCONST_ONEMETRE >= (1.0 - CleanAirPercentage);
+    }
 
-        return (value * 1000.0) >= (1.0 - CleanAirPercentage);
+    private bool IsSourceAnException(Actor source, Array<Name> exceptions) {
+        foreach (exception : exceptions) if (source is exception) return true;
+        return false;
     }
 }
 

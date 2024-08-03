@@ -16,6 +16,7 @@ class SpicyAirHandler : EventHandler {
     Array<Name> barrelExceptions;
 
     private transient Service _HHFunc;
+    private transient Service _RespService;
 
     private transient CVar _enabled;
 
@@ -115,17 +116,27 @@ class SpicyAirHandler : EventHandler {
             if (!plr || plr.Health <= 0) continue;
 
             // Handle Player Breathing
+            // -----------------------
+            // The player is "currently breathing" if:
+            // - They are not submerged underwater, or if they are, they're wearing a UaS Respirator and it has air in it
+            // - They are wearing a gas mask
+            // - They are wearing a Hideous Helmet and it provides protection against spicy air
             let mask = Despicyto(plr.FindInventory('Despicyto'));
             bool hasHelmet = _HHFunc && _HHFunc.GetInt("GetShowHUD", objectArg: plr);
-            
-
+            bool wearingRespirator = _RespService && _RespService.GetInt("IsWorn", objectArg: plr);
+            bool respiratorAir = _RespService && _RespService.GetInt("AirRemaining", objectArg: plr);
             int bDelay = GetBreathDelay(plr);
+            if ((plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0)) || (mask && mask.Worn) || (hasHelmet && _hhelmetProtection.GetInt() > 0)) {
 
-            BreathIndex[i]++;
-            if (BreathIndex[i] >= bDelay) {
-                BreathIndex[i] = -bDelay;
+                BreathIndex[i]++;
+                if (BreathIndex[i] >= bDelay) {
+                    BreathIndex[i] = -bDelay;
+                }
+            } else {
+                BreathIndex[i] = 0;
             }
 
+            // Display Visual/Auditory Feedback of breathing
             if ((mask && mask.Worn) || (hasHelmet && _hhelmetProtection.GetInt() > 0)) {
                 int bSpeed = GetBreathSpeed(plr);
 
@@ -151,20 +162,26 @@ class SpicyAirHandler : EventHandler {
                 }
             }
 
+            // Handle Air Toxicity Logic
+            // -------------------------
+            // - If the air being breathed in is clean, adjust "breath hold timer" depending if the player is underwater or wearing a respirator providing air
+            // - If the air being breathed in is clean or filtered, reduce spiciness while the player is breathing out
+            // - If the air being breathed in is not clean nor filtered, if the player has breath left to hold, reduce timer; otherwise add spiciness while the player is breathing in
+            // - If the player has gathered enough spiciness in their system, increase their spicy level
+            // - As long as the player still has some amount of spiciness levels in their system, every time the timer ticks, add aggro based on their spicy level
             let aggroTime = 35 * GetAggroThreshold(plr);
 
-            // Handle Air Toxicity Logic
             if (IsAirClean(plr)) {
 
                 if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is clean! "..(BreathHoldTimer[i] / 35).."s");
 
-                if (BreathIndex[i] >= 0) RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, 1);
-                BreathHoldTimer[i] = clamp(BreathHoldTimer[i] + 5, 0, Level.AirSupply * plr.AirCapacity);
+                if (BreathIndex[i] > 0) RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, 1);
+                BreathHoldTimer[i] = clamp(BreathHoldTimer[i] + ((plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0)) ? 5 : -1), 0, Level.AirSupply * plr.AirCapacity);
             } else if (IsAirFiltered(plr)) {
 
                 if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is filtered! "..(BreathHoldTimer[i] / 35).."s");
 
-                if (BreathIndex[i] >= 0) RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, 1);
+                if (BreathIndex[i] > 0) RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, 1);
             } else if (BreathHoldTimer[i] > 0) {
 
                 if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy! "..(BreathHoldTimer[i] / 35).."s");
@@ -193,6 +210,7 @@ class SpicyAirHandler : EventHandler {
 
     private void InitCvars() {
         if (!_HHFunc) _HHFunc                       = ServiceIterator.Find("HHFunc").Next();
+        if (!_RespService) _RespService             = ServiceIterator.Find("UaS_RespiratorStatus").Next();
 
         if (!_enabled) _enabled                     = CVar.GetCVar('spicy_enabled');
 

@@ -25,6 +25,7 @@ OptionMenu "SpicyAirMenu"{
 
 	Option "$SPICYAIR_CLEAN_SECRETS", "spicy_secrets_clean", "OnOff", "spicy_enabled"
 	Option "$SPICYAIR_CLEAN_OUTDOORS", "spicy_outdoors_clean", "OnOff", "spicy_enabled"
+	Option "$SPICYAIR_CLEAN_UNDERWATER", "spicy_underwater_clean", "OnOff", "spicy_enabled"
 	StaticText ""
 	FlagOption "$SPICYAIR_MONSTERS_SPICY", "spicy_sources", "OnOff", 0, "spicy_enabled"
 	FlagOption "$SPICYAIR_FRAG_SPICY", "spicy_sources", "OnOff", 1, "spicy_enabled"

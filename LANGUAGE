@@ -15,6 +15,7 @@ SPICYAIR_HHELMET_PROTECTION              = "Hideous Helmet Multiplier to protect
 
 SPICYAIR_CLEAN_SECRETS                   = "Secret sectors have clean air: ";
 SPICYAIR_CLEAN_OUTDOORS                  = "Outdoor sectors have clean air: ";
+SPICYAIR_CLEAN_UNDERWATER                = "Underwater sectors have \"clean air\": ";
 
 SPICYAIR_MONSTERS_SPICY                  = "Monsters cause spicy air: ";
 SPICYAIR_FRAG_SPICY                      = "Frage causes spicy air: ";

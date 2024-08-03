@@ -23,6 +23,7 @@ class SpicyAirHandler : EventHandler {
 
     private transient CVar _secretsClean;
     private transient CVar _outdoorsClean;
+    private transient CVar _underwaterClean;
 
     private transient CVar _spicySources;
     private transient CVar _spicySourceDistance;
@@ -206,6 +207,7 @@ class SpicyAirHandler : EventHandler {
 
         if (!_outdoorsClean) _outdoorsClean         = CVar.GetCVar('spicy_outdoors_clean');
         if (!_secretsClean) _secretsClean           = CVar.GetCVar('spicy_secrets_clean');
+        if (!_underwaterClean) _underwaterClean     = CVar.GetCVar('spicy_underwater_clean');
 
         if (!_spicySources) _spicySources           = CVar.GetCVar('spicy_sources');
 
@@ -265,6 +267,12 @@ class SpicyAirHandler : EventHandler {
             if (hd_debug && !(Level.time % 35) && plr.CurSector.GetTexture(1) == skyflatnum) Console.PrintF("Current Sector is Clean: Outdoors");
 
             clean |= plr.CurSector.GetTexture(1) == skyflatnum;
+        }
+
+        if (_underwaterClean.GetBool()) {
+            if (hd_debug && !(Level.time % 35) && plr.WaterLevel >= 3) Console.PrintF("Current Sector is Clean: Underwater");
+
+            clean |= plr.WaterLevel >= 3;
         }
 
         int spicySources = _spicySources.GetInt();

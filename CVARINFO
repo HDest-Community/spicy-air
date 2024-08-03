@@ -8,6 +8,7 @@ server int spicy_hhelmetprotection                    = 10;
 
 server bool spicy_secrets_clean                       = true;
 server bool spicy_outdoors_clean                      = false;
+server bool spicy_underwater_clean                    = false;
 server int spicy_sources                              = 1;
 
 server float spicy_source_distance                    = 30.0;

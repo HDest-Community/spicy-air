@@ -104,7 +104,7 @@ class SpicyAirHandler : EventHandler {
 
         if (!_enabled) InitCvars();
 
-        if (!_enabled.GetBool()) return;
+        if (!_enabled.GetBool() || Level.IsFrozen()) return;
         
         InitArrays();
 

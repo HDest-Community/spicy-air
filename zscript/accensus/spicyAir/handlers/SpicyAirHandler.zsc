@@ -229,29 +229,29 @@ class SpicyAirHandler : EventHandler {
     }
 
     private void InitCvars() {
-        if (!_HHFunc) _HHFunc                       = ServiceIterator.Find("HHFunc").Next();
-        if (!_RespService) _RespService             = ServiceIterator.Find("UaS_RespiratorStatus").Next();
+        if (!_HHFunc) _HHFunc                           = ServiceIterator.Find("HHFunc").Next();
+        if (!_RespService) _RespService                 = ServiceIterator.Find("UaS_RespiratorStatus").Next();
 
-        if (!_enabled) _enabled                     = CVar.GetCVar('spicy_enabled');
+        if (!_enabled) _enabled                         = CVar.GetCVar('spicy_enabled');
 
-        if (!_losFactor) _losFactor                 = CVar.GetCVar('spicy_los_factor');
+        if (!_losFactor) _losFactor                     = CVar.GetCVar('spicy_los_factor');
 
-        if (!_maxSpiciness) _maxSpiciness           = CVar.GetCVar('spicy_max_spiciness');
+        if (!_maxSpiciness) _maxSpiciness               = CVar.GetCVar('spicy_max_spiciness');
 
-        if (!_damageThreshold) _damageThreshold     = CVar.GetCVar('spicy_damagethreshold');
-        if (!_radsuitProtection) _radsuitProtection = CVar.GetCVar('spicy_radsuitprotection');
-        if (!_hhelmetProtection) _hhelmetProtection = CVar.GetCVar('spicy_hhelmetprotection');
+        if (!_damageThreshold) _damageThreshold         = CVar.GetCVar('spicy_damagethreshold');
+        if (!_radsuitProtection) _radsuitProtection     = CVar.GetCVar('spicy_radsuitprotection');
+        if (!_hhelmetProtection) _hhelmetProtection     = CVar.GetCVar('spicy_hhelmetprotection');
 
-        if (!_outdoorsClean) _outdoorsClean         = CVar.GetCVar('spicy_outdoors_clean');
-        if (!_secretsClean) _secretsClean           = CVar.GetCVar('spicy_secrets_clean');
-        if (!_underwaterClean) _underwaterClean     = CVar.GetCVar('spicy_underwater_clean');
+        if (!_outdoorsClean) _outdoorsClean             = CVar.GetCVar('spicy_outdoors_clean');
+        if (!_secretsClean) _secretsClean               = CVar.GetCVar('spicy_secrets_clean');
+        if (!_underwaterClean) _underwaterClean         = CVar.GetCVar('spicy_underwater_clean');
 
-        if (!_spicySources) _spicySources           = CVar.GetCVar('spicy_sources');
+        if (!_spicySources) _spicySources               = CVar.GetCVar('spicy_sources');
 
         if (!_spicySourceDistance) _spicySourceDistance = CVar.GetCVar('spicy_source_distance');
 
-        if (!_minKillReq) _minKillReq               = CVar.GetCVar('spicy_min_kill_req');
-        if (!_maxKillReq) _maxKillReq               = CVar.GetCVar('spicy_max_kill_req');
+        if (!_minKillReq) _minKillReq                   = CVar.GetCVar('spicy_min_kill_req');
+        if (!_maxKillReq) _maxKillReq                   = CVar.GetCVar('spicy_max_kill_req');
     }
 
     private void InitArrays() {
@@ -469,6 +469,7 @@ class SpicyAirHandler : EventHandler {
             "Proximity to "
             ..(spicyHurtFloors ? "damaging " : "")
             ..(spicyOutdoors ? "outdoor " : "")
+            ..(spicySecrets ? "secret " : "")
             .."sectors: "
             ..(value * HDCONST_ONEMETRE)
         );

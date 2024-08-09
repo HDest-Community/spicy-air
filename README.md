@@ -2,6 +2,8 @@
 
 _Originally made by Accensus_
 
+_Requires [AceCoreLib](https://github.com/HDest-Community/AceCoreLib)_
+
 ### Notes
 ---
 - The gas mask can only be found in backpacks. Filters can spawn in the wild.

@@ -22,8 +22,12 @@ user float spicy_breathalpha                          = 0.6;
 user float spicy_gasmaskalpha                         = 1.0;
 
 server bool spicy_gasmask_allowBackpacks              = true;
-// TODO: Add more Gasmask Spawn Slots
-// server bool spicy_gasmask_persistent_spawning         = false;
+server int spicy_gasmask_stimpack_spawn_bias          = -1;
+server int spicy_gasmask_healthbonus_spawn_bias       = -1;
+server int spicy_gasmask_armorbonus_spawn_bias        = -1;
+server int spicy_gasmask_greenarmour_spawn_bias       = -1;
+server int spicy_gasmask_bluearmour_spawn_bias        = -1;
+server bool spicy_gasmask_persistent_spawning         = false;
 
 server bool spicy_gasmaskfilter_allowBackpacks        = true;
 server int spicy_gasmaskfilter_stimpack_spawn_bias    = 14;

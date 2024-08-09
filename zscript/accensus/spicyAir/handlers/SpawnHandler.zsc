@@ -182,11 +182,14 @@ class SpicyAirSpawnHandler : EventHandler {
         //------------
 
         // Gas Mask
-        // Array<SpicyAirSpawnItemEntry> spawns_gasmask;
-        // spawns_gasmask.push(additementry('Stimpack', spicy_gasmask_stimpack_spawn_bias));
-        // spawns_gasmask.push(additementry('HealthBonus', spicy_gasmask_healthbonus_spawn_bias));
-        // spawns_gasmask.push(additementry('ArmorBonus', spicy_gasmask_armorbonus_spawn_bias));
-        // addItem('Despicyto', spawns_gasmask, spicy_gasmask_persistent_spawning);
+        Array<SpicyAirSpawnItemEntry> spawns_gasmask;
+        spawns_gasmask.push(additementry('Stimpack', spicy_gasmask_stimpack_spawn_bias));
+        spawns_gasmask.push(additementry('HealthBonus', spicy_gasmask_healthbonus_spawn_bias));
+        spawns_gasmask.push(additementry('ArmorBonus', spicy_gasmask_armorbonus_spawn_bias));
+        spawns_gasmask.push(addItemEntry('GarrisonArmour', spicy_gasmask_greenarmour_spawn_bias));
+        spawns_gasmask.push(addItemEntry('BattleArmour', spicy_gasmask_bluearmour_spawn_bias));
+        addItem('Despicyto', spawns_gasmask, spicy_gasmask_persistent_spawning);
+
 
         // Gas Mask Filters
         Array<SpicyAirSpawnItemEntry> spawns_gasmaskfilter;

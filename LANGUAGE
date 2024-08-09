@@ -66,6 +66,13 @@ SPICYAIR_RESETALLOPTIONS                 = "Reset all options for Spicy Air.";
 
 // Blackhawk Options Text
 MENU_GASMASK_TITLE                       = "------ Gas Mask Options ------";
+
+MENU_GASMASK_SPAWNOPTIONS                = "Air Filter Spawn Options";
+MENU_GASMASK_STIMPACK_SPAWNTEXT          = "Control the spawn rate of the Gas Mask on Stimpacks:";
+MENU_GASMASK_HEALTHBONUS_SPAWNTEXT       = "Control the spawn rate of the Gas Mask on Health Bonuses:";
+MENU_GASMASK_ARMORBONUS_SPAWNTEXT        = "Control the spawn rate of the Gas Mask on Armor Bonuses:";
+MENU_GASMASK_GREENARMOR_SPAWNTEXT        = "Control the spawn rate of the Gas Mask on Garrison Armor:";
+MENU_GASMASK_BLUEARMOR_SPAWNTEXT         = "Control the spawn rate of the Gas Mask on Battle Armor:";
 MENU_GASMASK_BACKPACKS                   = "Control whether the Gas Mask spawns in Backpacks:";
 
 MENU_GASMASKFILTER_SPAWNOPTIONS          = "Air Filter Spawn Options";

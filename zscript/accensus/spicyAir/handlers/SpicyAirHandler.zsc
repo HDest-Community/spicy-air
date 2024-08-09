@@ -239,6 +239,7 @@ class SpicyAirHandler : EventHandler {
 
         if (!monsterExceptions.Size()) {
             monsterExceptions.push('HDBarrel');
+            monsterExceptions.push('HDFollower');
         }
         
         if (!fragClasses.Size()) {

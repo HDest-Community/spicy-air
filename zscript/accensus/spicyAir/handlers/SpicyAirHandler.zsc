@@ -126,12 +126,14 @@ class SpicyAirHandler : EventHandler {
             bool wearingRespirator = _RespService && _RespService.GetInt("IsWorn", objectArg: plr);
             bool respiratorAir = _RespService && _RespService.GetInt("AirRemaining", objectArg: plr);
             int bDelay = GetBreathDelay(plr);
-            if ((plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0)) || (mask && mask.Worn) || (hasHelmet && _hhelmetProtection.GetInt() > 0)) {
-
+            if (
+                (plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0))
+                || (mask && mask.Worn)
+                || (hasHelmet && _hhelmetProtection.GetInt() > 0)
+            ) {
                 BreathIndex[i]++;
-                if (BreathIndex[i] >= bDelay) {
-                    BreathIndex[i] = -bDelay;
-                }
+
+                if (BreathIndex[i] >= bDelay) BreathIndex[i] = -bDelay;
             } else {
                 BreathIndex[i] = 0;
             }

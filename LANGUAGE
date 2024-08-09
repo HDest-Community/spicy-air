@@ -20,6 +20,8 @@ SPICYAIR_CLEAN_UNDERWATER                = "Underwater sectors have \"clean air\
 SPICYAIR_MONSTERS_SPICY                  = "Monsters cause spicy air: ";
 SPICYAIR_FRAG_SPICY                      = "Frage causes spicy air: ";
 SPICYAIR_BARRELS_SPICY                   = "Barrels cause spicy air: ";
+SPICYAIR_FRIENDLIES_SPICY                = "Friendly Monsters cause spicy air: ";
+SPICYAIR_BOSSES_SPICY                    = "Boss Monsters cause spicy air: ";
 
 SPICYAIR_MIN_KILLS                       = "Minimum Kill % range to clean air: ";
 SPICYAIR_MAX_KILLS                       = "Maximum Kill % range to clean air: ";

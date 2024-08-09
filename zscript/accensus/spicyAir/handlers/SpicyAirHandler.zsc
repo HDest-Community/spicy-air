@@ -296,7 +296,9 @@ class SpicyAirHandler : EventHandler {
         int spicySources = _spicySources.GetInt();
         int activeSources = IsNearSpicySource(plr, monsterClasses, monsterExceptions)
             + (IsNearSpicySource(plr, fragClasses, fragExceptions) << 1)
-            + (IsNearSpicySource(plr, barrelClasses, barrelExceptions) << 2);
+            + (IsNearSpicySource(plr, barrelClasses, barrelExceptions) << 2)
+            + (IsNearSpicySource(plr, monsterClasses, monsterExceptions, spicyFriendlies: true) << 3)
+            + (IsNearSpicySource(plr, monsterClasses, monsterExceptions, spicyBosses: true) << 4);
 
         if (hd_debug && !(Level.time % 35)) {
             Console.PrintF("Clean Air Percent: "..CleanAirPercentage);
@@ -341,7 +343,13 @@ class SpicyAirHandler : EventHandler {
         return threshold * totalBonus;
     }
 
-    private bool IsNearSpicySource(HDPlayerPawn plr, Array<Name> whitelist, Array<Name> blacklist) {
+    private bool IsNearSpicySource(
+        HDPlayerPawn plr,
+        Array<Name> whitelist,
+        Array<Name> blacklist,
+        bool spicyFriendlies = false,
+        bool spicyBosses = false
+    ) {
         let value = 0.0;
 
         foreach (sourceName : whitelist) {
@@ -350,14 +358,25 @@ class SpicyAirHandler : EventHandler {
             Actor mo;
             while (mo = Actor(iter.next())) {
 
-                if (mo.health > 0 && !IsSourceAnException(mo, blacklist)) {
+                if (
+                    mo.health > 0
+                    && !IsSourceAnException(mo, blacklist)
+                    && (spicyFriendlies == mo.bFRIENDLY)
+                    && (spicyBosses == mo.bBOSS)
+                ) {
                     let dist = max(1, plr.Distance3D(mo));
 
                     value += mo.SpawnHealth() * mo.scale.x * _spicySourceDistance.GetFloat() / (dist * dist);
                 }
             }
 
-            if (hd_debug && !(Level.time % 35)) Console.PrintF("Proximity to '"..sourceName.."': "..(value * HDCONST_ONEMETRE));
+            if (hd_debug && !(Level.time % 35)) Console.PrintF(
+                "Proximity to "
+                ..(spicyFriendlies ? "friendly " : "")
+                ..(spicyBosses ? "boss " : "")
+                .."'"..sourceName.."': "
+                ..(value * HDCONST_ONEMETRE)
+            );
         }
 
         return value * HDCONST_ONEMETRE >= (1.0 - CleanAirPercentage);
@@ -372,5 +391,7 @@ class SpicyAirHandler : EventHandler {
 enum SPICY_SOURCE_FLAGS {
     SASF_MONSTERS = 1,
     SASF_FRAG     = 2,
-    SASF_BARRELS  = 4
+    SASF_BARRELS  = 4,
+    SASF_FRIENDLY = 8,
+    SASF_BOSSES   = 16
 }

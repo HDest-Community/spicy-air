@@ -32,6 +32,13 @@ OptionMenu "SpicyAirMenu"{
 	FlagOption "$SPICYAIR_BARRELS_SPICY", "spicy_sources", "OnOff", 2, "spicy_enabled"
 	FlagOption "$SPICYAIR_FRIENDLIES_SPICY", "spicy_sources", "OnOff", 3, "spicy_enabled"
 	FlagOption "$SPICYAIR_BOSSES_SPICY", "spicy_sources", "OnOff", 4, "spicy_enabled"
+	FlagOption "$SPICYAIR_HURTFLOORS_SPICY", "spicy_sources", "OnOff", 5, "spicy_enabled"
+	FlagOption "$SPICYAIR_OUTDOORS_SPICY", "spicy_sources", "OnOff", 6, "spicy_enabled"
+	FlagOption "$SPICYAIR_SECRETS_SPICY", "spicy_sources", "OnOff", 7, "spicy_enabled"
+	StaticText ""
+
+	StaticText "$SPICYAIR_LOS_TEXT"
+	ScaleSlider "$SPICYAIR_LOS_FACTOR", "spicy_los_factor", 0, 100, 1, "$SPICYAIR_LOS_REQUIRED"
 	StaticText ""
 
 	Slider "$SPICYAIR_MAX_SPICINESS", "spicy_max_spiciness", 1, 10, 1, 0, "spicy_enabled"

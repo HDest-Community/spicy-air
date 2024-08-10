@@ -3,9 +3,8 @@ class Despicyto : HDWeapon {
     override void Tick() {
         Super.Tick();
 
-        if (!Handler) {
-            Handler = SpicyAirHandler(EventHandler.Find('SpicyAirHandler'));
-        }
+        if (!_handler) _handler = SpicyAirHandler(EventHandler.Find('SpicyAirHandler'));
+        if (!_HHFunc) _HHFunc   = ServiceIterator.Find("HHFunc").Next();
 
         let plr = HDPlayerPawn(owner);
 
@@ -16,15 +15,12 @@ class Despicyto : HDWeapon {
             return;
         }
 
-        if (owner.Health <= 0) {
-            return;
-        }
+        if (owner.Health <= 0) return;
 
-        if (!Worn && ++AutowearTicker == 4 && owner.player.cmd.buttons & BT_USE) {
-            A_WearMask();
-        }
+        if (!Worn && ++AutowearTicker == 4 && owner.player.cmd.buttons & BT_USE) A_WearMask();
+        if (Worn && _HHFunc && _HHFunc.GetObject("FindHelmet", objectArg: owner)) A_UnwearMask();
 
-        IsAirToxic = !Handler.IsAirClean(plr);
+        IsAirToxic = !_handler.IsAirClean(plr);
     }
 
     clearscope action int A_GetTotalAir(bool percentage) {
@@ -132,14 +128,12 @@ class Despicyto : HDWeapon {
     }
 
     private action void A_WearMask() {
-        if (invoker.Worn) {
-            return;
-        }
+        if (invoker.Worn || (invoker._HHFunc && invoker._HHFunc.GetObject("FindHelmet", objectArg: invoker.owner))) return;
 
         // [Ace] Necessary because LoadoutConfigure will call this before it's attached to the owner.
         if (invoker.owner) {
-            let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
-            handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 0;
+
+            if (invoker._handler) invoker._handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 0;
 
             invoker.owner.A_StartSound("weapons/pocket", 9);
             invoker.owner.A_SetBlend(0x000000, 1.0, 16);
@@ -148,9 +142,7 @@ class Despicyto : HDWeapon {
     }
 
     private action void A_UnwearMask() {
-        if (!invoker.Worn) {
-            return;
-        }
+        if (!invoker.Worn) return;
 
         if (A_GetTotalAir(false) > 0) {
             int toTake = 10;
@@ -169,8 +161,8 @@ class Despicyto : HDWeapon {
                 }
             }
 
-            let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
-            handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 35 * (3 * (10 - toTake));
+            if (invoker._handler) invoker._handler.BreathHoldTimer[invoker.owner.PlayerNumber()] = 35 * (3 * (10 - toTake));
+
             invoker.owner.A_StartSound("SpicyAir/Mask/BreatheIn1", 36, CHANF_LOCAL, clamp(CVar.GetCVar('spicy_breathingvolume', invoker.owner.player).GetFloat(), 0, 1), pitch: frandom[breathrand](0.98, 1.0));
         }
 
@@ -200,7 +192,9 @@ class Despicyto : HDWeapon {
         HDWeapon.WornLayer STRIP_RADSUIT + 1;
     }
 
-    private SpicyAirHandler Handler;
+    private transient SpicyAirHandler _handler;
+    private transient Service _HHFunc;
+
     private bool IsAirToxic;
     private int WhichFilter;
     private int AutowearTicker;
@@ -248,6 +242,7 @@ class Despicyto : HDWeapon {
             }
             Goto ReadyEnd;
         Lower:
+            TNT1 A 0 A_JumpIf(invoker._HHFunc && invoker._HHFunc.GetObject("FindHelmet", objectArg: invoker.owner), "Nope");
             TNT1 AA 1 A_AddOffset(6);
             TNT1 AAAA 1 A_AddOffset(18);
             TNT1 AAAAA 1 A_AddOffset(36);

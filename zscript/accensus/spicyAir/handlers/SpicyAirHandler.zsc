@@ -389,7 +389,7 @@ class SpicyAirHandler : EventHandler {
                     let dist = max(1, plr.Distance3D(mo));
 
                     if (canSeePlayer || losFactor > 0) {
-                        value += mo.SpawnHealth() * mo.scale.x * _spicySourceDistance.GetFloat() * (canSeePlayer ? 1.0 : (losFactor / 100.0)) / (dist * dist);
+                        value += mo.SpawnHealth() * mo.scale.x * (canSeePlayer ? 1.0 : (losFactor / 100.0)) / (dist * dist);
                     }
                 }
             }
@@ -399,11 +399,11 @@ class SpicyAirHandler : EventHandler {
                 ..(spicyFriendlies ? "friendly " : "")
                 ..(spicyBosses ? "boss " : "")
                 .."'"..sourceName.."': "
-                ..(value * HDCONST_ONEMETRE)
+                ..(value / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat())
             );
         }
 
-        return value * HDCONST_ONEMETRE >= (1.0 - CleanAirPercentage);
+        return value / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat() >= (1.0 - CleanAirPercentage);
     }
 
     private bool IsSourceAnException(Actor source, Array<Name> exceptions) {
@@ -429,7 +429,7 @@ class SpicyAirHandler : EventHandler {
 
                 let dist = max(1, (sectorPos - plrPos).length());
 
-                value += size * sector.damageAmount * _spicySourceDistance.GetFloat() / (dist * dist);
+                value += size * sector.damageAmount / (dist * dist);
             }
         }
 
@@ -443,7 +443,7 @@ class SpicyAirHandler : EventHandler {
 
                 let dist = max(1, (sectorPos - plrPos).length());
 
-                value += size * sector.damageAmount * _spicySourceDistance.GetFloat() / (dist * dist);
+                value += size / (dist * dist);
             }
         }
 
@@ -457,7 +457,7 @@ class SpicyAirHandler : EventHandler {
 
                 let dist = max(1, (sectorPos - plrPos).length());
 
-                value += size * sector.damageAmount * _spicySourceDistance.GetFloat() / (dist * dist);
+                value += size / (dist * dist);
             }
         }
 
@@ -467,10 +467,10 @@ class SpicyAirHandler : EventHandler {
             ..(spicyOutdoors ? "outdoor " : "")
             ..(spicySecrets ? "secret " : "")
             .."sectors: "
-            ..(value * HDCONST_ONEMETRE)
+            ..(value / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat())
         );
 
-        return value * HDCONST_ONEMETRE >= (1.0 - CleanAirPercentage);
+        return value / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat() >= (1.0 - CleanAirPercentage);
     }
 
     private void DealSpicyDamage(HDPlayerPawn plr, int amount) {

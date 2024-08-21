@@ -132,7 +132,7 @@ class SpicyAirHandler : EventHandler {
         for (int i = 0; i < MAXPLAYERS; i++) {
             let plr = HDPlayerPawn(players[i].mo);
 
-            if (!plr || plr.Health <= 0) continue;
+            if (!plr || plr.Health <= 0 || plr.player.cheats&(CF_GODMODE2|CF_GODMODE)) continue;
 
             // Handle Player Breathing
             // -----------------------

@@ -349,23 +349,18 @@ class SpicyAirHandler : EventHandler {
     }
 
     private int GetAggroThreshold(HDPlayerPawn plr) {
-        bool hasHelmet = _HHFunc && _HHFunc.GetInt("GetShowHUD", objectArg: plr);
-
+        let totalBonus = 0.0;
+        
+        if (plr.FindInventory('WornRadsuit')) {
+            totalBonus += _radsuitProtection.GetInt();
+        }
+        
+        if (_HHFunc && _HHFunc.GetInt("GetShowHUD", objectArg: plr)) {
+            totalBonus += _hhelmetProtection.GetInt();
+        }
+        
         let threshold = _damageThreshold.GetInt();
-        let radsuitBonus = _radsuitProtection.GetInt();
-        let hhelmetBonus = _hhelmetProtection.GetInt();
-
-        let totalBonus = 1.0;
-
-        if (radsuitBonus > 0 && plr.FindInventory('WornRadsuit')) {
-            totalBonus += radsuitBonus;
-        }
-
-        if (hhelmetBonus > 0 && hasHelmet) {
-            totalBonus += hhelmetBonus;
-        }
-
-        return threshold * totalBonus;
+        return threshold + (threshold * totalBonus);
     }
 
     private bool IsNearSpicyActor(

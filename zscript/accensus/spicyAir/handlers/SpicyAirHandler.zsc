@@ -26,6 +26,7 @@ class SpicyAirHandler : EventHandler {
 
     private transient CVar _losFactor;
 
+    private transient CVar _damageType;
     private transient CVar _maxSpiciness;
 
     private transient CVar _secretsClean;
@@ -222,8 +223,7 @@ class SpicyAirHandler : EventHandler {
             if (SpicyLevel[i] > 0 && !(Level.time % aggroTime)) {
                 if (hd_debug) Console.PrintF("[Player #"..(i + 1).."] Oof ouch, my blood! x"..SpicyLevel[i]);
 
-                plr.A_SetBlend(0xa7b55e, 0.15, 12);
-                plr.aggravateddamage += SpicyLevel[i];
+                DealSpicyDamage(plr, SpicyLevel[i]);
             }
         }
     }
@@ -236,6 +236,7 @@ class SpicyAirHandler : EventHandler {
 
         if (!_losFactor) _losFactor                     = CVar.GetCVar('spicy_los_factor');
 
+        if (!_damageType) _damageType                   = CVar.GetCVar('spicy_damage_type');
         if (!_maxSpiciness) _maxSpiciness               = CVar.GetCVar('spicy_max_spiciness');
 
         if (!_damageThreshold) _damageThreshold         = CVar.GetCVar('spicy_damagethreshold');
@@ -476,6 +477,77 @@ class SpicyAirHandler : EventHandler {
 
         return value * HDCONST_ONEMETRE >= (1.0 - CleanAirPercentage);
     }
+
+    private void DealSpicyDamage(HDPlayerPawn plr, int amount) {
+        plr.A_SetBlend(0xa7b55e, 0.15, 12);
+
+        switch (_damageType.GetInt()) {
+            case SADT_STUN:
+                DealSpicyStun(plr, amount);
+                break;
+            case SADT_FATIGUE:
+                DealSpicyFatigue(plr, amount);
+                break;
+            case SADT_TISSUE:
+                DealSpicyTissueDamage(plr, amount);
+                break;
+            case SADT_BLOOD:
+                DealSpicyBloodLoss(plr, amount);
+                break;
+            case SADT_BURN:
+                DealSpicyBurns(plr, amount);
+                break;
+            case SADT_AGGRO:
+                DealSpicyAggro(plr, amount);
+                break;
+            case SADT_WOUND:
+                DealSpicyWound(plr, amount);
+                break;
+            case SADT_AUTO:
+            default:
+
+                if (amount >= SADT_STUN)    DealSpicyStun(plr, max(1, amount - SADT_STUN));
+                if (amount >= SADT_FATIGUE) DealSpicyFatigue(plr, max(1, amount - SADT_FATIGUE));
+                if (amount >= SADT_TISSUE)  DealSpicyTissueDamage(plr, max(1, amount - SADT_TISSUE));
+                if (amount >= SADT_BLOOD)   DealSpicyBloodLoss(plr, max(1, amount - SADT_BLOOD));
+                if (amount >= SADT_BURN)    DealSpicyBurns(plr, max(1, amount - SADT_BURN));
+                if (amount >= SADT_AGGRO)   DealSpicyAggro(plr, max(1, amount - SADT_AGGRO));
+                if (amount >= SADT_WOUND)   DealSpicyWound(plr, max(1, amount - SADT_WOUND));
+
+                break;
+        }
+    }
+
+    private void DealSpicyStun(HDPlayerPawn plr, int amount) {
+        plr.stunned += 32 << amount;
+    }
+
+    private void DealSpicyFatigue(HDPlayerPawn plr, int amount) {
+        plr.fatigue += 1 << amount;
+    }
+
+    private void DealSpicyTissueDamage(HDPlayerPawn plr, int amount) {
+        plr.oldWoundCount += amount;
+    }
+
+    private void DealSpicyBloodLoss(HDPlayerPawn plr, int amount) {
+        plr.bloodLoss += 8 << amount;
+    }
+
+    private void DealSpicyBurns(HDPlayerPawn plr, int amount) {
+        plr.burnCount += amount;
+    }
+
+    private void DealSpicyAggro(HDPlayerPawn plr, int amount) {
+        plr.aggravatedDamage += amount;
+    }
+
+    private void DealSpicyWound(HDPlayerPawn plr, int amount) {
+        let numWounds = random(1, 1 << amount);
+        for (let i = 0; i < numWounds; i++) {
+            HDBleedingWound.inflict(plr, amount, damageType: 'internal');
+        }
+    }
 }
 
 enum SPICY_SOURCE_FLAGS {
@@ -487,4 +559,15 @@ enum SPICY_SOURCE_FLAGS {
     SASF_HURTFLOOR = 32,
     SASF_OUTDOORS  = 64,
     SASF_SECRETS   = 128
+}
+
+enum SPICY_DAMAGE_TYPES {
+    SADT_AUTO,
+    SADT_STUN,
+    SADT_FATIGUE,
+    SADT_TISSUE,
+    SADT_BLOOD,
+    SADT_BURN,
+    SADT_AGGRO,
+    SADT_WOUND
 }

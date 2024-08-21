@@ -9,6 +9,7 @@ SPICYAIR_LOS_TEXT                        = "Percentage of Spiciness when calcula
 SPICYAIR_LOS_FACTOR                      = "Spicy Air Line of Sight Factor: ";
 SPICYAIR_LOS_REQUIRED                    = "Line of Sight Required!";
 
+SPICYAIR_DAMAGE_TYPE                     = "Spicy Air Deals Damage in the form of: ";
 SPICYAIR_MAX_SPICINESS                   = "Maximum Spiciness Level: ";
 
 SPICYAIR_SOURCE_DISTANCE                 = "Spicy Source Distance Multiplier: ";

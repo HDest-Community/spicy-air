@@ -25,6 +25,7 @@ OptionMenu "SpicyAirMenu" {
 	ScaleSlider "$SPICYAIR_LOS_FACTOR", "spicy_los_factor", 0, 100, 1, "$SPICYAIR_LOS_REQUIRED"
 	StaticText ""
 
+	Option "$SPICYAIR_DAMAGE_TYPE", "spicy_damage_type", "SpicyAirDamageType", "spicy_enabled"
 	Slider "$SPICYAIR_MAX_SPICINESS", "spicy_max_spiciness", 1, 10, 1, 0, "spicy_enabled"
 	StaticText ""
 
@@ -124,4 +125,15 @@ OptionMenu "gasmaskSpawning" {
 
 	StaticText "$MENU_RESETOPTIONS", "Olive"
 	SafeCommand "$MENU_RESETALLOPTIONS", "spicy_reset_cvars"
+}
+
+OptionValue "SpicyAirDamageType" {
+	0, "Based on Spiciness Level"
+	1, "Stun"
+	2, "Fatigue"
+	3, "Tissue Damage"
+	4, "Blood Loss"
+	5, "Burns"
+	6, "Aggravated Damage"
+	7, "Wounds"
 }

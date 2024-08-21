@@ -2,6 +2,7 @@ server bool spicy_enabled                             = true;
 
 server float spicy_los_factor                         = 100;
 
+server int spicy_damage_type                          = 7;
 server int spicy_max_spiciness                        = 1;
 
 server int spicy_damagethreshold                      = 2;

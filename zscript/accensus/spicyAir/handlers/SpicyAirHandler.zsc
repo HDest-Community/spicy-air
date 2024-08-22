@@ -28,10 +28,6 @@ class SpicyAirHandler : EventHandler {
     private transient CVar _damageType;
     private transient CVar _maxSpiciness;
 
-    private transient CVar _secretsClean;
-    private transient CVar _outdoorsClean;
-    private transient CVar _underwaterClean;
-
     private transient CVar _spicySources;
     private transient CVar _spicySinks;
 
@@ -255,10 +251,6 @@ class SpicyAirHandler : EventHandler {
         if (!_radsuitProtection) _radsuitProtection     = CVar.GetCVar('spicy_radsuitprotection');
         if (!_hhelmetProtection) _hhelmetProtection     = CVar.GetCVar('spicy_hhelmetprotection');
 
-        if (!_outdoorsClean) _outdoorsClean             = CVar.GetCVar('spicy_outdoors_clean');
-        if (!_secretsClean) _secretsClean               = CVar.GetCVar('spicy_secrets_clean');
-        if (!_underwaterClean) _underwaterClean         = CVar.GetCVar('spicy_underwater_clean');
-
         if (!_spicySources) _spicySources               = CVar.GetCVar('spicy_sources');
         if (!_spicySinks) _spicySinks                   = CVar.GetCVar('spicy_sinks');
 
@@ -312,7 +304,7 @@ class SpicyAirHandler : EventHandler {
         if (hd_debug && !(Level.time % 35) && cleanSector) Console.PrintF("Current Sector is Clean: Special");
 
 
-        bool cleanUnderwater = _underwaterClean.GetBool() && plr.WaterLevel >= 3;
+        bool cleanUnderwater = _spicySinks.GetInt()&SASF_SINK_UNDERWATER && plr.WaterLevel >= 3;
 
         if (hd_debug && !(Level.time % 35) && cleanUnderwater) Console.PrintF("Current Sector is Clean: Underwater");
 

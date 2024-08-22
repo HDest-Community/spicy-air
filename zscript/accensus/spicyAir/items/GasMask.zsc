@@ -132,7 +132,7 @@ class Despicyto : HDWeapon {
             || (
                 invoker._HHFunc
                 && invoker._HHFunc.GetObject("FindHelmet", objectArg: invoker.owner)
-                && !CVar.GetCVar('spicy_gasmaskhelmet', invoker.owner.player).GetBool()
+                && !CVar.GetCVar('spicy_allow_gasmaskhelmet', invoker.owner.player).GetBool()
             )
         ) return;
 

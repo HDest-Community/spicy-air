@@ -9,11 +9,16 @@ OptionMenu "SpicyAirMenu" {
 
 	Option "$SPICYAIR_GASMASK_HHELMET", "spicy_gasmaskhelmet", "OnOff"
 	StaticText ""
-
-	Option "$SPICYAIR_CLEAN_SECRETS", "spicy_secrets_clean", "OnOff", "spicy_enabled"
-	Option "$SPICYAIR_CLEAN_OUTDOORS", "spicy_outdoors_clean", "OnOff", "spicy_enabled"
-	Option "$SPICYAIR_CLEAN_UNDERWATER", "spicy_underwater_clean", "OnOff", "spicy_enabled"
 	StaticText ""
+
+	FlagOption "$SPICYAIR_UNDERWATER_CLEAN", "spicy_sinks", "OnOff", 0, "spicy_enabled"
+	StaticText ""
+
+	FlagOption "$SPICYAIR_OUTDOORS_CLEAN", "spicy_sinks", "OnOff", 1, "spicy_enabled"
+	FlagOption "$SPICYAIR_SECRETS_CLEAN", "spicy_sinks", "OnOff", 2, "spicy_enabled"
+	StaticText ""
+	StaticText ""
+
 	FlagOption "$SPICYAIR_MONSTERS_SPICY", "spicy_sources", "OnOff", 0, "spicy_enabled"
 	FlagOption "$SPICYAIR_FRAG_SPICY", "spicy_sources", "OnOff", 1, "spicy_enabled"
 	FlagOption "$SPICYAIR_BARRELS_SPICY", "spicy_sources", "OnOff", 2, "spicy_enabled"
@@ -22,6 +27,7 @@ OptionMenu "SpicyAirMenu" {
 	FlagOption "$SPICYAIR_HURTFLOORS_SPICY", "spicy_sources", "OnOff", 5, "spicy_enabled"
 	FlagOption "$SPICYAIR_OUTDOORS_SPICY", "spicy_sources", "OnOff", 6, "spicy_enabled"
 	FlagOption "$SPICYAIR_SECRETS_SPICY", "spicy_sources", "OnOff", 7, "spicy_enabled"
+	StaticText ""
 	StaticText ""
 
 	StaticText "$SPICYAIR_LOS_TEXT"
@@ -37,10 +43,10 @@ OptionMenu "SpicyAirMenu" {
 	Slider "$SPICYAIR_HHELMET_PROTECTION", "spicy_hhelmetprotection", 0, 100, 1, 0, "spicy_enabled"
 	StaticText ""
 	Slider "$SPICYAIR_SOURCE_DISTANCE", "spicy_source_distance", 0.0, 100.0, 0.01, 2, "spicy_enabled"
+	Slider "$SPICYAIR_CLEAN_DISTANCE", "spicy_sink_distance", 0.0, 100.0, 0.01, 2, "spicy_enabled"
 	StaticText ""
-	Slider "$SPICYAIR_MIN_KILLS", "spicy_min_kill_req", 0.0, 1.0, 0.01, 2, "spicy_enabled"
-	Slider "$SPICYAIR_MAX_KILLS", "spicy_max_kill_req", 0.0, 1.0, 0.01, 2, "spicy_enabled"
 	StaticText ""
+
 	Slider "$SPICYAIR_BREATHING_VOLUME", "spicy_breathingvolume", 0.0, 1.0, 0.05, 2, "spicy_enabled"
 	StaticText ""
 	Slider "$SPICYAIR_BREATH_ALPHA", "spicy_breathalpha", 0.0, 1.0, 0.05, 2, "spicy_enabled"

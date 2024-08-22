@@ -20,7 +20,7 @@ class Despicyto : HDWeapon {
         if (!Worn && ++AutowearTicker == 4 && owner.player.cmd.buttons & BT_USE) A_WearMask();
         if (Worn && _HHFunc && _HHFunc.GetObject("FindHelmet", objectArg: owner)) A_UnwearMask();
 
-        IsAirToxic = !_handler.IsAirClean(plr);
+        IsAirToxic = _handler.GetAirSpiciness(plr) > 0;
     }
 
     clearscope action int A_GetTotalAir(bool percentage) {

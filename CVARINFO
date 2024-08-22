@@ -9,14 +9,11 @@ server int spicy_damagethreshold                      = 2;
 server int spicy_radsuitprotection                    = 30;
 server int spicy_hhelmetprotection                    = 10;
 
-server bool spicy_secrets_clean                       = true;
-server bool spicy_outdoors_clean                      = false;
-server bool spicy_underwater_clean                    = false;
+server int spicy_sinks                                = 4;
 server int spicy_sources                              = 1;
 
 server float spicy_source_distance                    = 30.0;
-server float spicy_min_kill_req                       = 0.75;
-server float spicy_max_kill_req                       = 0.96;
+server float spicy_sink_distance                      = 30.0;
 
 user float spicy_breathingvolume                      = 1.0;
 user float spicy_breathalpha                          = 0.6;

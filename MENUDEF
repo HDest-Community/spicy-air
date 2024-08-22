@@ -7,7 +7,7 @@ OptionMenu "SpicyAirMenu" {
 	StaticText ""
 	StaticText ""
 
-	Option "$SPICYAIR_GASMASK_HHELMET", "spicy_gasmaskhelmet", "OnOff"
+	Option "$SPICYAIR_GASMASK_HHELMET", "spicy_allow_gasmaskhelmet", "OnOff"
 	StaticText ""
 	StaticText ""
 

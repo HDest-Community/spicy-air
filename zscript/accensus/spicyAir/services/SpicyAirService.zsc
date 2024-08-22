@@ -37,6 +37,10 @@ class SpicyAirService : Service {
             retVal = GetTotalAir(Despicyto(objectArg));
         } else if (request == "GetBreathHoldTimer") {
             retVal = GetBreathHoldTimer(HDPlayerPawn(objectArg));
+        } else if (request == "GetAirToxicity") {
+            retVal = GetAirToxicity(HDPlayerPawn(objectArg));
+        } else if (request == "GetMaxAirToxicity") {
+            retVal = GetMaxAirToxicity(HDPlayerPawn(objectArg));
         } else {
             Console.PrintF("SpicyAirService: Invalid request "..request.."! Please fix :[");
         }
@@ -112,5 +116,39 @@ class SpicyAirService : Service {
         } else {
             return "D";
         }
+    }
+
+    static clearscope int GetAirToxicity(HDPlayerPawn plr) {
+        let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
+
+        return handler.RealSpiciness[plr.PlayerNumber()];
+    }
+
+    static clearscope int GetMaxAirToxicity(HDPlayerPawn plr) {
+        let maxSpiciness = CVar.GetCVar('spicy_max_spiciness').GetInt();
+
+        let aggroThreshold = 35 * GetAggroThreshold(plr);
+
+        return aggroThreshold * maxSpiciness;
+    }
+
+    static clearscope int GetAggroThreshold(HDPlayerPawn plr) {
+
+        let totalBonus = 0.0;
+        
+        if (plr.FindInventory('WornRadsuit')) {
+            let radsuitProtection = CVar.GetCVar('spicy_radsuitprotection');
+
+            totalBonus += radsuitProtection.GetInt();
+        }
+        
+        if (plr.FindInventory('HHelmetWorn')) {
+            let hhelmetProtection = CVar.GetCVar('spicy_hhelmetprotection');
+
+            totalBonus += hhelmetProtection.GetInt();
+        }
+        
+        let threshold = CVar.GetCVar('spicy_damagethreshold').GetInt();
+        return threshold + (threshold * totalBonus);
     }
 }

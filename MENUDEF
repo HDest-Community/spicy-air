@@ -7,6 +7,9 @@ OptionMenu "SpicyAirMenu" {
 	StaticText ""
 	StaticText ""
 
+	Option "$SPICYAIR_GASMASK_HHELMET", "spicy_gasmaskhelmet", "OnOff"
+	StaticText ""
+
 	Option "$SPICYAIR_CLEAN_SECRETS", "spicy_secrets_clean", "OnOff", "spicy_enabled"
 	Option "$SPICYAIR_CLEAN_OUTDOORS", "spicy_outdoors_clean", "OnOff", "spicy_enabled"
 	Option "$SPICYAIR_CLEAN_UNDERWATER", "spicy_underwater_clean", "OnOff", "spicy_enabled"

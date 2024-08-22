@@ -128,7 +128,13 @@ class Despicyto : HDWeapon {
     }
 
     private action void A_WearMask() {
-        if (invoker.Worn || (invoker._HHFunc && invoker._HHFunc.GetObject("FindHelmet", objectArg: invoker.owner))) return;
+        if (invoker.Worn
+            || (
+                invoker._HHFunc
+                && invoker._HHFunc.GetObject("FindHelmet", objectArg: invoker.owner)
+                && !CVar.GetCVar('spicy_gasmaskhelmet', invoker.owner.player).GetBool()
+            )
+        ) return;
 
         // [Ace] Necessary because LoadoutConfigure will call this before it's attached to the owner.
         if (invoker.owner) {

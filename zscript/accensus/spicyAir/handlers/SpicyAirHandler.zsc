@@ -4,7 +4,6 @@ class SpicyAirHandler : EventHandler {
     int BreathHoldTimer[MAXPLAYERS];
     int RealSpiciness[MAXPLAYERS];
     int SpicyLevel[MAXPLAYERS];
-    double CleanAirPercentage;
 
     Array<Name> monsterClasses;
     Array<Name> monsterExceptions;
@@ -54,8 +53,6 @@ class SpicyAirHandler : EventHandler {
         if (e.IsReopen) return;
 
         // Initialize  Status
-        CleanAirPercentage = frandom[desprand](_minKillReq.GetFloat(), _maxKillReq.GetFloat());
-        
         for (int i = 0; i < MAXPLAYERS; i++) {
             BreathIndex[i] = 0;
             RealSpiciness[i] = 0;

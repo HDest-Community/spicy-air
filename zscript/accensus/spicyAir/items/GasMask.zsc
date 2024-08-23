@@ -17,8 +17,17 @@ class Despicyto : HDWeapon {
 
         if (owner.Health <= 0) return;
 
-        if (!Worn && ++AutowearTicker == 4 && owner.player.cmd.buttons & BT_USE) A_WearMask();
-        if (Worn && _HHFunc && _HHFunc.GetObject("FindHelmet", objectArg: owner)) A_UnwearMask();
+        if (!Worn && ++AutowearTicker == 4 && owner.player.cmd.buttons & BT_USE) {
+            A_WearMask();
+        }
+
+        if (Worn
+            && _HHFunc
+            && _HHFunc.GetObject("FindHelmet", objectArg: owner)
+            && !CVar.GetCVar('spicy_allow_gasmaskhelmet', owner.player).GetBool()
+        ) {
+            A_UnwearMask();
+        }
 
         IsAirToxic = _handler.GetAirSpiciness(plr) > 0;
     }
@@ -248,7 +257,12 @@ class Despicyto : HDWeapon {
             }
             Goto ReadyEnd;
         Lower:
-            TNT1 A 0 A_JumpIf(invoker._HHFunc && invoker._HHFunc.GetObject("FindHelmet", objectArg: invoker.owner), "Nope");
+            TNT1 A 0 A_JumpIf(
+                invoker._HHFunc
+                && invoker._HHFunc.GetObject("FindHelmet", objectArg: invoker.owner)
+                && !CVar.GetCVar('spicy_allow_gasmaskhelmet', invoker.owner.player).GetBool(),
+                "Nope"
+            );
             TNT1 AA 1 A_AddOffset(6);
             TNT1 AAAA 1 A_AddOffset(18);
             TNT1 AAAAA 1 A_AddOffset(36);

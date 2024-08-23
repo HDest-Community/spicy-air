@@ -193,18 +193,19 @@ class SpicyAirHandler : EventHandler {
 
             if (IsAirClean(plr)) {
 
-                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is clean! "..(BreathHoldTimer[i] / 35).."s");
+                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is clean! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
 
                 if (BreathIndex[i] > 0) RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, abs(spiciness));
                 BreathHoldTimer[i] = clamp(BreathHoldTimer[i] + ((plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0)) ? 5 : -1), 0, Level.AirSupply * plr.AirCapacity);
             } else if (IsAirFiltered(plr)) {
 
-                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is filtered! "..(BreathHoldTimer[i] / 35).."s");
-
+                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is filtered! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
+                
                 if (BreathIndex[i] > 0) RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, abs(spiciness));
+                BreathHoldTimer[i] = clamp(BreathHoldTimer[i] + 3, 0, Level.AirSupply * plr.AirCapacity);
             } else if (BreathHoldTimer[i] > 0) {
 
-                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy! "..(BreathHoldTimer[i] / 35).."s");
+                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
 
                 BreathHoldTimer[i] = clamp(BreathHoldTimer[i] - 1, 0, Level.AirSupply * plr.AirCapacity);
             } else {

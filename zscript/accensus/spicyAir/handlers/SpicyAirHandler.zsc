@@ -401,11 +401,12 @@ class SpicyAirHandler : EventHandler {
                 ..(flags&SASF_SPICY_FRIENDLY ? "friendly " : "")
                 ..(flags&SASF_SPICY_BOSSES ? "boss " : "")
                 .."'"..sourceName.."': "
-                ..(value / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat())
+                ..(value * 100.0 / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat())
             );
         }
 
-        return value / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat();
+        // Scale up value by a factor of 100x to adjust for relative size of sectors vs actors in any given level.
+        return value * 100.0 / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat();
     }
 
     private bool IsSourceAnException(Actor source, Array<Name> exceptions) {

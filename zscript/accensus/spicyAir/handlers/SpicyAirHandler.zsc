@@ -2,6 +2,7 @@ class SpicyAirHandler : EventHandler {
 
     int BreathIndex[MAXPLAYERS];
     int BreathHoldTimer[MAXPLAYERS];
+    double AirSpiciness[MAXPLAYERS];
     int RealSpiciness[MAXPLAYERS];
     int SpicyLevel[MAXPLAYERS];
 
@@ -51,6 +52,7 @@ class SpicyAirHandler : EventHandler {
         // Initialize  Status
         for (int i = 0; i < MAXPLAYERS; i++) {
             BreathIndex[i] = 0;
+            AirSpiciness[i] = 0;
             RealSpiciness[i] = 0;
             SpicyLevel[i] = 0;
             BreathHoldTimer[i] = Level.AirSupply; // * players[i].mo.AirCapacity;
@@ -189,7 +191,11 @@ class SpicyAirHandler : EventHandler {
             let aggroTime = 35 * GetAggroThreshold(plr);
 
             let maxSpiciness = _maxSpiciness.GetInt();
-            let spiciness = clamp(round(GetAirSpiciness(plr)), -maxSpiciness, maxSpiciness);
+            let rawSpiciness = GetAirSpiciness(plr);
+            let spiciness = clamp(round(rawSpiciness), -maxSpiciness, maxSpiciness);
+
+            // Store the raw spiciness for service to provide.
+            AirSpiciness[i] = rawSpiciness;
 
             if (IsAirClean(plr)) {
 

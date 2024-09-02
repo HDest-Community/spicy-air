@@ -41,6 +41,61 @@ class SpicyAirService : Service {
             retVal = GetAirToxicity(HDPlayerPawn(objectArg));
         } else if (request == "GetMaxAirToxicity") {
             retVal = GetMaxAirToxicity(HDPlayerPawn(objectArg));
+        } else if (request == "GetPlayerToxicity") {
+            retVal = GetPlayerToxicity(HDPlayerPawn(objectArg));
+        } else if (request == "GetMaxPlayerToxicity") {
+            retVal = GetMaxPlayerToxicity(HDPlayerPawn(objectArg));
+        } else {
+            Console.PrintF("SpicyAirService: Invalid request "..request.."! Please fix :[");
+        }
+
+        return retVal;
+    }
+
+    override double GetDoubleUI(
+        String request,
+        String stringArg,
+        int intArg,
+        double doubleArg,
+        Object objectArg
+    ) {
+        return HandleGetDouble(request, stringArg, intArg, doubleArg, objectArg);
+    }
+
+    override double GetDouble(
+        String request,
+        String stringArg,
+        int intArg,
+        double doubleArg,
+        Object objectArg
+    ) {
+        return HandleGetDouble(request, stringArg, intArg, doubleArg, objectArg);
+    }
+
+    clearscope double HandleGetDouble(
+        String request,
+        String stringArg,
+        int intArg,
+        double doubleArg,
+        Object objectArg
+    ) {
+        double retVal = 0.0;
+
+        // Requires: objectArg (Actor)
+        if (request == "IsGasMaskWorn") {
+            retVal = IsGasMaskWorn(Despicyto(objectArg));
+        } else if (request == "GetTotalAir") {
+            retVal = GetTotalAir(Despicyto(objectArg));
+        } else if (request == "GetBreathHoldTimer") {
+            retVal = GetBreathHoldTimer(HDPlayerPawn(objectArg));
+        } else if (request == "GetAirToxicity") {
+            retVal = GetAirToxicity(HDPlayerPawn(objectArg));
+        } else if (request == "GetMaxAirToxicity") {
+            retVal = GetMaxAirToxicity(HDPlayerPawn(objectArg));
+        } else if (request == "GetPlayerToxicity") {
+            retVal = GetPlayerToxicity(HDPlayerPawn(objectArg));
+        } else if (request == "GetMaxPlayerToxicity") {
+            retVal = GetMaxPlayerToxicity(HDPlayerPawn(objectArg));
         } else {
             Console.PrintF("SpicyAirService: Invalid request "..request.."! Please fix :[");
         }
@@ -118,13 +173,23 @@ class SpicyAirService : Service {
         }
     }
 
-    static clearscope int GetAirToxicity(HDPlayerPawn plr) {
+    static clearscope double GetAirToxicity(HDplayerPawn plr) {
+        let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
+
+        return handler.AirSpiciness[plr.PlayerNumber()];
+    }
+
+    static clearscope int GetMaxAirToxicity(HDPlayerPawn plr) {
+        return CVar.GetCVar('spicy_max_spiciness').GetInt();
+    }
+
+    static clearscope int GetPlayerToxicity(HDPlayerPawn plr) {
         let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
 
         return handler.RealSpiciness[plr.PlayerNumber()];
     }
 
-    static clearscope int GetMaxAirToxicity(HDPlayerPawn plr) {
+    static clearscope int GetMaxPlayerToxicity(HDPlayerPawn plr) {
         let maxSpiciness = CVar.GetCVar('spicy_max_spiciness').GetInt();
 
         let aggroThreshold = 35 * GetAggroThreshold(plr);

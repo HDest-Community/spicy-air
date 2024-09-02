@@ -346,7 +346,7 @@ class SpicyAirHandler : EventHandler {
             + (spicySources&SASF_SPICY_BOSSES ? GetProximityToSpicyActors(plr, monsterClasses, monsterExceptions, losFactor, SASF_SPICY_BOSSES) : 0)
             + (spicySources&SASF_SPICY_HURTFLOOR ? GetProximityToSpicySectors(plr, SASF_SPICY_HURTFLOOR) : 0)
             + (spicySources&SASF_SPICY_OUTDOORS ? GetProximityToSpicySectors(plr, SASF_SPICY_OUTDOORS) : 0)
-            + (spicySources&SASF_SPICY_OUTDOORS ? GetProximityToSpicySectors(plr, SASF_SPICY_SECRETS) : 0);
+            + (spicySources&SASF_SPICY_SECRETS ? GetProximityToSpicySectors(plr, SASF_SPICY_SECRETS) : 0);
 
         if (hd_debug && !(Level.time % 35)) {
             Console.PrintF("Spicy Sources: "..spicySources..", Active Sources: "..activeSources);

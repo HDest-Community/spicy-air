@@ -207,7 +207,7 @@ class SpicyAirService : Service {
             totalBonus += radsuitProtection.GetInt();
         }
         
-        if (plr.FindInventory('HHelmetWorn')) {
+        if (AceCore.CheckForItem(plr, 'HHelmetWorn')) {
             let hhelmetProtection = CVar.GetCVar('spicy_hhelmetprotection');
 
             totalBonus += hhelmetProtection.GetInt();

@@ -457,40 +457,19 @@ class SpicyAirHandler : EventHandler {
     }
 
     private double GetDistanceFromSectors(HDPlayerPawn plr, Array<Sector> sectors, int flags = 0, Color debugColor = 0) {
-        let pi = 3.1415926535897932384626433832795;
-
         double distance = 0.0;
 
         foreach (sector : sectors) {
-            double size, avgSize, ceil, floor;
+            let size = HDCore.getSectorArea(sector);
+
+            double ceil, floor;
             Sector sec;
-            [size, avgSize] = AceCore.GetSectorSize(sector);
             [ceil, sec] = sector.HighestCeilingAt(sector.centerspot);
             [floor, sec] = sector.LowestFloorAt(sector.centerspot);
 
-            Vector3 plrPos = plr.pos;
-            Vector3 sectorPos = (sector.centerspot.x, sector.centerspot.y, (ceil + floor) / 2);
-            double  sectorRadius = sqrt(size / pi);
+            if (hd_debug) HDCore.drawSectorDebug(sector, debugColor, size: 10.0);
 
-            if (hd_debug) {
-                FSpawnParticleParams fp;
-                fp.flags = SPF_FULLBRIGHT;
-                fp.color1 = debugColor;
-                fp.lifetime = 1;
-                fp.pos = sectorPos;
-                fp.size = 10;
-                fp.startalpha = 1.0;
-
-                Level.SpawnParticle(fp);
-
-                for (let i = 0; i < 360; i++) {
-                    fp.pos = sectorPos + ((cos(i) * sectorRadius), sin(i) * sectorRadius, 0);
-
-                    Level.SpawnParticle(fp);
-                }
-            }
-
-            let dist = max(sectorRadius, (sectorPos - plrPos).length());
+            let dist = max(sqrt(size / HDCONST_PI), (((sector.centerspot.x, sector.centerspot.y, floor + ((ceil - floor) / 2))) - plr.pos).length());
 
             let sizeFactor = flags&SASF_SPICY_HURTFLOOR ? clamp(sector.damageAmount, 0.0, 100.0) / 25.0 : 1;
 

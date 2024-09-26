@@ -199,24 +199,24 @@ class SpicyAirHandler : EventHandler {
 
             if (IsAirClean(plr)) {
 
-                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is clean! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
+                if (hd_debug && !(Level.time % TICRATE)) Console.PrintF("[Player #"..(i + 1).."] Air is clean! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
 
                 if (BreathIndex[i] > 0) RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, abs(spiciness));
                 BreathHoldTimer[i] = clamp(BreathHoldTimer[i] + ((plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0)) ? 5 : -1), 0, Level.AirSupply * plr.AirCapacity);
             } else if (IsAirFiltered(plr)) {
 
-                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is filtered! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
+                if (hd_debug && !(Level.time % TICRATE)) Console.PrintF("[Player #"..(i + 1).."] Air is filtered! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
                 
                 if (BreathIndex[i] > 0) RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, abs(spiciness));
                 BreathHoldTimer[i] = clamp(BreathHoldTimer[i] + 3, 0, Level.AirSupply * plr.AirCapacity);
             } else if (BreathHoldTimer[i] > 0) {
 
-                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
+                if (hd_debug && !(Level.time % TICRATE)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
 
                 BreathHoldTimer[i] = clamp(BreathHoldTimer[i] - 1, 0, Level.AirSupply * plr.AirCapacity);
             } else {
 
-                if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy, too spicy! Breathing "..(BreathIndex[i] < 0 ? "in" : "out")..", "..RealSpiciness[i]);
+                if (hd_debug && !(Level.time % TICRATE)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy, too spicy! Breathing "..(BreathIndex[i] < 0 ? "in" : "out")..", "..RealSpiciness[i]);
 
                 // If we're breathing in while it's spicy,
                 // or we're breathing out while it's not spicy,
@@ -233,7 +233,7 @@ class SpicyAirHandler : EventHandler {
             RealSpiciness[i] = clamp(RealSpiciness[i], 0, aggroTime * maxSpiciness);
             SpicyLevel[i] = clamp(RealSpiciness[i] / aggroTime, 0, maxSpiciness);
 
-            if (hd_debug && !(Level.time % 35)) Console.PrintF("[Player #"..(i + 1).."] Spiciness Level: "..(RealSpiciness[i] / aggroTime));
+            if (hd_debug && !(Level.time % TICRATE)) Console.PrintF("[Player #"..(i + 1).."] Spiciness Level: "..(RealSpiciness[i] / aggroTime));
 
             if (SpicyLevel[i] > 0 && !(Level.time % aggroTime)) {
                 if (hd_debug) Console.PrintF("[Player #"..(i + 1).."] Oof ouch, my blood! x"..SpicyLevel[i]);
@@ -303,17 +303,17 @@ class SpicyAirHandler : EventHandler {
 
         bool cleanLevel = Level.mapName == 'RANGE' || Level.mapName == 'ReloadingRoom';
 
-        if (hd_debug && !(Level.time % 35)) Console.PrintF("Current Level: "..Level.mapName);
+        if (hd_debug && !(Level.time % TICRATE)) Console.PrintF("Current Level: "..Level.mapName);
 
 
         bool cleanSector = plr.CurSector.GetUDMFInt('user_nonspicysector') == 1;
 
-        if (hd_debug && !(Level.time % 35) && cleanSector) Console.PrintF("Current Sector is Clean: Special");
+        if (hd_debug && !(Level.time % TICRATE) && cleanSector) Console.PrintF("Current Sector is Clean: Special");
 
 
         bool cleanUnderwater = _spicySinks.GetInt()&SASF_SINK_UNDERWATER && plr.WaterLevel >= 3;
 
-        if (hd_debug && !(Level.time % 35) && cleanUnderwater) Console.PrintF("Current Sector is Clean: Underwater");
+        if (hd_debug && !(Level.time % TICRATE) && cleanUnderwater) Console.PrintF("Current Sector is Clean: Underwater");
 
         return cleanLevel|cleanSector|cleanUnderwater;
     }
@@ -348,7 +348,7 @@ class SpicyAirHandler : EventHandler {
             + (spicySources&SASF_SPICY_OUTDOORS ? GetProximityToSpicySectors(plr, SASF_SPICY_OUTDOORS) : 0)
             + (spicySources&SASF_SPICY_SECRETS ? GetProximityToSpicySectors(plr, SASF_SPICY_SECRETS) : 0);
 
-        if (hd_debug && !(Level.time % 35)) {
+        if (hd_debug && !(Level.time % TICRATE)) {
             Console.PrintF("Spicy Sources: "..spicySources..", Active Sources: "..activeSources);
             Console.PrintF("Spicy Sinks: "..spicySinks..", Active Sinks: "..activeSinks);
             Console.PrintF("Air Spiciness: "..(activeSources - activeSinks));
@@ -402,7 +402,7 @@ class SpicyAirHandler : EventHandler {
                 }
             }
 
-            if (hd_debug && !(Level.time % 35)) Console.PrintF(
+            if (hd_debug && !(Level.time % TICRATE)) Console.PrintF(
                 "Proximity to "
                 ..(flags&SASF_SPICY_FRIENDLY ? "friendly " : "")
                 ..(flags&SASF_SPICY_BOSSES ? "boss " : "")
@@ -427,7 +427,7 @@ class SpicyAirHandler : EventHandler {
         if (flags&SASF_SPICY_OUTDOORS)  value += GetDistanceFromSectors(plr, outdoorSectors,   SASF_SPICY_OUTDOORS,  Color(255, 255, 255, 255));
         if (flags&SASF_SPICY_SECRETS)   value += GetDistanceFromSectors(plr, secretSectors,    SASF_SPICY_SECRETS,   Color(255, 255, 255, 0));
         
-        if (hd_debug && !(Level.time % 35)) Console.PrintF(
+        if (hd_debug && !(Level.time % TICRATE)) Console.PrintF(
             "Proximity to spicy "
             ..(flags&SASF_SPICY_HURTFLOOR ? "damaging " : "")
             ..(flags&SASF_SPICY_OUTDOORS ? "outdoor " : "")
@@ -445,7 +445,7 @@ class SpicyAirHandler : EventHandler {
         if (flags&SASF_SINK_OUTDOORS) value += GetDistanceFromSectors(plr, outdoorSectors, SASF_SINK_OUTDOORS, Color(255, 255, 255, 255));
         if (flags&SASF_SINK_SECRETS)  value += GetDistanceFromSectors(plr, secretSectors,  SASF_SINK_SECRETS,  Color(255, 255, 255, 0));
 
-        if (hd_debug && !(Level.time % 35)) Console.PrintF(
+        if (hd_debug && !(Level.time % TICRATE)) Console.PrintF(
             "Proximity to clean "
             ..(flags&SASF_SINK_OUTDOORS ? "outdoor " : "")
             ..(flags&SASF_SINK_SECRETS ? "secret " : "")

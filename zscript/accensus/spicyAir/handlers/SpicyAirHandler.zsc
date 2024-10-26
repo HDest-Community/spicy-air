@@ -397,7 +397,7 @@ class SpicyAirHandler : EventHandler {
                     let dist = max(1, plr.Distance3D(mo));
 
                     if (canSeePlayer || losFactor > 0) {
-                        value += mo.SpawnHealth() * mo.scale.x * (canSeePlayer ? 1.0 : (losFactor / 100.0)) / (dist * dist);
+                        value += mo.SpawnHealth() * mo.scale.x * (canSeePlayer ? 1.0 : (losFactor / 100.0)) / max(1.0, dist * dist);
                     }
                 }
             }
@@ -492,9 +492,9 @@ class SpicyAirHandler : EventHandler {
 
             let dist = max(sectorRadius, (sectorPos - plrPos).length());
 
-            let sizeFactor = flags&SASF_SPICY_HURTFLOOR ? sector.damageAmount : 1;
+            let sizeFactor = flags&SASF_SPICY_HURTFLOOR ? clamp(sector.damageAmount, 0.0, 100.0) / 25.0 : 1;
 
-            distance += size * sizeFactor / (dist * dist);
+            distance += size * sizeFactor / max(1.0, dist * dist);
         }
 
         return distance;

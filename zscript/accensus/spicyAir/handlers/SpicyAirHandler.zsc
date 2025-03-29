@@ -486,15 +486,11 @@ class SpicyAirHandler : EventHandler {
 
         foreach (sector : sectors) {
             let area = HDCore.getSectorArea(sector);
-
-            double ceil, floor;
-            Sector sec;
-            [ceil, sec] = sector.HighestCeilingAt(sector.centerspot);
-            [floor, sec] = sector.LowestFloorAt(sector.centerspot);
+            let pos  = HDCore.getSectorCenter(sector);
 
             if (hd_debug) HDCore.drawSectorDebug(sector, debugColor, size: 10.0);
 
-            let dist = max(sqrt(area / HDCONST_PI), (((sector.centerspot.x, sector.centerspot.y, floor + ((ceil - floor) / 2))) - plr.pos).length());
+            let dist = max(sqrt(area / HDCONST_PI), (pos - plr.pos).length());
 
             let sizeFactor = flags&SASF_SPICY_HURTFLOOR ? clamp(sector.damageAmount, 0.0, 100.0) / 25.0 : 1.0;
 

@@ -26,6 +26,9 @@ class SpicyAirHandler : EventHandler {
 
     private transient CVar _losFactor;
 
+    private transient CVar _actorSectorRatio;
+    private transient CVar _distCalc;
+
     private transient CVar _damageType;
     private transient CVar _maxSpiciness;
 
@@ -197,12 +200,12 @@ class SpicyAirHandler : EventHandler {
             // Store the raw spiciness for service to provide.
             AirSpiciness[i] = rawSpiciness;
 
-            if (IsAirClean(plr)) {
+            if (IsAirClean(plr) || AirSpiciness[i] <= 0.0) {
 
                 if (hd_debug && !(Level.time % TICRATE)) Console.PrintF("[Player #"..(i + 1).."] Air is clean! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
 
                 if (BreathIndex[i] > 0) RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, abs(spiciness));
-                BreathHoldTimer[i] = clamp(BreathHoldTimer[i] + ((plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0)) ? 5 : -1), 0, Level.AirSupply * plr.AirCapacity);
+                else if (BreathIndex[i] < 0) BreathHoldTimer[i] = clamp(BreathHoldTimer[i] + ((plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0)) ? 5 : -1), 0, Level.AirSupply * plr.AirCapacity);
             } else if (IsAirFiltered(plr)) {
 
                 if (hd_debug && !(Level.time % TICRATE)) Console.PrintF("[Player #"..(i + 1).."] Air is filtered! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
@@ -218,16 +221,19 @@ class SpicyAirHandler : EventHandler {
 
                 if (hd_debug && !(Level.time % TICRATE)) Console.PrintF("[Player #"..(i + 1).."] Air is spicy, too spicy! Breathing "..(BreathIndex[i] < 0 ? "in" : "out")..", "..RealSpiciness[i]);
 
-                // If we're breathing in while it's spicy,
-                // or we're breathing out while it's not spicy,
+                // If we're breathing in while it's spicier than the player,
+                // or we're breathing out while it's not spicier than the player,
                 // adjust the player's raw spiciness level.
                 if (
-                    (BreathIndex[i] < 0 && spiciness > 0)
-                    || (BreathIndex[i] > 0 && spiciness < 0)
+                    (BreathIndex[i] < 0 && (AirSpiciness[i] * 100) > RealSpiciness[i])
+                    || (BreathIndex[i] > 0 && (AirSpiciness[i] * 100) < RealSpiciness[i])
                 ) {
-                    RealSpiciness[i] += spiciness;
+                    // Force increase when breathing in, decrease when breathing out
+                    // RealSpiciness[i] += spiciness;
+                    RealSpiciness[i] += (BreathIndex[i] < 0 ? frandom(1 - (0.1 * maxSpiciness), 1 + (0.1 * maxSpiciness)) : -frandom(0.0001 * (10 - maxSpiciness), 0.001 * (10 - maxSpiciness))) * abs(AirSpiciness[i] - RealSpiciness[i]);
                 }
 
+                // if (BreathIndex[i] < 0 && RealSpiciness[i] <= 0.0 && BreathHoldTimer[i] < (Level.AirSupply * plr.AirCapacity)) BreathHoldTimer[i]++;
             }
 
             RealSpiciness[i] = clamp(RealSpiciness[i], 0, aggroTime * maxSpiciness);
@@ -250,6 +256,9 @@ class SpicyAirHandler : EventHandler {
         if (!_enabled) _enabled                         = CVar.GetCVar('spicy_enabled');
 
         if (!_losFactor) _losFactor                     = CVar.GetCVar('spicy_los_factor');
+
+        if (!_actorSectorRatio) _actorSectorRatio       = CVar.GetCVar('spicy_actor_sector_ratio');
+        if (!_distCalc) _distCalc                       = CVar.GetCVar('spicy_dist_calc');
 
         if (!_damageType) _damageType                   = CVar.GetCVar('spicy_damage_type');
         if (!_maxSpiciness) _maxSpiciness               = CVar.GetCVar('spicy_max_spiciness');
@@ -348,11 +357,11 @@ class SpicyAirHandler : EventHandler {
             + (spicySources&SASF_SPICY_OUTDOORS ? GetProximityToSpicySectors(plr, SASF_SPICY_OUTDOORS) : 0)
             + (spicySources&SASF_SPICY_SECRETS ? GetProximityToSpicySectors(plr, SASF_SPICY_SECRETS) : 0);
 
-        if (hd_debug && !(Level.time % TICRATE)) {
-            Console.PrintF("Spicy Sources: "..spicySources..", Active Sources: "..activeSources);
-            Console.PrintF("Spicy Sinks: "..spicySinks..", Active Sinks: "..activeSinks);
-            Console.PrintF("Air Spiciness: "..(activeSources - activeSinks));
-        }
+        if (hd_debug && !(Level.time % TICRATE)) Console.PrintF(
+            "Spicy Sources: "..spicySources..", Active Sources: "..activeSources.."\n"
+            .."Spicy Sinks: "..spicySinks..", Active Sinks: "..activeSinks.."\n"
+            .."Air Spiciness: "..(activeSources - activeSinks)
+        );
 
         return activeSources - activeSinks;
     }
@@ -379,6 +388,7 @@ class SpicyAirHandler : EventHandler {
         float losFactor = 1.0,
         int flags = 0
     ) {
+        let count = 0;
         let value = 0.0;
 
         foreach (sourceName : whitelist) {
@@ -390,29 +400,38 @@ class SpicyAirHandler : EventHandler {
                 if (
                     mo.health > 0
                     && !IsSourceAnException(mo, blacklist)
-                    && (flags&SASF_SPICY_FRIENDLY == mo.bFRIENDLY)
-                    && (flags&SASF_SPICY_BOSSES == mo.bBOSS)
+                    && (!!(flags&SASF_SPICY_FRIENDLY) == mo.bFRIENDLY)
+                    && (!!(flags&SASF_SPICY_BOSSES) == mo.bBOSS)
                 ) {
                     let canSeePlayer = mo.CheckSight(plr);
                     let dist = max(1, plr.Distance3D(mo));
 
                     if (canSeePlayer || losFactor > 0) {
-                        value += mo.SpawnHealth() * mo.scale.x * (canSeePlayer ? 1.0 : (losFactor / 100.0)) / max(1.0, dist * dist);
+                        value += calcDist(
+                            mo.SpawnHealth()
+                              * ((mo.scale.x + mo.scale.y) / 2.0)
+                              * (canSeePlayer ? 1.0 : (losFactor / 100.0)),
+                            _spicySourceDistance.GetFloat() * HDCONST_ONEMETRE,
+                            dist
+                        );
+                        count++;
                     }
                 }
             }
+
+            // Adjust raw value by distance factor, then average across all actors
+            value = value * (_actorSectorRatio.GetInt() / 100.0); // / max(1, count);
 
             if (hd_debug && !(Level.time % TICRATE)) Console.PrintF(
                 "Proximity to "
                 ..(flags&SASF_SPICY_FRIENDLY ? "friendly " : "")
                 ..(flags&SASF_SPICY_BOSSES ? "boss " : "")
                 .."'"..sourceName.."': "
-                ..(value * 100.0 / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat())
+                ..value * 100
             );
         }
 
-        // Scale up value by a factor of 100x to adjust for relative size of sectors vs actors in any given level.
-        return value * 100.0 / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat();
+        return value * 100;
     }
 
     private bool IsSourceAnException(Actor source, Array<Name> exceptions) {
@@ -423,48 +442,54 @@ class SpicyAirHandler : EventHandler {
     private double GetProximityToSpicySectors(HDPlayerPawn plr, int flags = 0) {
         let value = 0.0;
 
-        if (flags&SASF_SPICY_HURTFLOOR) value += GetDistanceFromSectors(plr, hurtfloorSectors, SASF_SPICY_HURTFLOOR, Color(255, 0, 255, 0));
-        if (flags&SASF_SPICY_OUTDOORS)  value += GetDistanceFromSectors(plr, outdoorSectors,   SASF_SPICY_OUTDOORS,  Color(255, 255, 255, 255));
-        if (flags&SASF_SPICY_SECRETS)   value += GetDistanceFromSectors(plr, secretSectors,    SASF_SPICY_SECRETS,   Color(255, 255, 255, 0));
+        if (flags&SASF_SPICY_HURTFLOOR) value += GetDistanceFromSectors(plr, hurtfloorSectors, _spicySourceDistance.GetFloat(), SASF_SPICY_HURTFLOOR, Color(255, 0, 255, 0));
+        if (flags&SASF_SPICY_OUTDOORS)  value += GetDistanceFromSectors(plr, outdoorSectors,   _spicySourceDistance.GetFloat(), SASF_SPICY_OUTDOORS,  Color(255, 255, 255, 255));
+        if (flags&SASF_SPICY_SECRETS)   value += GetDistanceFromSectors(plr, secretSectors,    _spicySourceDistance.GetFloat(), SASF_SPICY_SECRETS,   Color(255, 255, 255, 0));
         
+        // Adjust raw value by distance factor, then average across all sectorss
+        value = value * ((100 - _actorSectorRatio.GetInt()) / 100.0) / max(1, (flags&SASF_SPICY_HURTFLOOR ? hurtfloorSectors.size() : 0) + (flags&SASF_SPICY_OUTDOORS ? outdoorSectors.size() : 0) + (flags&SASF_SPICY_SECRETS ? secretSectors.size() : 0));
+
         if (hd_debug && !(Level.time % TICRATE)) Console.PrintF(
             "Proximity to spicy "
             ..(flags&SASF_SPICY_HURTFLOOR ? "damaging " : "")
             ..(flags&SASF_SPICY_OUTDOORS ? "outdoor " : "")
             ..(flags&SASF_SPICY_SECRETS ? "secret " : "")
             .."sectors: "
-            ..(value / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat())
+            ..value
         );
 
-        return value / HDCONST_ONEMETRE * _spicySourceDistance.GetFloat();
+        return value;
     }
 
     private double GetProximityToCleanSectors(HDPlayerPawn plr, int flags = 0) {
         let value = 0.0;
 
-        if (flags&SASF_SINK_OUTDOORS) value += GetDistanceFromSectors(plr, outdoorSectors, SASF_SINK_OUTDOORS, Color(255, 255, 255, 255));
-        if (flags&SASF_SINK_SECRETS)  value += GetDistanceFromSectors(plr, secretSectors,  SASF_SINK_SECRETS,  Color(255, 255, 255, 0));
+        if (flags&SASF_SINK_OUTDOORS) value += GetDistanceFromSectors(plr, outdoorSectors, _spicySinkDistance.GetFloat(), SASF_SINK_OUTDOORS, Color(255, 255, 255, 255));
+        if (flags&SASF_SINK_SECRETS)  value += GetDistanceFromSectors(plr, secretSectors,  _spicySinkDistance.GetFloat(), SASF_SINK_SECRETS,  Color(255, 255, 255, 0));
+
+        // Adjust raw value by distance factor, then average across all sectorss
+        value = value * ((100 - _actorSectorRatio.GetInt()) / 100.0) / max(1, (flags&SASF_SINK_OUTDOORS ? outdoorSectors.size() : 0) + (flags&SASF_SINK_SECRETS ? secretSectors.size() : 0));
 
         if (hd_debug && !(Level.time % TICRATE)) Console.PrintF(
             "Proximity to clean "
             ..(flags&SASF_SINK_OUTDOORS ? "outdoor " : "")
             ..(flags&SASF_SINK_SECRETS ? "secret " : "")
             .."sectors: "
-            ..(value / HDCONST_ONEMETRE * _spicySinkDistance.GetFloat())
+            ..value
         );
 
-        return value / HDCONST_ONEMETRE * _spicySinkDistance.GetFloat();
+        return value;
     }
 
-    private double GetDistanceFromSectors(HDPlayerPawn plr, Array<Sector> sectors, int flags = 0, Color debugColor = 0) {
+    private double GetDistanceFromSectors(HDPlayerPawn plr, Array<Sector> sectors, double distFactor, int flags = 0, Color debugColor = 0) {
         let pi = 3.1415926535897932384626433832795;
 
         double distance = 0.0;
 
         foreach (sector : sectors) {
-            double size, avgSize, ceil, floor;
+            double area, avgSize, ceil, floor;
             Sector sec;
-            [size, avgSize] = AceCore.GetSectorSize(sector);
+            [area, avgSize] = AceCore.GetSectorSize(sector);
             [ceil, sec] = sector.HighestCeilingAt(sector.centerspot);
             [floor, sec] = sector.LowestFloorAt(sector.centerspot);
 
@@ -490,14 +515,28 @@ class SpicyAirHandler : EventHandler {
                 }
             }
 
-            let dist = max(sectorRadius, (sectorPos - plrPos).length());
+            let dist = max(sqrt(area / pi), (sectorPos - plrPos).length());
 
-            let sizeFactor = flags&SASF_SPICY_HURTFLOOR ? clamp(sector.damageAmount, 0.0, 100.0) / 25.0 : 1;
+            let sizeFactor = flags&SASF_SPICY_HURTFLOOR ? clamp(sector.damageAmount, 0.0, 100.0) / 25.0 : 1.0;
 
-            distance += size * sizeFactor / max(1.0, dist * dist);
+            distance += calcDist(area * sizeFactor, distFactor * HDCONST_ONEMETRE, dist);
         }
 
         return distance;
+    }
+
+    private double calcDist(double amount, double factor, double dist) {
+        switch (_distCalc.GetInt()) {
+            case SADC_INVERSE_SQUARE:
+                return amount * factor / max(1.0, dist * dist);
+            case SADC_INVERSE_LOG:
+                return (amount / factor) * max(1.0, log10(max(1.0, factor - dist)));
+            case SADC_INVERSE_SQRT:
+                return (amount / (factor * factor)) * sqrt(factor - dist);
+            case SADC_LINEAR:
+            default:
+                return ((amount * factor) - dist) / max(1.0, factor);
+        }
     }
 
     private void DealSpicyDamage(HDPlayerPawn plr, int amount) {
@@ -587,6 +626,13 @@ enum SPICY_SINK_FLAGS {
     SASF_SINK_UNDERWATER = 1,
     SASF_SINK_OUTDOORS   = 2,
     SASF_SINK_SECRETS    = 4
+}
+
+enum SPICY_DISTANCE_CALCS {
+    SADC_INVERSE_LOG,
+    SADC_INVERSE_SQRT,
+    SADC_INVERSE_SQUARE,
+    SADC_LINEAR
 }
 
 enum SPICY_DAMAGE_TYPES {

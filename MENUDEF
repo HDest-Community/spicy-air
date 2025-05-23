@@ -30,6 +30,14 @@ OptionMenu "SpicyAirMenu" {
 	StaticText ""
 	StaticText ""
 
+	StaticText "$SPICYAIR_ACTORSECTOR_TEXT"
+	Slider "$SPICYAIR_ACTORSECTOR_RATIO", "spicy_actor_sector_ratio", 0, 100, 1, 0, "spicy_enabled"
+	StaticText ""
+
+	StaticText "$SPICYAIR_DISTCALC_TEXT"
+	Option "$SPICYAIR_DISTANCE_CALC", "spicy_dist_calc", "SpicyAirDistanceCalc", "spicy_enabled"
+	StaticText ""
+
 	StaticText "$SPICYAIR_LOS_TEXT"
 	ScaleSlider "$SPICYAIR_LOS_FACTOR", "spicy_los_factor", 0, 100, 1, "$SPICYAIR_LOS_REQUIRED"
 	StaticText ""
@@ -145,4 +153,11 @@ OptionValue "SpicyAirDamageType" {
 	5, "Burns"
 	6, "Aggravated Damage"
 	7, "Wounds"
+}
+
+OptionValue "SpicyAirDistanceCalc" {
+	0, "Inverse Logarithmic"
+	1, "Inverse Square Root"
+	2, "Inverse Square"
+	3, "Linear"
 }

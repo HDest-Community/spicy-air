@@ -7,6 +7,12 @@ SPICYAIR_ENABLED                         = "Spicy Air Enabled: ";
 
 SPICYAIR_GASMASK_HHELMET                 = "Gas Masks can be worn along with HHelmets: ";
 
+SPICYAIR_ACTORSECTOR_TEXT                = "Increase to give actors more influence over spiciness, decrease to give sectors more.";
+SPICYAIR_ACTORSECTOR_RATIO               = "Actor-to-Sector Ratio: ";
+
+SPICYAIR_DISTCALC_TEXT                   = "The formula used when calculating distance from sources/sinks.";
+SPICYAIR_DISTANCE_CALC                   = "Spicy Air Distance Calc: ";
+
 SPICYAIR_LOS_TEXT                        = "Percentage of Spiciness when calculating sources that aren't in line of sight.";
 SPICYAIR_LOS_FACTOR                      = "Spicy Air Line of Sight Factor: ";
 SPICYAIR_LOS_REQUIRED                    = "Line of Sight Required!";

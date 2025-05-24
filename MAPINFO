@@ -1,4 +1,3 @@
-GameInfo
-{
-	AddEventHandlers = "SpicyAirHandler", "SpicyAirSpawnHandler"
+GameInfo {
+	AddEventHandlers = "SpicyAirHandler"
 }

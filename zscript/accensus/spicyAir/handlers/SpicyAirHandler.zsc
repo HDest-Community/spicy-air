@@ -420,7 +420,7 @@ class SpicyAirHandler : EventHandler {
             }
 
             // Adjust raw value by distance factor, then average across all actors
-            value = value * (_actorSectorRatio.GetInt() / 100.0); // / max(1, count);
+            value = value * (_actorSectorRatio.GetFloat() / 100.0); // / max(1, count);
 
             if (hd_debug && !(Level.time % TICRATE)) Console.PrintF(
                 "Proximity to "
@@ -447,7 +447,7 @@ class SpicyAirHandler : EventHandler {
         if (flags&SASF_SPICY_SECRETS)   value += GetDistanceFromSectors(plr, secretSectors,    _spicySourceDistance.GetFloat(), SASF_SPICY_SECRETS,   Color(255, 255, 255, 0));
         
         // Adjust raw value by distance factor, then average across all sectorss
-        value = value * ((100 - _actorSectorRatio.GetInt()) / 100.0) / max(1, (flags&SASF_SPICY_HURTFLOOR ? hurtfloorSectors.size() : 0) + (flags&SASF_SPICY_OUTDOORS ? outdoorSectors.size() : 0) + (flags&SASF_SPICY_SECRETS ? secretSectors.size() : 0));
+        value = value * ((100 - _actorSectorRatio.GetFloat()) / 100.0) / max(1, (flags&SASF_SPICY_HURTFLOOR ? hurtfloorSectors.size() : 0) + (flags&SASF_SPICY_OUTDOORS ? outdoorSectors.size() : 0) + (flags&SASF_SPICY_SECRETS ? secretSectors.size() : 0));
 
         if (hd_debug && !(Level.time % TICRATE)) Console.PrintF(
             "Proximity to spicy "
@@ -468,7 +468,7 @@ class SpicyAirHandler : EventHandler {
         if (flags&SASF_SINK_SECRETS)  value += GetDistanceFromSectors(plr, secretSectors,  _spicySinkDistance.GetFloat(), SASF_SINK_SECRETS,  Color(255, 255, 255, 0));
 
         // Adjust raw value by distance factor, then average across all sectorss
-        value = value * ((100 - _actorSectorRatio.GetInt()) / 100.0) / max(1, (flags&SASF_SINK_OUTDOORS ? outdoorSectors.size() : 0) + (flags&SASF_SINK_SECRETS ? secretSectors.size() : 0));
+        value = value * ((100 - _actorSectorRatio.GetFloat()) / 100.0) / max(1, (flags&SASF_SINK_OUTDOORS ? outdoorSectors.size() : 0) + (flags&SASF_SINK_SECRETS ? secretSectors.size() : 0));
 
         if (hd_debug && !(Level.time % TICRATE)) Console.PrintF(
             "Proximity to clean "
@@ -526,16 +526,21 @@ class SpicyAirHandler : EventHandler {
     }
 
     private double calcDist(double amount, double factor, double dist) {
+        let af = amount * factor;
+        let denom = min(af, max(1.0, dist));
+
         switch (_distCalc.GetInt()) {
             case SADC_INVERSE_SQUARE:
-                return amount * factor / max(1.0, dist * dist);
-            case SADC_INVERSE_LOG:
-                return (amount / factor) * max(1.0, log10(max(1.0, factor - dist)));
+                return af / (denom * denom);
             case SADC_INVERSE_SQRT:
-                return (amount / (factor * factor)) * sqrt(factor - dist);
+                return (af / sqrt(denom)) - sqrt(af);
+            case SADC_REVERSE_LOG:
+                return (amount / factor) * max(1.0, log10(max(1.0, factor - dist)));
+            case SADC_REVERSE_SQRT:
+                return (amount / (factor * factor)) * sqrt(af - dist);
             case SADC_LINEAR:
             default:
-                return ((amount * factor) - dist) / max(1.0, factor);
+                return (af - dist) / max(1.0, factor);
         }
     }
 
@@ -629,9 +634,10 @@ enum SPICY_SINK_FLAGS {
 }
 
 enum SPICY_DISTANCE_CALCS {
-    SADC_INVERSE_LOG,
     SADC_INVERSE_SQRT,
     SADC_INVERSE_SQUARE,
+    SADC_REVERSE_LOG,
+    SADC_REVERSE_SQRT,
     SADC_LINEAR
 }
 

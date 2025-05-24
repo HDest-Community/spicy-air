@@ -1,0 +1,18 @@
+// Backpack Spawn Pool Filters
+addBPSpawnPoolFilter => { "name": "Despicyto", "allowed": "#spicy_gasmask_allowBackpacks" }
+addBPSpawnPoolFilter => { "name": "DespicytoFilter", "allowed": "#spicy_gasmaskfilter_allowBackpacks" }
+
+// Ammo Usages
+addAmmoUser => { "ammoName": "DespicytoFilter", "name": "Despicyto" }
+
+// Gas Mask Spawn Entries
+addSpawnTableSingleEntry => { "tableName": "StimpackReplaces", "name": "Despicyto", "weight": "#spicy_gasmask_stimpack_spawn_bias", "persists": "#spicy_gasmask_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "HealthBonusReplaces", "name": "Despicyto", "weight": "#spicy_gasmask_healthbonus_spawn_bias", "persists": "#spicy_gasmask_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "ArmorBonusReplaces", "name": "Despicyto", "weight": "#spicy_gasmask_armorbonus_spawn_bias", "persists": "#spicy_gasmask_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "GreenArmorReplaces", "name": "Despicyto", "weight": "#spicy_gasmask_greenarmour_spawn_bias", "persists": "#spicy_gasmask_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "BlueArmorReplaces", "name": "Despicyto", "weight": "#spicy_gasmask_bluearmour_spawn_bias", "persists": "#spicy_gasmask_persistent_spawning" }
+
+// Gas Mask Filter Spawn Entries
+addSpawnTableSingleEntry => { "tableName": "StimpackReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_stimpack_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "HealthBonusReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_healthbonus_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "ArmorBonusReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_armorbonus_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }

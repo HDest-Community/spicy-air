@@ -1,39 +1,39 @@
-server bool spicy_enabled                             = true;
+server bool spicy_enabled                               = true;
 
-server float spicy_los_factor                         = 50;
+server float spicy_los_factor                           = 50;
 
-server float spicy_actor_sector_ratio                 = 98.0;
-server int spicy_dist_calc                            = 2;
+server float spicy_actor_sector_ratio                   = 98.0;
+server int spicy_dist_calc                              = 2;
 
-server int spicy_damage_type                          = 0;
-server int spicy_max_spiciness                        = 6;
+server int spicy_damage_type                            = 0;
+server int spicy_max_spiciness                          = 6;
 
-server int spicy_damagethreshold                      = 2;
-server int spicy_radsuitprotection                    = 30;
-server int spicy_hhelmetprotection                    = 10;
+server int spicy_damagethreshold                        = 2;
+server int spicy_radsuitprotection                      = 30;
+server int spicy_hhelmetprotection                      = 10;
 
-server int spicy_sinks                                = 3;
-server int spicy_sources                              = 55;
+server int spicy_sinks                                  = 3;
+server int spicy_sources                                = 55;
 
-server float spicy_source_distance                    = 10.0;
-server float spicy_sink_distance                      = 10.0;
+server float spicy_source_distance                      = 10.0;
+server float spicy_sink_distance                        = 10.0;
 
-user float spicy_breathingvolume                      = 0.5;
-user float spicy_breathalpha                          = 0.6;
-user float spicy_gasmaskalpha                         = 1.0;
+user float spicy_breathingvolume                        = 0.5;
+user float spicy_breathalpha                            = 0.6;
+user float spicy_gasmaskalpha                           = 1.0;
 
-user bool spicy_allow_gasmaskhelmet                   = false;
+user bool spicy_allow_gasmaskhelmet                     = false;
 
-server bool spicy_gasmask_allowBackpacks              = true;
-server int spicy_gasmask_stimpack_spawn_bias          = -1;
-server int spicy_gasmask_healthbonus_spawn_bias       = -1;
-server int spicy_gasmask_armorbonus_spawn_bias        = -1;
-server int spicy_gasmask_greenarmour_spawn_bias       = -1;
-server int spicy_gasmask_bluearmour_spawn_bias        = -1;
-server bool spicy_gasmask_persistent_spawning         = false;
+server bool spicy_gasmask_allowBackpacks                = true;
+server float spicy_gasmask_stimpack_spawn_bias          = 0.0;
+server float spicy_gasmask_healthbonus_spawn_bias       = 0.0;
+server float spicy_gasmask_armorbonus_spawn_bias        = 0.0;
+server float spicy_gasmask_greenarmour_spawn_bias       = 0.0;
+server float spicy_gasmask_bluearmour_spawn_bias        = 0.0;
+server bool spicy_gasmask_persistent_spawning           = false;
 
-server bool spicy_gasmaskfilter_allowBackpacks        = true;
-server int spicy_gasmaskfilter_stimpack_spawn_bias    = 14;
-server int spicy_gasmaskfilter_healthbonus_spawn_bias = -1;
-server int spicy_gasmaskfilter_armorbonus_spawn_bias  = -1;
-server bool spicy_gasmaskfilter_persistent_spawning   = false;
+server bool spicy_gasmaskfilter_allowBackpacks          = true;
+server float spicy_gasmaskfilter_stimpack_spawn_bias    = 0.5333;
+server float spicy_gasmaskfilter_healthbonus_spawn_bias = 0.0;
+server float spicy_gasmaskfilter_armorbonus_spawn_bias  = 0.0;
+server bool spicy_gasmaskfilter_persistent_spawning     = false;

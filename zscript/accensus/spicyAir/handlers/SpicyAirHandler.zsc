@@ -527,7 +527,7 @@ class SpicyAirHandler : EventHandler {
 
     private double calcDist(double amount, double factor, double dist) {
         let af = amount * factor;
-        let denom = min(af, max(1.0, dist));
+        let denom = max(1.0, min(af, dist));
 
         switch (_distCalc.GetInt()) {
             case SADC_INVERSE_SQUARE:

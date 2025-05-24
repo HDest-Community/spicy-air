@@ -39,7 +39,7 @@ OptionMenu "SpicyAirMenu" {
 	StaticText ""
 
 	StaticText "$SPICYAIR_LOS_TEXT"
-	ScaleSlider "$SPICYAIR_LOS_FACTOR", "spicy_los_factor", 0, 100, 1, "$SPICYAIR_LOS_REQUIRED"
+	ScaleSlider "$SPICYAIR_LOS_FACTOR", "spicy_los_factor", 0, 100, 1, "$SPICYAIR_LOS_REQUIRED", "spicy_enabled"
 	StaticText ""
 
 	Option "$SPICYAIR_DAMAGE_TYPE", "spicy_damage_type", "SpicyAirDamageType", "spicy_enabled"

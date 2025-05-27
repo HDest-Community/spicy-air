@@ -495,7 +495,7 @@ class SpicyAirHandler : EventHandler {
 
             Vector3 plrPos = plr.pos;
             Vector3 sectorPos = (sector.centerspot.x, sector.centerspot.y, (ceil + floor) / 2);
-            double  sectorRadius = sqrt(size / pi);
+            double  sectorRadius = sqrt(area / pi);
 
             if (hd_debug) {
                 FSpawnParticleParams fp;

@@ -96,19 +96,19 @@ OptionMenu "gasmaskSpawning" {
 
 	StaticText "$MENU_GASMASK_SPAWNOPTIONS", "Olive"
 	StaticText "$MENU_GASMASK_STIMPACK_SPAWNTEXT", "White"
-	Slider "$MENU_GASMASK_SPAWNRATE", "spicy_gasmask_stimpack_spawn_bias",  0.0, 1000, .01, 3
+	Slider "$MENU_GASMASK_SPAWNRATE", "spicy_gasmask_stimpack_spawn_bias", 0.0, 100, .01, 2
 	SafeCommand "$MENU_RESETOPTIONS", "resetcvar spicy_gasmask_stimpack_spawn_bias"
 	StaticText "$MENU_GASMASK_HEALTHBONUS_SPAWNTEXT", "White"
-	Slider "$MENU_GASMASK_SPAWNRATE", "spicy_gasmask_healthbonus_spawn_bias",  0.0, 1000, .01, 3
+	Slider "$MENU_GASMASK_SPAWNRATE", "spicy_gasmask_healthbonus_spawn_bias", 0.0, 100, .01, 2
 	SafeCommand "$MENU_RESETOPTIONS", "resetcvar spicy_gasmask_healthbonus_spawn_bias"
 	StaticText "$MENU_GASMASK_ARMORBONUS_SPAWNTEXT", "White"
-	Slider "$MENU_GASMASK_SPAWNRATE", "spicy_gasmask_armorbonus_spawn_bias",  0.0, 1000, .01, 3
+	Slider "$MENU_GASMASK_SPAWNRATE", "spicy_gasmask_armorbonus_spawn_bias", 0.0, 100, .01, 2
 	SafeCommand "$MENU_RESETOPTIONS", "resetcvar spicy_gasmask_armorbonus_spawn_bias"
 	StaticText "$MENU_GASMASK_GREENARMOR_SPAWNTEXT", "White"
-	Slider "$MENU_GASMASK_SPAWNRATE", "spicy_gasmask_greenarmour_spawn_bias",  0.0, 1000, .01, 3
+	Slider "$MENU_GASMASK_SPAWNRATE", "spicy_gasmask_greenarmour_spawn_bias", 0.0, 100, .01, 2
 	SafeCommand "$MENU_RESETOPTIONS", "resetcvar spicy_gasmask_greenarmour_spawn_bias"
 	StaticText "$MENU_GASMASK_BLUEARMOR_SPAWNTEXT", "White"
-	Slider "$MENU_GASMASK_SPAWNRATE", "spicy_gasmask_bluearmour_spawn_bias",  0.0, 1000, .01, 3
+	Slider "$MENU_GASMASK_SPAWNRATE", "spicy_gasmask_bluearmour_spawn_bias", 0.0, 100, .01, 2
 	SafeCommand "$MENU_RESETOPTIONS", "resetcvar spicy_gasmask_bluearmour_spawn_bias"
 	StaticText ""
 
@@ -118,13 +118,13 @@ OptionMenu "gasmaskSpawning" {
 
 	StaticText "$MENU_GASMASKFILTER_SPAWNOPTIONS", "Olive"
 	StaticText "$MENU_GASMASKFILTER_STIMPACK_SPAWNTEXT", "White"
-	Slider "$MENU_GASMASKFILTER_SPAWNRATE", "spicy_gasmaskfilter_stimpack_spawn_bias",  0.0, 1000, .01, 3
+	Slider "$MENU_GASMASKFILTER_SPAWNRATE", "spicy_gasmaskfilter_stimpack_spawn_bias", 0.0, 100, .01, 2
 	SafeCommand "$MENU_RESETOPTIONS", "resetcvar spicy_gasmaskfilter_stimpack_spawn_bias"
 	StaticText "$MENU_GASMASKFILTER_HEALTHBONUS_SPAWNTEXT", "White"
-	Slider "$MENU_GASMASKFILTER_SPAWNRATE", "spicy_gasmaskfilter_healthbonus_spawn_bias",  0.0, 1000, .01, 3
+	Slider "$MENU_GASMASKFILTER_SPAWNRATE", "spicy_gasmaskfilter_healthbonus_spawn_bias", 0.0, 100, .01, 2
 	SafeCommand "$MENU_RESETOPTIONS", "resetcvar spicy_gasmaskfilter_healthbonus_spawn_bias"
 	StaticText "$MENU_GASMASKFILTER_ARMORBONUS_SPAWNTEXT", "White"
-	Slider "$MENU_GASMASKFILTER_SPAWNRATE", "spicy_gasmaskfilter_armorbonus_spawn_bias",  0.0, 1000, .01, 3
+	Slider "$MENU_GASMASKFILTER_SPAWNRATE", "spicy_gasmaskfilter_armorbonus_spawn_bias", 0.0, 100, .01, 2
 	SafeCommand "$MENU_RESETOPTIONS", "resetcvar spicy_gasmaskfilter_armorbonus_spawn_bias"
 	StaticText ""
 

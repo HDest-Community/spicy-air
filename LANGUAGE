@@ -115,3 +115,16 @@ TAG_GASMASKFILTER                       = "Air Filter";
 // Pickup Messages
 PICKUP_GASMASK                          = "Picked up a gas mask.";
 PICKUP_GASMASKFILTER                    = "Picked up an air filter.";
+
+
+// Merchant Store Entries
+
+// Gas Mask
+MERCH_CAT_GASMASK                 = "AceCorp";
+MERCH_TAG_GASMASK                 = "Gas Mask";
+MERCH_FLAVOR_GASMASK              = "Found this in an abandoned metro next to some dead guy.";
+
+// Air Filter
+MERCH_CAT_DESPFILTER              = "AceCorp";
+MERCH_TAG_DESPFILTER              = "Air Filter";
+MERCH_FLAVOR_DESPFILTER           = "It won't make the air smell any better, but at least it won't kill you.";

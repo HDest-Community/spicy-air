@@ -16,3 +16,8 @@ addSpawnTableSingleEntry => { "tableName": "BlueArmorReplaces", "name": "Despicy
 addSpawnTableSingleEntry => { "tableName": "StimpackReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_stimpack_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
 addSpawnTableSingleEntry => { "tableName": "HealthBonusReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_healthbonus_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
 addSpawnTableSingleEntry => { "tableName": "ArmorBonusReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_armorbonus_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
+
+// Merchant Store Entries
+newMerchantStoreItem => { "enabled": "#hdm_enable_gasmask", "type": "item", "category": "$MERCH_CAT_GASMASK", "item": "Despicyto", "icon": "DSPGA0", "displayName": "$MERCH_TAG_GASMASK", "basePrice": "120", "flavorText": "$MERCH_FLAVOR_GASMASK" }
+
+newMerchantStoreItem => { "enabled": "#hdm_enable_despfilter", "type": "ammo", "category": "$MERCH_CAT_DESPFILTER", "item": "DespicytoFilter", "icon": "DSPFA0", "displayName": "$MERCH_TAG_DESPFILTER", "basePrice": "50", "flavorText": "$MERCH_FLAVOR_DESPFILTER" }

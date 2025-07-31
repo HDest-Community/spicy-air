@@ -37,3 +37,6 @@ server float spicy_gasmaskfilter_stimpack_spawn_bias    = 0.5333;
 server float spicy_gasmaskfilter_healthbonus_spawn_bias = 0.0;
 server float spicy_gasmaskfilter_armorbonus_spawn_bias  = 0.0;
 server bool spicy_gasmaskfilter_persistent_spawning     = false;
+
+// Merchant Store Filters
+server bool hdm_enable_gasmask                          = true;

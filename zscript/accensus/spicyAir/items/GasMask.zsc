@@ -3,7 +3,7 @@ class Despicyto : HDWeapon {
     override void Tick() {
         Super.Tick();
 
-        if (!_handler) _handler = SpicyAirHandler(EventHandler.Find('SpicyAirHandler'));
+        if (!_handler) _handler = SpicyAirHandler(StaticEventHandler.Find('SpicyAirHandler'));
         if (!_HHFunc) _HHFunc   = ServiceIterator.Find("HHFunc").Next();
 
         let plr = HDPlayerPawn(owner);

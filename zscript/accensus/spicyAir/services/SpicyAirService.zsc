@@ -152,7 +152,7 @@ class SpicyAirService : Service {
 
     static clearscope int GetBreathHoldTimer(HDPlayerPawn plr) {
         
-        let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
+        let handler = SpicyAirHandler(StaticEventHandler.Find("SpicyAirHandler"));
 
         return handler.BreathHoldTimer[plr.PlayerNumber()];
     }
@@ -174,17 +174,20 @@ class SpicyAirService : Service {
     }
 
     static clearscope double GetAirToxicity(HDplayerPawn plr) {
-        let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
+        let handler = SpicyAirHandler(StaticEventHandler.Find("SpicyAirHandler"));
 
         return handler.AirSpiciness[plr.PlayerNumber()];
     }
 
     static clearscope int GetMaxAirToxicity(HDPlayerPawn plr) {
-        return CVar.GetCVar('spicy_max_spiciness').GetInt();
+        let maxSpiciness = CVar.GetCVar('spicy_max_spiciness').GetInt();
+
+        let aggroThreshold = 35 * GetAggroThreshold(plr);
+        return aggroThreshold * maxSpiciness;
     }
 
     static clearscope int GetPlayerToxicity(HDPlayerPawn plr) {
-        let handler = SpicyAirHandler(EventHandler.Find("SpicyAirHandler"));
+        let handler = SpicyAirHandler(StaticEventHandler.Find("SpicyAirHandler"));
 
         return handler.RealSpiciness[plr.PlayerNumber()];
     }

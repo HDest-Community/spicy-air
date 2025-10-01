@@ -27,15 +27,17 @@ SPICYAIR_DAMAGE_THRESHOLD                = "Seconds before air is too spicy: ";
 SPICYAIR_RADSUIT_PROTECTION              = "Radsuit Multiplier to Protection from spicy air: ";
 SPICYAIR_HHELMET_PROTECTION              = "Hideous Helmet Multiplier to protection from spicy air: ";
 
-SPICYAIR_SECRETS_CLEAN                   = "Secret sectors remove spicy air: ";
-SPICYAIR_OUTDOORS_CLEAN                  = "Outdoor sectors remove spicy air: ";
 SPICYAIR_UNDERWATER_CLEAN                = "Being underwater is considered \"clean air\": ";
 
+SPICYAIR_SECRETS_CLEAN                   = "Secret sectors remove spicy air: ";
+SPICYAIR_OUTDOORS_CLEAN                  = "Outdoor sectors remove spicy air: ";
+
 SPICYAIR_MONSTERS_SPICY                  = "Monsters cause spicy air: ";
-SPICYAIR_FRAG_SPICY                      = "Frage causes spicy air: ";
+SPICYAIR_FRAGE_SPICY                     = "Frage causes spicy air: ";
 SPICYAIR_BARRELS_SPICY                   = "Barrels cause spicy air: ";
 SPICYAIR_FRIENDLIES_SPICY                = "Friendly Monsters cause spicy air: ";
 SPICYAIR_BOSSES_SPICY                    = "Boss Monsters cause spicy air: ";
+SPICYAIR_SHIELDS_SPICY                   = "Monsters' Shields cause spicy air: ";
 SPICYAIR_HURTFLOORS_SPICY                = "Damaging Floors cause spicy air: ";
 SPICYAIR_OUTDOORS_SPICY                  = "Outdoor Sectors cause spicy air: ";
 SPICYAIR_SECRETS_SPICY                   = "Secret Sectors cause spicy air: ";

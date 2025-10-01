@@ -11,27 +11,24 @@ OptionMenu "SpicyAirMenu" {
 	StaticText ""
 	StaticText ""
 
-	FlagOption "$SPICYAIR_UNDERWATER_CLEAN", "spicy_sinks", "OnOff", 0, "spicy_enabled"
+	Option "$SPICYAIR_UNDERWATER_CLEAN", "spicy_underwater_clean", "OnOff", "spicy_enabled"
 	StaticText ""
-
-	FlagOption "$SPICYAIR_OUTDOORS_CLEAN", "spicy_sinks", "OnOff", 1, "spicy_enabled"
-	FlagOption "$SPICYAIR_SECRETS_CLEAN", "spicy_sinks", "OnOff", 2, "spicy_enabled"
-	StaticText ""
-	StaticText ""
-
-	FlagOption "$SPICYAIR_MONSTERS_SPICY", "spicy_sources", "OnOff", 0, "spicy_enabled"
-	FlagOption "$SPICYAIR_FRAG_SPICY", "spicy_sources", "OnOff", 1, "spicy_enabled"
-	FlagOption "$SPICYAIR_BARRELS_SPICY", "spicy_sources", "OnOff", 2, "spicy_enabled"
-	FlagOption "$SPICYAIR_FRIENDLIES_SPICY", "spicy_sources", "OnOff", 3, "spicy_enabled"
-	FlagOption "$SPICYAIR_BOSSES_SPICY", "spicy_sources", "OnOff", 4, "spicy_enabled"
-	FlagOption "$SPICYAIR_HURTFLOORS_SPICY", "spicy_sources", "OnOff", 5, "spicy_enabled"
-	FlagOption "$SPICYAIR_OUTDOORS_SPICY", "spicy_sources", "OnOff", 6, "spicy_enabled"
-	FlagOption "$SPICYAIR_SECRETS_SPICY", "spicy_sources", "OnOff", 7, "spicy_enabled"
+	
+	Option "$SPICYAIR_OUTDOORS_CLEAN", "spicy_sinks_outdoors", "OnOff", "spicy_enabled"
+	Option "$SPICYAIR_SECRETS_CLEAN", "spicy_sinks_secrets", "OnOff", "spicy_enabled"
 	StaticText ""
 	StaticText ""
 
-	StaticText "$SPICYAIR_ACTORSECTOR_TEXT"
-	Slider "$SPICYAIR_ACTORSECTOR_RATIO", "spicy_actor_sector_ratio", 0, 100, 0.01, 2, "spicy_enabled"
+	Option "$SPICYAIR_MONSTERS_SPICY", "spicy_sources_monsters", "OnOff", "spicy_enabled"
+	Option "$SPICYAIR_FRAGE_SPICY", "spicy_sources_frage", "OnOff", "spicy_enabled"
+	Option "$SPICYAIR_BARRELS_SPICY", "spicy_sources_barrels", "OnOff", "spicy_enabled"
+	Option "$SPICYAIR_FRIENDLIES_SPICY", "spicy_sources_friendlies", "OnOff", "spicy_enabled"
+	Option "$SPICYAIR_BOSSES_SPICY", "spicy_sources_bosses", "OnOff", "spicy_enabled"
+	Option "$SPICYAIR_SHIELDS_SPICY", "spicy_sources_shields", "OnOff", "spicy_enabled"
+	Option "$SPICYAIR_HURTFLOORS_SPICY", "spicy_sources_hurtfloors", "OnOff", "spicy_enabled"
+	Option "$SPICYAIR_OUTDOORS_SPICY", "spicy_sources_outdoors", "OnOff", "spicy_enabled"
+	Option "$SPICYAIR_SECRETS_SPICY", "spicy_sources_secrets", "OnOff", "spicy_enabled"
+	StaticText ""
 	StaticText ""
 
 	StaticText "$SPICYAIR_DISTCALC_TEXT"
@@ -50,8 +47,9 @@ OptionMenu "SpicyAirMenu" {
 	Slider "$SPICYAIR_RADSUIT_PROTECTION", "spicy_radsuitprotection", 0, 100, 1, 0, "spicy_enabled"
 	Slider "$SPICYAIR_HHELMET_PROTECTION", "spicy_hhelmetprotection", 0, 100, 1, 0, "spicy_enabled"
 	StaticText ""
-	Slider "$SPICYAIR_SOURCE_DISTANCE", "spicy_source_distance", 0.0, 100.0, 0.01, 2, "spicy_enabled"
-	Slider "$SPICYAIR_CLEAN_DISTANCE", "spicy_sink_distance", 0.0, 100.0, 0.01, 2, "spicy_enabled"
+
+	Slider "$SPICYAIR_SOURCE_DISTANCE", "spicy_source_distance", 0.0, 10.0, 0.01, 2, "spicy_enabled"
+	Slider "$SPICYAIR_CLEAN_DISTANCE", "spicy_sink_distance", 0.0, 10.0, 0.01, 2, "spicy_enabled"
 	StaticText ""
 	StaticText ""
 

@@ -1,0 +1,80 @@
+class SpicyAirDummy : IdleDummy abstract {
+
+    name tokenName; property tokenName:tokenName;
+
+    default {
+        health 100;
+    }
+
+    override void postBeginPlay() {
+
+        super.postBeginPlay();
+
+        // If we can't find the handler, quit.
+        let handler = SpicyAirHandler(StaticEventHandler.find('SpicyAirHandler'));
+        if (!handler) {
+            destroy();
+            return;
+        }
+
+        // If we spawned in a blacklisted map, quit.
+        forEach (bl : handler.mapBlacklist) {
+            if (Level.mapName == bl) {
+                destroy();
+                return;
+            }
+        }
+
+        if (!(countInv('SpicyAirSourceToken') || countInv('SpicyAirSinkToken'))) A_GiveInventory(tokenName, spawnHealth());
+    }
+}
+
+class SpicyAirSource : SpicyAirDummy {
+    default {
+        SpicyAirDummy.tokenName 'SpicyAirSourceToken';
+    }
+}
+
+class SpicyAirSink : SpicyAirDummy {
+    default {
+        SpicyAirDummy.tokenName 'SpicyAirSinkToken';
+    }
+}
+
+
+class SpicyAirTrackerToken : Inventory abstract {
+
+    default {
+        +Inventory.UNTOSSABLE;
+    }
+
+    override void Tick() {
+        super.Tick();
+
+        amount = GetAmount();
+    }
+
+    abstract int GetAmount();
+}
+
+class SpicyAirSinkToken : SpicyAirTrackerToken {
+
+    override int GetAmount() {
+        return owner.spawnHealth();
+    }
+}
+
+class SpicyAirSourceToken : SpicyAirTrackerToken {
+
+    protected transient CVar _shieldsSpicySources;
+
+    override void PostBeginPlay() {
+        super.PostBeginPlay();
+
+        if (!_shieldsSpicySources) _shieldsSpicySources = CVar.GetCVar('spicy_sources_shields');
+    }
+
+    override int GetAmount() {
+        return max(1, _shieldsSpicySources.GetBool() ? owner.countInv('HDMagicShield') : owner.spawnHealth());
+    }
+}

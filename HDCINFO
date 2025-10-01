@@ -1,3 +1,99 @@
+// Spicy Air Blacklists
+addSpicyMapBlacklist => { "name": "LOTSAGUN" }
+addSpicyMapBlacklist => { "name": "RANGE" }
+addSpicyMapBlacklist => { "name": "RANGE2" }
+addSpicyMapBlacklist => { "name": "ReloadingRoom" }
+// addSpicyMapBlacklist => { "name": "TEST" }
+
+addSpicyThingBlacklist => { "name": "BarrelGibs" }
+addSpicyThingBlacklist => { "name": "BFGSpark" }
+addSpicyThingBlacklist => { "name": "BloodSplatSilent" }
+addSpicyThingBlacklist => { "name": "BloodTrail" }
+addSpicyThingBlacklist => { "name": "btAdrenaline" }
+addSpicyThingBlacklist => { "name": "CheckPuff" }
+addSpicyThingBlacklist => { "name": "ClusterSpawner" }
+addSpicyThingBlacklist => { "name": "ColonGibs" }
+addSpicyThingBlacklist => { "name": "DecoPusher" }
+addSpicyThingBlacklist => { "name": "DistanceCheckerCeiling" }
+addSpicyThingBlacklist => { "name": "DummySpawner" }
+addSpicyThingBlacklist => { "name": "DynamicLight" }
+addSpicyThingBlacklist => { "name": "FragShard" }
+addSpicyThingBlacklist => { "name": "Gibs" }
+addSpicyThingBlacklist => { "name": "GrenadeSmokeTrail" }
+addSpicyThingBlacklist => { "name": "hasHelmet" }
+addSpicyThingBlacklist => { "name": "HDAIOverride" }
+addSpicyThingBlacklist => { "name": "HDArmourWorn" }
+addSpicyThingBlacklist => { "name": "HDBulletActor" }
+addSpicyThingBlacklist => { "name": "HDBulletPuff" }
+addSpicyThingBlacklist => { "name": "HDDebris" }
+addSpicyThingBlacklist => { "name": "HDExplosion" }
+addSpicyThingBlacklist => { "name": "HDExplosionBoss" }
+addSpicyThingBlacklist => { "name": "HDFireball" }
+addSpicyThingBlacklist => { "name": "HDFireballTail" }
+addSpicyThingBlacklist => { "name": "HDFireDouse" }
+addSpicyThingBlacklist => { "name": "HDFlameRed" }
+addSpicyThingBlacklist => { "name": "HDFlameRedBig" }
+addSpicyThingBlacklist => { "name": "HDFollower" }
+addSpicyThingBlacklist => { "name": "HDLadderSection" }
+addSpicyThingBlacklist => { "name": "HDMagicShield" }
+addSpicyThingBlacklist => { "name": "HDMasterBlood" }
+addSpicyThingBlacklist => { "name": "HDMerchant" }
+addSpicyThingBlacklist => { "name": "HDPickup" }
+addSpicyThingBlacklist => { "name": "HDPlayerCorpse" }
+addSpicyThingBlacklist => { "name": "HDPlayerPawn" }
+addSpicyThingBlacklist => { "name": "HDPuff" }
+addSpicyThingBlacklist => { "name": "HDSmoke" }
+addSpicyThingBlacklist => { "name": "HDSmokeChunk" }
+addSpicyThingBlacklist => { "name": "HDSpent7mm" }
+addSpicyThingBlacklist => { "name": "HDTracerYellow" }
+addSpicyThingBlacklist => { "name": "HDUPK" }
+addSpicyThingBlacklist => { "name": "HDWeapon" }
+addSpicyThingBlacklist => { "name": "HHArmourNerf" }
+addSpicyThingBlacklist => { "name": "HHelmet" }
+addSpicyThingBlacklist => { "name": "HHelmetWorn" }
+addSpicyThingBlacklist => { "name": "HideousBubble" }
+addSpicyThingBlacklist => { "name": "IA_Sound" }
+addSpicyThingBlacklist => { "name": "ImmunityToFire" }
+addSpicyThingBlacklist => { "name": "Inventory" }
+addSpicyThingBlacklist => { "name": "LDLegendaryMonsterChooserHard" }
+addSpicyThingBlacklist => { "name": "MapMarker" }
+addSpicyThingBlacklist => { "name": "ParticleWhiteSmall" }
+addSpicyThingBlacklist => { "name": "REItemGlow" }
+addSpicyThingBlacklist => { "name": "ReverseImpBallTail" }
+addSpicyThingBlacklist => { "name": "RocketSmokeTrail" }
+addSpicyThingBlacklist => { "name": "ScopeCamera" }
+addSpicyThingBlacklist => { "name": "ShieldSpark" }
+addSpicyThingBlacklist => { "name": "SmallBloodPool" }
+addSpicyThingBlacklist => { "name": "SoundEnvironment" }
+addSpicyThingBlacklist => { "name": "SpicyAirSinkToken" }
+addSpicyThingBlacklist => { "name": "SpicyAirSourceToken" }
+addSpicyThingBlacklist => { "name": "TeleFog" }
+addSpicyThingBlacklist => { "name": "TeleportDest" }
+addSpicyThingBlacklist => { "name": "UaS_AI_Handler" }
+addSpicyThingBlacklist => { "name": "UaS_LaserLightModule" }
+addSpicyThingBlacklist => { "name": "UaS_VisWeps_Updater" }
+addSpicyThingBlacklist => { "name": "VisualFighterImp_Updater" }
+addSpicyThingBlacklist => { "name": "VisualHealerImp_Updater" }
+addSpicyThingBlacklist => { "name": "VisualJackboot_Updater" }
+addSpicyThingBlacklist => { "name": "VisualMageImp_Updater" }
+addSpicyThingBlacklist => { "name": "VisualOperator_Updater" }
+addSpicyThingBlacklist => { "name": "VisualStormtrooper_Updater" }
+addSpicyThingBlacklist => { "name": "WallChunk" }
+addSpicyThingBlacklist => { "name": "Weapon" }
+addSpicyThingBlacklist => { "name": "BFGNecroShard", "enabled": "@Not", "enabled.value": "#spicy_sources_frage" }
+addSpicyThingBlacklist => { "name": "HDBarrel", "enabled": "@Not", "enabled.value": "#spicy_sources_barrels" }
+addSpicyThingBlacklist => { "name": "HDMobBase", "enabled": "@Not", "enabled.value": "#spicy_sources_monsters" }
+
+// Spicy Air Sources
+addSpicySource => { "name": "SpicyAirSource" }
+addSpicySource => { "name": "BFGNecroShard", "enabled": "#spicy_sources_frage" }
+addSpicySource => { "name": "HDBarrel", "enabled": "#spicy_sources_barrels" }
+addSpicySource => { "name": "HDMobBase", "enabled": "#spicy_sources_monsters" }
+
+// Spicy Air Sinks
+addSpicySink => { "name": "SpicyAirSink" }
+addSpicySink => { "name": "PlantBit" }
+
 // Backpack Spawn Pool Filters
 addBPSpawnPoolFilter => { "name": "Despicyto", "allowed": "#spicy_gasmask_allowBackpacks" }
 addBPSpawnPoolFilter => { "name": "DespicytoFilter", "allowed": "#spicy_gasmaskfilter_allowBackpacks" }
@@ -16,6 +112,26 @@ addSpawnTableSingleEntry => { "tableName": "BlueArmorReplaces", "name": "Despicy
 addSpawnTableSingleEntry => { "tableName": "StimpackReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_stimpack_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
 addSpawnTableSingleEntry => { "tableName": "HealthBonusReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_healthbonus_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
 addSpawnTableSingleEntry => { "tableName": "ArmorBonusReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_armorbonus_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
+
+// Spicy Air Source Sector Spawn Entries
+newSpawnTable => { "spawnName": "HurtfloorSectorSpawner", "tableName": "SpicyAir.HurtfloorSectorSources", "replaces": "false" }
+addSpawnTableSingleEntry => { "tableName": "SpicyAir.HurtfloorSectorSources", "name": "SpicyAirSource", "replaces": "false", "enabled": "#spicy_sources_hurtfloors" }
+
+newSpawnTable => { "spawnName": "OutdoorSectorSpawner", "tableName": "SpicyAir.OutdoorSectorSources", "replaces": "false" }
+addSpawnTableSingleEntry => { "tableName": "SpicyAir.OutdoorSectorSources", "name": "SpicyAirSource", "replaces": "false", "enabled": "#spicy_sources_outdoors" }
+
+newSpawnTable => { "spawnName": "SecretSectorSpawner", "tableName": "SpicyAir.SecretSectorSources", "replaces": "false" }
+addSpawnTableSingleEntry => { "tableName": "SpicyAir.SecretSectorSources", "name": "SpicyAirSource", "replaces": "false", "enabled": "#spicy_sources_secrets" }
+
+// Spicy Air Sink Sector Spawn Entries
+// newSpawnTable => { "spawnName": "HurtfloorSectorSpawner", "tableName": "SpicyAir.HurtfloorSectorSinks", "replaces": "false" }
+// addSpawnTableSingleEntry => { "tableName": "SpicyAir.HurtfloorSectorSinks", "name": "SpicyAirSink", "replaces": "false", "enabled": "#spicy_sinks_hurtfloors" }
+
+newSpawnTable => { "spawnName": "OutdoorSectorSpawner", "tableName": "SpicyAir.OutdoorSectorSinks", "replaces": "false" }
+addSpawnTableSingleEntry => { "tableName": "SpicyAir.OutdoorSectorSinks", "name": "SpicyAirSink", "replaces": "false", "enabled": "#spicy_sinks_outdoors" }
+
+newSpawnTable => { "spawnName": "SecretSectorSpawner", "tableName": "SpicyAir.SecretSectorSinks", "replaces": "false" }
+addSpawnTableSingleEntry => { "tableName": "SpicyAir.SecretSectorSinks", "name": "SpicyAirSink", "replaces": "false", "enabled": "#spicy_sinks_secrets" }
 
 // Merchant Store Entries
 newMerchantStoreItem => { "enabled": "#hdm_enable_gasmask", "type": "item", "category": "$MERCH_CAT_GASMASK", "item": "Despicyto", "icon": "DSPGA0", "displayName": "$MERCH_TAG_GASMASK", "basePrice": "120", "flavorText": "$MERCH_FLAVOR_GASMASK" }

@@ -77,16 +77,36 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
     override void processCommand(HDCoreCommand cmd) {
         
         switch (cmd.command) {
+            case 'addSpicyMapBlacklist': {
+                let name = cmd.getNameParam("name");
+
+                if (name && mapBlacklist.find(name) == mapBlacklist.size()) mapBlacklist.push(name);
+                break;
+            }
+            case 'removeSpicyMapBlacklist': {
+                let name = cmd.getNameParam("name");
+
+                if (name && mapBlacklist.find(name) < mapBlacklist.size()) mapBlacklist.push(mapBlacklist.find(name));
+                break;
+            }
+            case 'clearSpicyMapBlacklist': {
+                mapBlacklist.clear();
+                break;
+            }
             case 'addSpicyThingBlacklist': {
                 let name = cmd.getNameParam("name");
 
                 if (name && thingBlacklist.find(name) == thingBlacklist.size()) thingBlacklist.push(name);
                 break;
             }
-            case 'addSpicyMapBlacklist': {
+            case 'removeSpicyThingBlacklist': {
                 let name = cmd.getNameParam("name");
 
-                if (name && mapBlacklist.find(name) == mapBlacklist.size()) mapBlacklist.push(name);
+                if (name && thingBlacklist.find(name) < thingBlacklist.size()) thingBlacklist.delete(thingBlacklist.find(name));
+                break;
+            }
+            case 'clearSpicyThingBlacklist': {
+                thingBlacklist.clear();
                 break;
             }
             case 'addSpicySource': {

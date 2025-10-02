@@ -75,6 +75,6 @@ class SpicyAirSourceToken : SpicyAirTrackerToken {
     }
 
     override int GetAmount() {
-        return max(1, _shieldsSpicySources.GetBool() ? owner.countInv('HDMagicShield') : owner.spawnHealth());
+        return max(1, (_shieldsSpicySources && _shieldsSpicySources.GetBool()) ? owner.countInv('HDMagicShield') : owner.spawnHealth());
     }
 }

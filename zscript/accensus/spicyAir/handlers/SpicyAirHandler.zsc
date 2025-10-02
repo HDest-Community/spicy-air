@@ -86,7 +86,7 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
             case 'removeSpicyMapBlacklist': {
                 let name = cmd.getNameParam("name");
 
-                if (name && mapBlacklist.find(name) < mapBlacklist.size()) mapBlacklist.push(mapBlacklist.find(name));
+                if (name && mapBlacklist.find(name) < mapBlacklist.size()) mapBlacklist.delete(mapBlacklist.find(name));
                 break;
             }
             case 'clearSpicyMapBlacklist': {

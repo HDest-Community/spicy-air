@@ -3,7 +3,6 @@ addSpicyMapBlacklist => { "name": "LOTSAGUN" }
 addSpicyMapBlacklist => { "name": "RANGE" }
 addSpicyMapBlacklist => { "name": "RANGE2" }
 addSpicyMapBlacklist => { "name": "ReloadingRoom" }
-// addSpicyMapBlacklist => { "name": "TEST" }
 
 addSpicyThingBlacklist => { "name": "BarrelGibs" }
 addSpicyThingBlacklist => { "name": "BFGSpark" }

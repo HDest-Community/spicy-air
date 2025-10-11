@@ -114,25 +114,15 @@ addSpawnTableSingleEntry => { "tableName": "StimpackReplaces", "name": "Despicyt
 addSpawnTableSingleEntry => { "tableName": "HealthBonusReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_healthbonus_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
 addSpawnTableSingleEntry => { "tableName": "ArmorBonusReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_armorbonus_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
 
-// Spicy Air Source Sector Spawn Entries
-newSpawnTable => { "spawnName": "HurtfloorSectorSpawner", "tableName": "SpicyAir.HurtfloorSectorSources", "replaces": "false" }
-addSpawnTableSingleEntry => { "tableName": "SpicyAir.HurtfloorSectorSources", "name": "SpicyAirSource", "replaces": "false", "enabled": "#spicy_sources_hurtfloors" }
+// Spicy Air Tracker Sector Spawn Entries
+// addSpawnTableSingleEntry => { "tableName": "HurtfloorSectorSpawnerReplaces", "name": "SpicyAirSink", "replaces": "true", "enabled": "#spicy_sinks_hurtfloors" }
+addSpawnTableSingleEntry => { "tableName": "HurtfloorSectorSpawnerReplaces", "name": "SpicyAirSource", "replaces": "true", "enabled": "#spicy_sources_hurtfloors" }
 
-newSpawnTable => { "spawnName": "OutdoorSectorSpawner", "tableName": "SpicyAir.OutdoorSectorSources", "replaces": "false" }
-addSpawnTableSingleEntry => { "tableName": "SpicyAir.OutdoorSectorSources", "name": "SpicyAirSource", "replaces": "false", "enabled": "#spicy_sources_outdoors" }
+addSpawnTableSingleEntry => { "tableName": "OutdoorSectorSpawnerReplaces", "name": "SpicyAirSink", "replaces": "true", "enabled": "#spicy_sinks_outdoors" }
+addSpawnTableSingleEntry => { "tableName": "OutdoorSectorSpawnerReplaces", "name": "SpicyAirSource", "replaces": "true", "enabled": "#spicy_sources_outdoors" }
 
-newSpawnTable => { "spawnName": "SecretSectorSpawner", "tableName": "SpicyAir.SecretSectorSources", "replaces": "false" }
-addSpawnTableSingleEntry => { "tableName": "SpicyAir.SecretSectorSources", "name": "SpicyAirSource", "replaces": "false", "enabled": "#spicy_sources_secrets" }
-
-// Spicy Air Sink Sector Spawn Entries
-// newSpawnTable => { "spawnName": "HurtfloorSectorSpawner", "tableName": "SpicyAir.HurtfloorSectorSinks", "replaces": "false" }
-// addSpawnTableSingleEntry => { "tableName": "SpicyAir.HurtfloorSectorSinks", "name": "SpicyAirSink", "replaces": "false", "enabled": "#spicy_sinks_hurtfloors" }
-
-newSpawnTable => { "spawnName": "OutdoorSectorSpawner", "tableName": "SpicyAir.OutdoorSectorSinks", "replaces": "false" }
-addSpawnTableSingleEntry => { "tableName": "SpicyAir.OutdoorSectorSinks", "name": "SpicyAirSink", "replaces": "false", "enabled": "#spicy_sinks_outdoors" }
-
-newSpawnTable => { "spawnName": "SecretSectorSpawner", "tableName": "SpicyAir.SecretSectorSinks", "replaces": "false" }
-addSpawnTableSingleEntry => { "tableName": "SpicyAir.SecretSectorSinks", "name": "SpicyAirSink", "replaces": "false", "enabled": "#spicy_sinks_secrets" }
+addSpawnTableSingleEntry => { "tableName": "SecretSectorSpawnerReplaces", "name": "SpicyAirSink", "replaces": "true", "enabled": "#spicy_sinks_secrets" }
+addSpawnTableSingleEntry => { "tableName": "SecretSectorSpawnerReplaces", "name": "SpicyAirSource", "replaces": "true", "enabled": "#spicy_sources_secrets" }
 
 // Merchant Store Entries
 newMerchantStoreItem => { "enabled": "#hdm_enable_gasmask", "type": "item", "category": "$MERCH_CAT_GASMASK", "item": "Despicyto", "icon": "DSPGA0", "displayName": "$MERCH_TAG_GASMASK", "basePrice": "120", "flavorText": "$MERCH_FLAVOR_GASMASK" }

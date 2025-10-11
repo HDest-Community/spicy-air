@@ -15,6 +15,7 @@ addSpicyThingBlacklist => { "name": "ColonGibs" }
 addSpicyThingBlacklist => { "name": "DecoPusher" }
 addSpicyThingBlacklist => { "name": "DistanceCheckerCeiling" }
 addSpicyThingBlacklist => { "name": "DummySpawner" }
+addSpicyThingBlacklist => { "name": "DustCloud" }
 addSpicyThingBlacklist => { "name": "DynamicLight" }
 addSpicyThingBlacklist => { "name": "FragShard" }
 addSpicyThingBlacklist => { "name": "Gibs" }

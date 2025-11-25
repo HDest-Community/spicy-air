@@ -17,6 +17,7 @@ addSpicyThingBlacklist => { "name": "DistanceCheckerCeiling" }
 addSpicyThingBlacklist => { "name": "DummySpawner" }
 addSpicyThingBlacklist => { "name": "DustCloud" }
 addSpicyThingBlacklist => { "name": "DynamicLight" }
+addSpicyThingBlacklist => { "name": "FlemoidMonster" }
 addSpicyThingBlacklist => { "name": "FragShard" }
 addSpicyThingBlacklist => { "name": "Gibs" }
 addSpicyThingBlacklist => { "name": "GrenadeSmokeTrail" }

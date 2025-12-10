@@ -5,6 +5,8 @@ const HDLD_GASMASKFILTER = "dsf";
 
 #include "zscript/accensus/spicyAir/sources/SpicyAirTrackers.zsc"
 
+#include "zscript/accensus/spicyAir/SpicyAirDrug.zsc"
+
 #include "zscript/accensus/spicyAir/items/GasMask.zsc"
 #include "zscript/accensus/spicyAir/items/GasMaskFilter.zsc"
 

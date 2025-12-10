@@ -1,6 +1,6 @@
 server bool spicy_enabled                               = true;
 
-server float spicy_los_factor                           = 50;
+server float spicy_los_factor                           = 33;
 
 server int spicy_dist_calc                              = 3;
 
@@ -8,7 +8,7 @@ server int spicy_damage_type                            = 0;
 server int spicy_max_spiciness                          = 6;
 
 server int spicy_damagethreshold                        = 5;
-server int spicy_radsuitprotection                      = 30;
+server int spicy_radsuitprotection                      = 50;
 server int spicy_hhelmetprotection                      = 10;
 
 server bool spicy_underwater_clean                      = true;
@@ -21,13 +21,13 @@ server bool spicy_sources_frage                         = true;
 server bool spicy_sources_barrels                       = true;
 server bool spicy_sources_friendlies                    = false;
 server bool spicy_sources_bosses                        = true;
-server bool spicy_sources_shields                       = false;
+server bool spicy_sources_shields                       = true;
 server bool spicy_sources_hurtfloors                    = true;
 server bool spicy_sources_outdoors                      = false;
 server bool spicy_sources_secrets                       = false;
 
-server float spicy_sink_distance                        = 1.0;
-server float spicy_source_distance                      = 1.0;
+server float spicy_sink_distance                        = 3.0;
+server float spicy_source_distance                      = 3.0;
 
 user float spicy_breathingvolume                        = 0.5;
 user float spicy_breathalpha                            = 0.6;

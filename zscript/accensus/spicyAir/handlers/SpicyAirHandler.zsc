@@ -20,6 +20,7 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
 
     private transient Service _HHFunc;
     private transient Service _RespService;
+    private transient Service _SpicyService;
 
     private transient CVar _enabled;
 
@@ -48,6 +49,7 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
     override void beforeProcessCommands() {
         if (!_HHFunc) _HHFunc                                 = ServiceIterator.Find("HHFunc").Next();
         if (!_RespService) _RespService                       = ServiceIterator.Find("UaS_RespiratorStatus").Next();
+        if (!_SpicyService) _SpicyService                     = ServiceIterator.Find("SpicyAirService").Next();
 
         if (!_enabled) _enabled                               = CVar.GetCVar('spicy_enabled');
 
@@ -258,6 +260,7 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
 
             // If the player has godmode on, clear their spiciness and skip.
             if (plr.player.cheats&(CF_GODMODE2|CF_GODMODE)) {
+                plr.A_TakeInventory('SpicyAirDrug');
                 RealSpiciness[i] = 0;
                 continue;
             }
@@ -268,45 +271,35 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
             // - They are not submerged underwater, or if they are, they're wearing a UaS Respirator and it has air in it
             // - They are wearing a gas mask
             // - They are wearing a Hideous Helmet and it provides protection against spicy air
+            // TODO: add manual breath holding?
             let mask = Despicyto(plr.FindInventory('Despicyto'));
             bool hasHelmet = _HHFunc && _HHFunc.GetInt("GetShowHUD", objectArg: plr);
             bool wearingRespirator = _RespService && _RespService.GetInt("IsWorn", objectArg: plr);
             bool respiratorAir = _RespService && _RespService.GetInt("AirRemaining", objectArg: plr);
             int bDelay = GetBreathDelay(plr);
-            if (
-                (plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0))
-                || (mask && mask.Worn)
-                || (hasHelmet && _hhelmetProtection.GetInt() > 0)
-            ) {
+            bool isBreathing = true;
+
+            if (plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0)) {
                 BreathIndex[i]++;
 
                 if (BreathIndex[i] >= bDelay) BreathIndex[i] = -bDelay;
             } else {
+                isBreathing = false;
                 BreathIndex[i] = 0;
             }
 
             // Display Visual/Auditory Feedback of breathing
+            // TODO: Refactor into commands to define what constitutes "covered face/breathing"
             if ((mask && mask.Worn) || (hasHelmet && _hhelmetProtection.GetInt() > 0)) {
                 int bSpeed = GetBreathSpeed(plr);
 
                 double vol = clamp(CVar.GetCVar('spicy_breathingvolume', players[i]).GetFloat(), 0, 1);
                 
-                if (BreathIndex[i] == 0 && vol > 0) {
-                    plr.A_StartSound("SpicyAir/Mask/BreatheOut"..bSpeed, 35, CHANF_LOCAL, vol, pitch: frandom[breathrand](0.97, 1.0));
-                }
-
-                if (BreathIndex[i] == -bDelay) {
-
-                    if (vol > 0) {
-                        plr.A_StartSound("SpicyAir/Mask/BreatheIn"..bSpeed, 36, CHANF_LOCAL, vol, pitch: frandom[breathrand](0.97, 1.0));
-                    }
-
-                    if (mask && mask.Worn) {
-                        if (mask.weaponStatus[DEProp_FilterLife1] > 0) {
-                            mask.weaponStatus[DEProp_FilterLife1]--;
-                        } else if (mask.weaponStatus[DEProp_FilterLife2] > 0) {
-                            mask.weaponStatus[DEProp_FilterLife2]--;
-                        }
+                if (vol > 0) {
+                    if (BreathIndex[i] == 0) {
+                        plr.A_StartSound("SpicyAir/Mask/BreatheOut"..bSpeed, 35, CHANF_LOCAL, vol, pitch: frandom[spicyrand](0.97, 1.0));
+                    } else if (BreathIndex[i] == -bDelay) {
+                        plr.A_StartSound("SpicyAir/Mask/BreatheIn"..bSpeed, 36, CHANF_LOCAL, vol, pitch: frandom[spicyrand](0.97, 1.0));
                     }
                 }
             }
@@ -318,60 +311,56 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
             // - If the air being breathed in is not clean nor filtered, if the player has breath left to hold, reduce timer; otherwise add spiciness while the player is breathing in
             // - If the player has gathered enough spiciness in their system, increase their spicy level
             // - As long as the player still has some amount of spiciness levels in their system, every time the timer ticks, add aggro based on their spicy level
-            let aggroTime = 35 * GetAggroThreshold(plr);
 
-            let maxSpiciness = _maxSpiciness.GetInt();
-            let rawSpiciness = GetAirSpiciness(plr);
-            let spiciness = clamp(round(rawSpiciness), -maxSpiciness, maxSpiciness);
+            // Store the raw air spiciness for service to provide.
+            AirSpiciness[i] = !(IsAirClean(plr) || (mask && mask.worn)) ? GetAirSpiciness(plr) : 0.0;
 
-            // Store the raw spiciness for service to provide.
-            AirSpiciness[i] = rawSpiciness;
+            if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Air Spiciness: "..AirSpiciness[i]);
 
-            if (IsAirClean(plr) || AirSpiciness[i] <= 0.0) {
+            // adjust the player's raw spiciness level.
+            if (
+                // TODO: Add check for manually holding breath?
+                (plr.waterLevel < 3 || (wearingRespirator && respiratorAir > 0)) && isBreathing
+            ) {
+                // TODO: Enhance to track UaS Respirator being filled in spicy air,
+                //   later breathing from same respirator should give roughly percent spiciness from last refill
+                let toAdd = frandom[spicyrand](0.01, 0.1) * abs(AirSpiciness[i] - RealSpiciness[i]);
+                let filterBonus = _spicyService.getDouble("GetFilterBonus", objectArg: plr);
 
-                if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Air is clean! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
+                if (BreathIndex[i] == -bDelay || BreathIndex[i] == 0) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Breathing "..(BreathIndex[i] < 0 ? "in" : "out").." "..toAdd.."x Spiciness");
 
-                if (BreathIndex[i] > 0) RealSpiciness[i] -= max(RealSpiciness[i] / aggroTime, abs(spiciness));
-                else if (BreathIndex[i] < 0) BreathHoldTimer[i] = clamp(BreathHoldTimer[i] + ((plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0)) ? 5 : -1), 0, Level.AirSupply * plr.AirCapacity);
-            } else if (IsAirFiltered(plr)) {
+                RealSpiciness[i] += BreathIndex[i] < 0 ? (toAdd * clamp(1.0 - filterBonus, 0.0, 1.0)) : -toAdd;
 
-                if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Air is filtered! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
-                
-                if (BreathIndex[i] > 0) RealSpiciness[i] -= min(RealSpiciness[i] / aggroTime, abs(spiciness));
-                BreathHoldTimer[i] = clamp(BreathHoldTimer[i] + 3, 0, Level.AirSupply * plr.AirCapacity);
-            } else if (BreathHoldTimer[i] > 0) {
+                if (BreathIndex[i] < 0 && !random[spicyrand](0, abs(BreathIndex[i]))) {
 
-                if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Air is spicy! "..(BreathHoldTimer[i] / 35).."s"..", "..RealSpiciness[i]);
-
-                BreathHoldTimer[i] = clamp(BreathHoldTimer[i] - 1, 0, Level.AirSupply * plr.AirCapacity);
-            } else {
-
-                if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Air is spicy, too spicy! Breathing "..(BreathIndex[i] < 0 ? "in" : "out")..", "..RealSpiciness[i]);
-
-                // If we're breathing in while it's spicier than the player,
-                // or we're breathing out while it's not spicier than the player,
-                // adjust the player's raw spiciness level.
-                if (
-                    (BreathIndex[i] < 0 && AirSpiciness[i] > RealSpiciness[i])
-                    || (BreathIndex[i] > 0 && AirSpiciness[i] < RealSpiciness[i])
-                ) {
-                    // Force increase when breathing in, decrease when breathing out
-                    // RealSpiciness[i] += spiciness;
-                    RealSpiciness[i] += (BreathIndex[i] < 0 ? frandom(1 - (0.1 * maxSpiciness), 1 + (0.1 * maxSpiciness)) : -frandom(0.0001 * (11 - maxSpiciness), 0.001 * (11 - maxSpiciness))) * abs(AirSpiciness[i] - RealSpiciness[i]);
+                    if (mask && mask.Worn) {
+                        // let filterDmg = toAdd
+                        if (mask.weaponStatus[DEProp_FilterLife1] > 0) {
+                            mask.weaponStatus[DEProp_FilterLife1] -= toAdd;
+                        } else if (mask.weaponStatus[DEProp_FilterLife2] > 0) {
+                            mask.weaponStatus[DEProp_FilterLife2] -= toAdd;
+                        }
+                    }
                 }
-
-                // if (BreathIndex[i] < 0 && RealSpiciness[i] <= 0.0 && BreathHoldTimer[i] < (Level.AirSupply * plr.AirCapacity)) BreathHoldTimer[i]++;
             }
 
-            RealSpiciness[i] = clamp(RealSpiciness[i], 0, aggroTime * maxSpiciness);
-            SpicyLevel[i] = clamp(RealSpiciness[i] / aggroTime, 0, maxSpiciness);
+            // Clamp lung spiciness
+            RealSpiciness[i] = clamp(RealSpiciness[i], 0, Level.airSupply * _maxSpiciness.GetInt());
 
-            if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Spiciness Level: "..(RealSpiciness[i] / aggroTime));
+            if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Lung Spiciness: "..RealSpiciness[i]);
+            
+            // Convert spiciness in lungs to SpicyAirDrug on heartbeat
+            let playerSpiciness = plr.countInv('SpicyAirDrug');
+            if (playerSpiciness < RealSpiciness[i] && !plr.beatcount) {
 
-            if (SpicyLevel[i] > 0 && !(Level.time % aggroTime)) {
-                HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Oof ouch, my blood! x"..SpicyLevel[i]);
+                let processed = frandom[spicyrand](0.01, 0.1) * abs(RealSpiciness[i] - playerSpiciness);
 
-                DealSpicyDamage(plr, SpicyLevel[i]);
+                if (processed > 0) {
+                    HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Converting "..processed.."x Spiciness into SpicyAirDrug");
+    
+                    HDF.give(plr, 'SpicyAirDrug', processed);
+                    RealSpiciness[i] -= processed;
+                }
             }
         }
     }
@@ -410,27 +399,21 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
             }
         }
 
-        // Grab the magnitude of the source/sink based on whether we're counting shields or just base HP.
-        // TODO: Move this into tracker tokens
-        let amt = (_shieldsSpicySources.Getbool() && mo.CountInv('HDMagicShield'))
-                    ? mo.CountInv('HDMagicShield')
-                    : mo.SpawnHealth();
-
         // If there's no amount to consider or thing is neither sink nor source, quit.
-        if (amt <= 0 || !(isSink || isSource)) return;
+        if (!(isSink || isSource)) return;
 
         // If the thing has no trackers and is a spicy sink, give it a token.
         if (!(mo.countInv('SpicyAirSourceToken') || mo.countInv('SpicyAirSinkToken')) && isSink) {
-            HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "Giving "..amt.."x Sink Token to "..mo.getClassName().." @"..mo.pos);
+            HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "Giving Sink Token to "..mo.getClassName().." @"..mo.pos);
 
-            mo.A_GiveInventory('SpicyAirSinkToken', max(amt, 1));
+            HDF.give(mo, 'SpicyAirSinkToken');
         }
 
         // If the thing has no trackers and is a spicy source, give it a token.
         if (!(mo.countInv('SpicyAirSourceToken') || mo.countInv('SpicyAirSinkToken')) && isSource) {
-            HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "Giving "..amt.."x Source Token to "..mo.getClassName().." @"..mo.pos);
+            HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "Giving Source Token to "..mo.getClassName().." @"..mo.pos);
 
-            mo.A_GiveInventory('SpicyAirSourceToken', max(amt, 1));
+            HDF.give(mo, 'SpicyAirSourceToken');
         }
     }
 
@@ -448,19 +431,22 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
             }
         }
 
-        if (!(Level.time % TICRATE) && cleanLevel) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "Current Level is Clean: "..Level.mapName);
-
-
         bool cleanSector = plr.CurSector.GetUDMFInt('user_nonspicysector') == 1;
-
-        if (!(Level.time % TICRATE) && cleanSector) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "Current Sector is Clean: Special");
-
-
         bool cleanUnderwater = _underwaterClean.GetBool() && plr.WaterLevel >= 3;
 
-        if (!(Level.time % TICRATE) && cleanUnderwater) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "Current Sector is Clean: Underwater");
+        let ret = cleanLevel|cleanSector|cleanUnderwater;
+        
+        if (HDCore.shouldLog('SpicyAir.SpicyAirHandler', LOGGING_DEBUG) && !(Level.time % TICRATE)) {
+            let msg = ret ? "Air is clean because:\n" : "Ait is not clean";
 
-        return cleanLevel|cleanSector|cleanUnderwater;
+            if (cleanLevel) msg = msg.." * Current Level is Clean: "..Level.mapName.."\n";
+            if (cleanSector) msg = msg.." * Current Sector is Clean: Special\n";
+            if (cleanUnderwater) msg = msg.." * Current Sector is Clean: Underwater";
+            
+            HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, msg);
+        }
+
+        return ret;
     }
 
     bool IsAirFiltered(HDPlayerPawn plr) {
@@ -481,13 +467,18 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
 
         double activeSinks = 0.0;
         double activeSources = 0.0;
+        int countSinks = 0;
+        int countSources = 0;
 
         int losFactor = _losFactor.GetInt();
 
+		// let iter = BlockThingsIterator.create(plr, 1024);
         let iter = ThinkerIterator.create('Actor');
 
+        if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_TRACE, "BEGIN AIR SPICINESS CALCULATION:");
         Actor mo;
         while (mo = Actor(iter.next())) {
+            // Actor mo = iter.thing;
 
             let blacklisted = false;
             forEach (bl : thingBlacklist) {
@@ -499,6 +490,9 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
             
             // If the thing is blacklisted, skip.
             if (blacklisted) continue;
+
+            // If the thing has an invalid pos, skip.
+            if (mo.pos == (-Double.NaN, -Double.NaN, -Double.NaN)) continue;
 
             // If thing is dead, skip.
             if (mo.health <= 0) continue;
@@ -522,147 +516,71 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
             if (!(sourceAmt || sinkAmt)) continue;
 
             let canSeePlayer = mo.CheckSight(plr);
-            let dist = max(1, plr.Distance3D(mo));
+            let dist = max(Double.EPSILON, plr.Distance3D(mo));
 
             if (canSeePlayer || losFactor > 0) {
                 if (sinkAmt) {
-                    HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_TRACE, "Adding Spicy Air Sink: "..mo.getClassName().." @ "..mo.pos);
-
-                    activeSinks += calcDist(
+                    let toAdd = calcDist(
                         sinkAmt
                             * ((mo.scale.x + mo.scale.y) / 2.0)
                             * (canSeePlayer ? 1.0 : (losFactor / 100.0)),
-                        _spicySinkDistance.GetFloat() * HDCONST_ONEMETRE,
+                        _spicySinkDistance.GetFloat(),
                         dist
                     );
+
+                    if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_TRACE, "Adding Spicy Air Sink: "..mo.getClassName().." @ "..mo.pos..", -"..toAdd.."x spiciness");
+
+                    activeSinks = max(toAdd, activeSinks);
+                    countSinks++;
                 } else if (sourceAmt) {
-                    HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_TRACE, "Adding Spicy Air Source: "..mo.getClassName().." @ "..mo.pos);
-                    
-                    activeSources += calcDist(
+                    let toAdd = calcDist(
                         sourceAmt
                             * ((mo.scale.x + mo.scale.y) / 2.0)
                             * (canSeePlayer ? 1.0 : (losFactor / 100.0)),
-                        _spicySourceDistance.GetFloat() * HDCONST_ONEMETRE,
+                        _spicySourceDistance.GetFloat(),
                         dist
                     );
+
+                    if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_TRACE, "Adding Spicy Air Source: "..mo.getClassName().." @ "..mo.pos..", +"..toAdd.."x spiciness");
+                    
+                    activeSources = max(toAdd, activeSources);
+                    countSources++;
                 }
             }
         }
+        if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_TRACE, "END AIR SPICINESS CALCULATION:");
+
+        let airSpiciness = activeSources - activeSinks; // (countSources > 0 ? activeSources / countSources : 0) - (countSinks > 0 ? activeSinks / countSinks : 0);
 
         if (!(Level.time % TICRATE)) HDCore.log(
             'SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "Current Spicy Air Status:\n"
             .." * Spicy Sources: "..activeSources.."\n"
             .." * Spicy Sinks: "..activeSinks.."\n"
-            .." * Air Spiciness: "..(activeSources - activeSinks)
+            .." * Air Spiciness: "..airSpiciness
         );
 
-        return activeSources - activeSinks;
-    }
-
-    int GetAggroThreshold(HDPlayerPawn plr) {
-        let totalBonus = 0.0;
-        
-        if (plr.FindInventory('WornRadsuit')) {
-            totalBonus += _radsuitProtection.GetInt();
-        }
-        
-        if (_HHFunc && _HHFunc.GetInt("GetShowHUD", objectArg: plr)) {
-            totalBonus += _hhelmetProtection.GetInt();
-        }
-        
-        let threshold = _damageThreshold.GetInt();
-        return threshold + (threshold * totalBonus);
+        return airSpiciness;
     }
 
     private double calcDist(double amount, double factor, double dist) {
-        HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_TRACE, "Calculating distance: ("..amount..", "..factor..", "..dist..")...");
+        if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_TRACE, "Calculating distance: ("..amount..", "..factor..", "..dist..")...");
 
         let af = amount * factor;
-        let denom = max(1.0, min(af, dist));
+        let aff = af * factor;
+        let denom = clamp(dist, 1.0, af);
 
         switch (_distCalc.GetInt()) {
             case SADC_INVERSE_SQUARE:
                 return af / (denom * denom);
             case SADC_INVERSE_SQRT:
-                return (af / sqrt(denom)) - sqrt(af);
+                return (af / sqrt(denom)) - sqrt(max(1.0, af));
             case SADC_REVERSE_LOG:
-                return (amount / factor) * max(1.0, log10(max(1.0, factor - dist)));
+                return (amount / factor) * max(0.0, log10(max(1.0, aff - dist)));
             case SADC_REVERSE_SQRT:
-                return (amount / (factor * factor)) * sqrt(af - dist);
+                return (amount / factor) * sqrt(max(0.0, aff - dist)) / sqrt(max(1.0, amount));
             case SADC_LINEAR:
             default:
-                return clamp((af - dist) / max(1.0, factor), 0.0, Double.MAX);
-        }
-    }
-
-    private void DealSpicyDamage(HDPlayerPawn plr, int amount) {
-        plr.A_SetBlend(0xa7b55e, 0.15, 12);
-
-        switch (_damageType.GetInt()) {
-            case SADT_STUN:
-                DealSpicyStun(plr, amount);
-                break;
-            case SADT_FATIGUE:
-                DealSpicyFatigue(plr, amount);
-                break;
-            case SADT_TISSUE:
-                DealSpicyTissueDamage(plr, amount);
-                break;
-            case SADT_BLOOD:
-                DealSpicyBloodLoss(plr, amount);
-                break;
-            case SADT_BURN:
-                DealSpicyBurns(plr, amount);
-                break;
-            case SADT_AGGRO:
-                DealSpicyAggro(plr, amount);
-                break;
-            case SADT_WOUND:
-                DealSpicyWound(plr, amount);
-                break;
-            case SADT_AUTO:
-            default:
-
-                if (amount >= SADT_STUN)    DealSpicyStun(plr, max(1, amount - SADT_STUN));
-                if (amount >= SADT_FATIGUE) DealSpicyFatigue(plr, max(1, amount - SADT_FATIGUE));
-                if (amount >= SADT_TISSUE)  DealSpicyTissueDamage(plr, max(1, amount - SADT_TISSUE));
-                if (amount >= SADT_BLOOD)   DealSpicyBloodLoss(plr, max(1, amount - SADT_BLOOD));
-                if (amount >= SADT_BURN)    DealSpicyBurns(plr, max(1, amount - SADT_BURN));
-                if (amount >= SADT_AGGRO)   DealSpicyAggro(plr, max(1, amount - SADT_AGGRO));
-                if (amount >= SADT_WOUND)   DealSpicyWound(plr, max(1, amount - SADT_WOUND));
-
-                break;
-        }
-    }
-
-    private void DealSpicyStun(HDPlayerPawn plr, int amount) {
-        plr.stunned += 32 << amount;
-    }
-
-    private void DealSpicyFatigue(HDPlayerPawn plr, int amount) {
-        plr.fatigue += 1 << amount;
-    }
-
-    private void DealSpicyTissueDamage(HDPlayerPawn plr, int amount) {
-        plr.oldWoundCount += amount;
-    }
-
-    private void DealSpicyBloodLoss(HDPlayerPawn plr, int amount) {
-        plr.bloodLoss += 8 << amount;
-    }
-
-    private void DealSpicyBurns(HDPlayerPawn plr, int amount) {
-        plr.burnCount += amount;
-    }
-
-    private void DealSpicyAggro(HDPlayerPawn plr, int amount) {
-        plr.aggravatedDamage += amount;
-    }
-
-    private void DealSpicyWound(HDPlayerPawn plr, int amount) {
-        let numWounds = random(1, 1 << amount);
-        for (let i = 0; i < numWounds; i++) {
-            HDBleedingWound.inflict(plr, amount, damageType: 'internal');
+                return clamp((aff - dist) / max(1.0, factor * factor), 0.0, Double.MAX);
         }
     }
 }
@@ -674,15 +592,4 @@ enum SPICY_DISTANCE_CALCS {
     SADC_REVERSE_LOG,
     SADC_REVERSE_SQRT,
     SADC_LINEAR
-}
-
-enum SPICY_DAMAGE_TYPES {
-    SADT_AUTO,
-    SADT_STUN,
-    SADT_FATIGUE,
-    SADT_TISSUE,
-    SADT_BLOOD,
-    SADT_BURN,
-    SADT_AGGRO,
-    SADT_WOUND
 }

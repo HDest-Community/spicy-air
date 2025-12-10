@@ -31,22 +31,39 @@ class SpicyAirService : Service {
         int retVal = 0;
 
         // Requires: objectArg (Actor)
-        if (request == "IsGasMaskWorn") {
-            retVal = IsGasMaskWorn(Despicyto(objectArg));
-        } else if (request == "GetTotalAir") {
-            retVal = GetTotalAir(Despicyto(objectArg));
-        } else if (request == "GetBreathHoldTimer") {
-            retVal = GetBreathHoldTimer(HDPlayerPawn(objectArg));
-        } else if (request == "GetAirToxicity") {
-            retVal = GetAirToxicity(HDPlayerPawn(objectArg));
-        } else if (request == "GetMaxAirToxicity") {
-            retVal = GetMaxAirToxicity(HDPlayerPawn(objectArg));
-        } else if (request == "GetPlayerToxicity") {
-            retVal = GetPlayerToxicity(HDPlayerPawn(objectArg));
-        } else if (request == "GetMaxPlayerToxicity") {
-            retVal = GetMaxPlayerToxicity(HDPlayerPawn(objectArg));
-        } else {
-            Console.PrintF("SpicyAirService: Invalid request "..request.."! Please fix :[");
+        name reqName = request;
+
+        switch (reqName) {
+            case 'IsGasMaskWorn':
+                retVal = IsGasMaskWorn(Despicyto(objectArg));
+                break;
+            case 'GetTotalAir':
+                retVal = GetTotalAir(Despicyto(objectArg));
+                break;
+            case 'GetFilterBonus':
+                retVal = GetFilterBonus(HDPlayerPawn(objectArg));
+                break;
+            case 'GetAggroThreshold':
+                retVal = GetAggroThreshold(HDPlayerPawn(objectArg));
+                break;
+            case 'GetBreathHoldTimer':
+                retVal = GetBreathHoldTimer(HDPlayerPawn(objectArg));
+                break;
+            case 'GetAirToxicity':
+                retVal = GetAirToxicity(HDPlayerPawn(objectArg));
+                break;
+            case 'GetMaxAirToxicity':
+                retVal = GetMaxAirToxicity(HDPlayerPawn(objectArg));
+                break;
+            case 'GetPlayerToxicity':
+                retVal = GetPlayerToxicity(HDPlayerPawn(objectArg));
+                break;
+            case 'GetMaxPlayerToxicity':
+                retVal = GetMaxPlayerToxicity(HDPlayerPawn(objectArg));
+                break;
+            default:
+                HDCore.log('SpicyAir.SpicyAirService', LOGGING_WARN, "Invalid request "..request.."!");
+                break;
         }
 
         return retVal;
@@ -82,22 +99,39 @@ class SpicyAirService : Service {
         double retVal = 0.0;
 
         // Requires: objectArg (Actor)
-        if (request == "IsGasMaskWorn") {
-            retVal = IsGasMaskWorn(Despicyto(objectArg));
-        } else if (request == "GetTotalAir") {
-            retVal = GetTotalAir(Despicyto(objectArg));
-        } else if (request == "GetBreathHoldTimer") {
-            retVal = GetBreathHoldTimer(HDPlayerPawn(objectArg));
-        } else if (request == "GetAirToxicity") {
-            retVal = GetAirToxicity(HDPlayerPawn(objectArg));
-        } else if (request == "GetMaxAirToxicity") {
-            retVal = GetMaxAirToxicity(HDPlayerPawn(objectArg));
-        } else if (request == "GetPlayerToxicity") {
-            retVal = GetPlayerToxicity(HDPlayerPawn(objectArg));
-        } else if (request == "GetMaxPlayerToxicity") {
-            retVal = GetMaxPlayerToxicity(HDPlayerPawn(objectArg));
-        } else {
-            Console.PrintF("SpicyAirService: Invalid request "..request.."! Please fix :[");
+        name reqName = request;
+
+        switch (reqName) {
+            case 'IsGasMaskWorn':
+                retVal = IsGasMaskWorn(Despicyto(objectArg));
+                break;
+            case 'GetTotalAir':
+                retVal = GetTotalAir(Despicyto(objectArg));
+                break;
+            case 'GetFilterBonus':
+                retVal = GetFilterBonus(HDPlayerPawn(objectArg));
+                break;
+            case 'GetAggroThreshold':
+                retVal = GetAggroThreshold(HDPlayerPawn(objectArg));
+                break;
+            case 'GetBreathHoldTimer':
+                retVal = GetBreathHoldTimer(HDPlayerPawn(objectArg));
+                break;
+            case 'GetAirToxicity':
+                retVal = GetAirToxicity(HDPlayerPawn(objectArg));
+                break;
+            case 'GetMaxAirToxicity':
+                retVal = GetMaxAirToxicity(HDPlayerPawn(objectArg));
+                break;
+            case 'GetPlayerToxicity':
+                retVal = GetPlayerToxicity(HDPlayerPawn(objectArg));
+                break;
+            case 'GetMaxPlayerToxicity':
+                retVal = GetMaxPlayerToxicity(HDPlayerPawn(objectArg));
+                break;
+            default:
+                HDCore.log('SpicyAir.SpicyAirService', LOGGING_WARN, "Invalid request "..request.."!");
+                break;
         }
 
         return retVal;
@@ -182,41 +216,35 @@ class SpicyAirService : Service {
     static clearscope int GetMaxAirToxicity(HDPlayerPawn plr) {
         let maxSpiciness = CVar.GetCVar('spicy_max_spiciness').GetInt();
 
-        let aggroThreshold = 35 * GetAggroThreshold(plr);
-        return aggroThreshold * maxSpiciness;
+        return Level.airSupply * maxSpiciness;
     }
 
     static clearscope int GetPlayerToxicity(HDPlayerPawn plr) {
-        let handler = SpicyAirHandler(StaticEventHandler.Find("SpicyAirHandler"));
-
-        return handler.RealSpiciness[plr.PlayerNumber()];
+        return plr.countInv('SpicyAirDrug');
     }
 
     static clearscope int GetMaxPlayerToxicity(HDPlayerPawn plr) {
         let maxSpiciness = CVar.GetCVar('spicy_max_spiciness').GetInt();
 
-        let aggroThreshold = 35 * GetAggroThreshold(plr);
+        return Level.airSupply * maxSpiciness;
+    }
 
-        return aggroThreshold * maxSpiciness;
+    static clearscope double GetFilterBonus(HDPlayerPawn plr) {
+        let totalBonus = 0.0;
+        
+        if (HDCore.checkForItem(plr, 'WornRadsuit')) {
+            totalBonus += CVar.GetCVar('spicy_radsuitprotection').GetInt();
+        }
+        
+        if (HDCore.checkForItem(plr 'HHelmetWorn')) {
+            totalBonus += CVar.GetCVar('spicy_hhelmetprotection').GetInt();
+        }
+
+        return totalBonus / 100.0;
     }
 
     static clearscope int GetAggroThreshold(HDPlayerPawn plr) {
-
-        let totalBonus = 0.0;
-        
-        if (plr.FindInventory('WornRadsuit')) {
-            let radsuitProtection = CVar.GetCVar('spicy_radsuitprotection');
-
-            totalBonus += radsuitProtection.GetInt();
-        }
-        
-        if (AceCore.CheckForItem(plr, 'HHelmetWorn')) {
-            let hhelmetProtection = CVar.GetCVar('spicy_hhelmetprotection');
-
-            totalBonus += hhelmetProtection.GetInt();
-        }
-        
-        let threshold = CVar.GetCVar('spicy_damagethreshold').GetInt();
-        return threshold + (threshold * totalBonus);
+        let threshold = Level.airSupply;
+        return threshold + (threshold * GetFilterBonus(plr));
     }
 }

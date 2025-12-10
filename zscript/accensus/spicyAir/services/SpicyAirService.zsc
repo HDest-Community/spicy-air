@@ -236,7 +236,7 @@ class SpicyAirService : Service {
             totalBonus += CVar.GetCVar('spicy_radsuitprotection').GetInt();
         }
         
-        if (HDCore.checkForItem(plr 'HHelmetWorn')) {
+        if (HDCore.checkForItem(plr, 'HHelmetWorn')) {
             totalBonus += CVar.GetCVar('spicy_hhelmetprotection').GetInt();
         }
 

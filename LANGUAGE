@@ -19,6 +19,7 @@ SPICYAIR_LOS_REQUIRED                    = "Line of Sight Required!";
 
 SPICYAIR_DAMAGE_TYPE                     = "Spicy Air Deals Damage in the form of: ";
 SPICYAIR_MAX_SPICINESS                   = "Maximum Spiciness Level: ";
+SPICYAIR_PARTICLE_MULT                   = "Spicy Particle Multiplier: ";
 
 SPICYAIR_SOURCE_DISTANCE                 = "Spicy Source Distance Multiplier: ";
 SPICYAIR_CLEAN_DISTANCE                  = "Clean Source Distance Multiplier: ";

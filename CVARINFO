@@ -6,6 +6,7 @@ server int spicy_dist_calc                              = 3;
 
 server int spicy_damage_type                            = 0;
 server int spicy_max_spiciness                          = 6;
+server float spicy_particle_mult                        = 1.0;
 
 server int spicy_damagethreshold                        = 5;
 server int spicy_radsuitprotection                      = 50;

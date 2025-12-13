@@ -66,11 +66,19 @@ class SpicyAirSinkToken : SpicyAirTrackerToken {
 
 class SpicyAirSourceToken : SpicyAirTrackerToken {
 
+    protected transient CVar _enabled;
+    protected transient CVar _particleMult;
+    protected transient CVar _distanceMult;
+    protected transient CVar _maxSpiciness;
     protected transient CVar _shieldsSpicySources;
 
     override void PostBeginPlay() {
         super.PostBeginPlay();
 
+        if (!_enabled) _enabled                         = CVar.GetCVar('spicy_enabled');
+        if (!_particleMult) _particleMult               = CVar.GetCVar('spicy_particle_mult');
+        if (!_distanceMult) _distanceMult               = CVar.GetCVar('spicy_source_distance');
+        if (!_maxSpiciness) _maxSpiciness               = CVar.GetCVar('spicy_max_spiciness');
         if (!_shieldsSpicySources) _shieldsSpicySources = CVar.GetCVar('spicy_sources_shields');
     }
 
@@ -80,5 +88,53 @@ class SpicyAirSourceToken : SpicyAirTrackerToken {
         if (owner is 'HDMobBase' && HDMobBase(owner).maxshields > 0 && _shieldsSpicySources && _shieldsSpicySources.GetBool()) return owner.countInv('HDMagicShield');
 
         return owner.spawnHealth();
+    }
+
+    override void Tick() {
+        super.Tick();
+
+        // If Spicy Air is currently disabled, don't spawn VFX particles
+        if (!(_enabled &&_enabled.GetBool())) return;
+
+        // If owner is dead, don't spawn VFX particles
+        if (HDMath.isDead(owner)) return;
+
+        double maxSpiciness = _maxSpiciness ? _maxSpiciness.GetInt() : 0.0;
+        double distanceMult = _distanceMult ? _distanceMult.GetFloat() : 0.0;
+        double ratio = double(amount * TICRATE / max(1, Level.airSupply));
+        if (maxSpiciness > 0 && frandom[spicyrand](0.0, 1.0) < clamp(ratio, 0.0, 1.0)) {
+
+            let particleCount = ratio * maxSpiciness * (_particleMult ? _particleMult.GetFloat() : 1.0);
+            for (let i = 0; i < particleCount; i++) {
+
+                double vx = (owner.vel.x * cos(owner.angle) + owner.vel.y * sin(owner.angle)) * 35;
+                double vy = (owner.vel.x * sin(owner.angle) + owner.vel.y * cos(owner.angle)) * 35;
+                double vz = owner.vel.z * 35;
+
+                let dist  = HDCONST_ONEMETRE * maxSpiciness * distanceMult;
+                Vector3 pos = owner.pos + (
+                    vx + (frandom[spicyrand](-dist, dist)),
+                    vy + (frandom[spicyrand](-dist, dist)),
+                    vz + (frandom[spicyrand](-dist, dist))
+                );
+    
+                if (!Level.isPointInLevel(pos)) return;
+    
+                let lifetime = random[spicyrand](27, 88) * 2.0;
+                let vel = (frandom[spicyrand](-0.4, 0.4), frandom[spicyrand](-0.4, 0.4), frandom[spicyrand](-0.4, 0.4));
+                let accel = ((frandom[spicyrand](-0.4, 0.4), frandom[spicyrand](-0.4, 0.4), frandom[spicyrand](-0.4, 0.4)) - vel) / lifetime;
+    
+                HDF.Particle(
+                    owner,
+                    0xa7b55e,
+                    pos,
+                    lifetime: lifetime,
+                    size: 2.0,
+                    vel: vel,
+                    fullBright: true,
+                    accel: accel
+                );
+            }
+        }
     }
 }

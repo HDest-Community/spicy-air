@@ -96,29 +96,42 @@ class SpicyAirSourceToken : SpicyAirTrackerToken {
         // If Spicy Air is currently disabled, don't spawn VFX particles
         if (!(_enabled &&_enabled.GetBool())) return;
 
+        let maxSpiciness = _maxSpiciness ? _maxSpiciness.GetInt() : 0;
+
+        // If Max Spiciness is below valid amount, don't spawn VFX particles.
+        if (maxSpiciness <= 0) return;
+
+        let particleMult = _particleMult ? _particleMult.GetFloat() : 0.0;
+
+        // If Particle Multiplier is below valid amount, don't spawn VFX particles.
+        if (particleMult <= 0.0) return;
+
+        let distanceMult = _distanceMult ? _distanceMult.GetFloat() : 0.0;
+
+        // If Distance Multiplier is below valid amount, don't spawn VFX particles.
+        if (distanceMult <= 0.0) return;
+
         // If owner is dead, don't spawn VFX particles
         if (HDMath.isDead(owner)) return;
 
-        double maxSpiciness = _maxSpiciness ? _maxSpiciness.GetInt() : 0.0;
-        double distanceMult = _distanceMult ? _distanceMult.GetFloat() : 0.0;
-        double ratio = double(amount * TICRATE / max(1, Level.airSupply));
-        if (maxSpiciness > 0 && frandom[spicyrand](0.0, 1.0) < clamp(ratio, 0.0, 1.0)) {
+        // If owner is either outside of or too far from the current player's POV
+        if (!(owner.distance3D(players[ConsolePlayer].camera) < HDCONST_ONEMETRE * 20 && HDF.checkParticle(owner))) return;
 
-            let particleCount = ratio * maxSpiciness * (_particleMult ? _particleMult.GetFloat() : 1.0);
+        let ratio = double(amount * TICRATE / max(1, Level.airSupply));
+        if (frandom[spicyrand](0.0, 1.0) < clamp(ratio, 0.0, 1.0)) {
+
+            let particleCount = ratio * maxSpiciness * particleMult;
             for (let i = 0; i < particleCount; i++) {
 
-                double vx = (owner.vel.x * cos(owner.angle) + owner.vel.y * sin(owner.angle)) * 35;
-                double vy = (owner.vel.x * sin(owner.angle) + owner.vel.y * cos(owner.angle)) * 35;
-                double vz = owner.vel.z * 35;
-
-                let dist  = HDCONST_ONEMETRE * maxSpiciness * distanceMult;
+                let dist = HDCONST_ONEMETRE * max(1, ceil(i / distanceMult)) * distanceMult;
                 Vector3 pos = owner.pos + (
-                    vx + (frandom[spicyrand](-dist, dist)),
-                    vy + (frandom[spicyrand](-dist, dist)),
-                    vz + (frandom[spicyrand](-dist, dist))
+                    frandom[spicyrand](-dist, dist),
+                    frandom[spicyrand](-dist, dist),
+                    frandom[spicyrand](-dist, dist)
                 );
     
-                if (!Level.isPointInLevel(pos)) return;
+                // If the spawnPos is outside the level, skip.
+                if (!Level.isPointInLevel(pos)) continue;
     
                 let lifetime = random[spicyrand](27, 88) * 2.0;
                 let vel = (frandom[spicyrand](-0.4, 0.4), frandom[spicyrand](-0.4, 0.4), frandom[spicyrand](-0.4, 0.4));

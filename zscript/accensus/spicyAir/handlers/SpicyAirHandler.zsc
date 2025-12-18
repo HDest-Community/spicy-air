@@ -258,6 +258,14 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
             // If the player isn't an HDPlayerPawn or is dead, skip.
             if (!plr || plr.Health <= 0) continue;
 
+            let mask = Despicyto(plr.FindInventory('Despicyto'));
+            bool hasHelmet = _HHFunc && _HHFunc.GetInt("GetShowHUD", objectArg: plr);
+            bool wearingRespirator = _RespService && _RespService.GetInt("IsWorn", objectArg: plr);
+            bool respiratorAir = _RespService && _RespService.GetInt("AirRemaining", objectArg: plr);
+
+            // Store the raw air spiciness for service to provide.
+            AirSpiciness[i] = !(IsAirClean(plr) || (mask && mask.worn)) ? GetAirSpiciness(plr) : 0.0;
+
             // If the player has godmode on, clear their spiciness and skip.
             if (plr.player.cheats&(CF_GODMODE2|CF_GODMODE)) {
                 plr.A_TakeInventory('SpicyAirDrug');
@@ -272,13 +280,8 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
             // - They are wearing a gas mask
             // - They are wearing a Hideous Helmet and it provides protection against spicy air
             // TODO: add manual breath holding?
-            let mask = Despicyto(plr.FindInventory('Despicyto'));
-            bool hasHelmet = _HHFunc && _HHFunc.GetInt("GetShowHUD", objectArg: plr);
-            bool wearingRespirator = _RespService && _RespService.GetInt("IsWorn", objectArg: plr);
-            bool respiratorAir = _RespService && _RespService.GetInt("AirRemaining", objectArg: plr);
-            int bDelay = GetBreathDelay(plr);
             bool isBreathing = true;
-
+            int bDelay = GetBreathDelay(plr);
             if (plr.WaterLevel < 3 || (wearingRespirator && respiratorAir > 0)) {
                 BreathIndex[i]++;
 
@@ -311,9 +314,6 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
             // - If the air being breathed in is not clean nor filtered, if the player has breath left to hold, reduce timer; otherwise add spiciness while the player is breathing in
             // - If the player has gathered enough spiciness in their system, increase their spicy level
             // - As long as the player still has some amount of spiciness levels in their system, every time the timer ticks, add aggro based on their spicy level
-
-            // Store the raw air spiciness for service to provide.
-            AirSpiciness[i] = !(IsAirClean(plr) || (mask && mask.worn)) ? GetAirSpiciness(plr) : 0.0;
 
             if (!(Level.time % TICRATE)) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Air Spiciness: "..AirSpiciness[i]);
 

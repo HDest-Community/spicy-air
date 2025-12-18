@@ -25,7 +25,7 @@ class SpicyAirDummy : IdleDummy abstract {
             }
         }
 
-        if (!(countInv('SpicyAirSourceToken') || countInv('SpicyAirSinkToken'))) A_GiveInventory(tokenName, spawnHealth());
+        if (!(countInv('SpicyAirSourceToken') || countInv('SpicyAirSinkToken'))) HDF.give(self, tokenName, spawnHealth());
     }
 }
 

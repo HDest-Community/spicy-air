@@ -6,17 +6,13 @@ class SpicyAirDrug : HDDrug {
     private int _processedCounter;
     private int _spicyLevel;
 
-    override void beginPlay() {
-        super.beginPlay();
-
-        if (!_damageType) _damageType     = CVar.GetCVar('spicy_damage_type');
-        if (!_maxSpiciness) _maxSpiciness = CVar.GetCVar('spicy_max_spiciness');
-    }
-
     override void onHeartbeat(HDPlayerPawn hdp) {
 
         // If we don't have any in our system, quit.
         if (amount < 1) return;
+
+        if (!_damageType) _damageType     = CVar.GetCVar('spicy_damage_type');
+        if (!_maxSpiciness) _maxSpiciness = CVar.GetCVar('spicy_max_spiciness');
 
         let maxSpiciness = _maxSpiciness.getInt();
 

@@ -124,8 +124,12 @@ class SpicyAirSourceToken : SpicyAirTrackerToken {
         // If owner is dead, don't spawn VFX particles
         if (HDMath.isDead(owner)) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Owner is Dead"); return; }
 
+		// Grab closest playerpawn distance.
+		let dist = int.MAX;
+		for(int i = 0; i < MAXPLAYERS; i++) if (playerInGame[i]) dist = min(dist, owner.distance3D(players[i].mo));
+
         // If owner is either outside of or too far from the current player's POV
-        if (!(owner.distance3D(players[ConsolePlayer].camera) < (HDCONST_ONEMETRE * 20) && HDF.checkParticle(owner))) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Player cannot see"); return; }
+        if (dist > (HDCONST_ONEMETRE * 20) || owner.A_CheckSight("null")) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Player cannot see"); return; }
 
         let cycleLength = TICRATE;
         let cycleOffset = Level.time % cycleLength;

@@ -1,5 +1,7 @@
 class SpicyAirDummy : IdleDummy abstract {
 
+    protected transient CVar _enabled;
+
     name tokenName; property tokenName:tokenName;
 
     default {
@@ -7,8 +9,9 @@ class SpicyAirDummy : IdleDummy abstract {
     }
 
     override void postBeginPlay() {
-
         super.postBeginPlay();
+
+        if (!_enabled) _enabled = CVar.GetCVar('spicy_enabled');
 
         // If we can't find the handler, quit.
         let handler = SpicyAirHandler(StaticEventHandler.find('SpicyAirHandler'));
@@ -27,6 +30,11 @@ class SpicyAirDummy : IdleDummy abstract {
 
         if (!(countInv('SpicyAirSourceToken') || countInv('SpicyAirSinkToken'))) HDF.give(self, tokenName, spawnHealth());
     }
+
+    override void Tick() {
+        // If Spicy Air is currently disabled, remove dummy actor
+        if (!(_enabled &&_enabled.GetBool())) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Spicy Air Not Enabled"); destroy(); return; }
+    }
 }
 
 class SpicyAirSource : SpicyAirDummy {
@@ -44,12 +52,38 @@ class SpicyAirSink : SpicyAirDummy {
 
 class SpicyAirTrackerToken : Inventory abstract {
 
+    protected transient CVar _enabled;
+
     default {
         +Inventory.UNTOSSABLE;
     }
 
+    override void PostBeginPlay() {
+        super.PostBeginPlay();
+
+        if (!_enabled) _enabled = CVar.GetCVar('spicy_enabled');
+
+        // If we can't find the handler, quit.
+        let handler = SpicyAirHandler(StaticEventHandler.find('SpicyAirHandler'));
+        if (!handler) {
+            destroy();
+            return;
+        }
+
+        // If we spawned in a blacklisted map, quit.
+        forEach (bl : handler.mapBlacklist) {
+            if (Level.mapName == bl) {
+                destroy();
+                return;
+            }
+        }
+    }
+
     override void Tick() {
         super.Tick();
+
+        // If Spicy Air is currently disabled, remove tracker
+        if (!(_enabled &&_enabled.GetBool())) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Spicy Air Not Enabled"); destroy(); return; }
 
         amount = GetAmount();
     }
@@ -65,8 +99,6 @@ class SpicyAirSinkToken : SpicyAirTrackerToken {
 }
 
 class SpicyAirSourceToken : SpicyAirTrackerToken {
-
-    protected transient CVar _enabled;
     protected transient CVar _particleMult;
     protected transient CVar _distanceMult;
     protected transient CVar _maxSpiciness;
@@ -76,8 +108,6 @@ class SpicyAirSourceToken : SpicyAirTrackerToken {
 
     override void PostBeginPlay() {
         super.PostBeginPlay();
-
-        if (!_enabled) _enabled                         = CVar.GetCVar('spicy_enabled');
         if (!_particleMult) _particleMult               = CVar.GetCVar('spicy_particle_mult');
         if (!_distanceMult) _distanceMult               = CVar.GetCVar('spicy_source_distance');
         if (!_maxSpiciness) _maxSpiciness               = CVar.GetCVar('spicy_max_spiciness');
@@ -97,8 +127,7 @@ class SpicyAirSourceToken : SpicyAirTrackerToken {
     override void Tick() {
         super.Tick();
 
-        // If Spicy Air is currently disabled, don't spawn VFX particles
-        if (!(_enabled &&_enabled.GetBool())) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Spicy Air Not Enabled"); return; }
+        if (bDESTROYED) return;
 
         let maxSpiciness = _maxSpiciness ? _maxSpiciness.GetInt() : 0;
 

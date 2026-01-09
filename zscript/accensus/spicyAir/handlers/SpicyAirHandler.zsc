@@ -368,7 +368,7 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
     override void WorldThingSpawned(WorldEvent e) {
 
         // If we can't find the CVAR or it's not set to true, quit.
-        if (!_enabled && _enabled.GetBool()) return;
+        if (!(_enabled && _enabled.GetBool())) return;
 
         // If the thing doesn't exist, quit.
         if (!e.thing) return;

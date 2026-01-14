@@ -5,6 +5,9 @@ class SpicyAirDummy : IdleDummy abstract {
     name tokenName; property tokenName:tokenName;
 
     default {
+        +FLOAT;
+        +NOGRAVITY;
+
         health 100;
     }
 
@@ -28,7 +31,12 @@ class SpicyAirDummy : IdleDummy abstract {
             }
         }
 
-        if (!(countInv('SpicyAirSourceToken') || countInv('SpicyAirSinkToken'))) HDF.give(self, tokenName, spawnHealth());
+        SetOrigin((pos.x, pos.y, curSector.centerFloor() + (HDCONST_ONEMETRE * frandom[spicyrand](0.5, 1.5))), false);
+
+        // Adjust dummy spawner health for token tracking purposes.
+        if (curSector.damageAmount > 0) health *= curSector.damageAmount;
+
+        if (!(countInv('SpicyAirSourceToken') || countInv('SpicyAirSinkToken'))) HDF.give(self, tokenName, health);
     }
 
     override void Tick() {
@@ -94,7 +102,7 @@ class SpicyAirTrackerToken : Inventory abstract {
 class SpicyAirSinkToken : SpicyAirTrackerToken {
 
     override int GetAmount() {
-        return owner.spawnHealth();
+        return owner.health;
     }
 }
 
@@ -121,7 +129,7 @@ class SpicyAirSourceToken : SpicyAirTrackerToken {
 
         if (owner is 'HDMobBase' && HDMobBase(owner).maxshields > 0 && _shieldsSpicySources && _shieldsSpicySources.GetBool()) return owner.countInv('HDMagicShield');
 
-        return owner.spawnHealth();
+        return owner.health;
     }
 
     override void Tick() {

@@ -158,7 +158,7 @@ class SpicyAirSourceToken : SpicyAirTrackerToken {
 		for(int i = 0; i < MAXPLAYERS; i++) if (playerInGame[i]) dist = min(dist, owner.distance3D(players[i].mo));
 
         // If owner is either outside of or too far from the current player's POV
-        if (dist > (HDCONST_ONEMETRE * 50) || owner.A_CheckSight("null")) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Player cannot see"); return; }
+        if (dist > (HDCONST_ONEMETRE * 10) && owner.A_CheckSight("null")) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Player cannot see"); return; }
 
         let cycleLength = TICRATE;
         let cycleOffset = Level.time % cycleLength;

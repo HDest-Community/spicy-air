@@ -332,13 +332,15 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
                 RealSpiciness[i] += BreathIndex[i] < 0 ? (toAdd * clamp(1.0 - filterBonus, 0.0, 1.0)) : -toAdd;
 
                 if (BreathIndex[i] < 0 && !random[spicyrand](0, abs(BreathIndex[i]))) {
-
                     if (mask && mask.Worn) {
-                        // let filterDmg = toAdd
-                        if (mask.weaponStatus[DEProp_FilterLife1] > 0) {
-                            mask.weaponStatus[DEProp_FilterLife1] -= toAdd;
-                        } else if (mask.weaponStatus[DEProp_FilterLife2] > 0) {
-                            mask.weaponStatus[DEProp_FilterLife2] -= toAdd;
+                        let hasLeftFilter  = mask.weaponStatus[DEProp_FilterLife1] > 0;
+                        let hasRightFilter = mask.weaponStatus[DEProp_FilterLife2] > 0;
+
+                        if (hasLeftFilter || hasRightFilter) {
+                            let filterDmg = toAdd / max(1, hasLeftFilter + hasRightFilter);
+
+                            if (hasLeftFilter)  mask.weaponStatus[DEProp_FilterLife1] -= filterDmg;
+                            if (hasRightFilter) mask.weaponStatus[DEProp_FilterLife2] -= filterDmg;
                         }
                     }
                 }

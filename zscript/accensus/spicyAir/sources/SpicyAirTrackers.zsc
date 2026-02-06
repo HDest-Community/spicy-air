@@ -61,6 +61,7 @@ class SpicyAirSink : SpicyAirDummy {
 class SpicyAirTrackerToken : Inventory abstract {
 
     protected transient CVar _enabled;
+    protected transient CVar _sampleRate;
 
     default {
         +Inventory.UNTOSSABLE;
@@ -69,7 +70,9 @@ class SpicyAirTrackerToken : Inventory abstract {
     override void PostBeginPlay() {
         super.PostBeginPlay();
 
-        if (!_enabled) _enabled = CVar.GetCVar('spicy_enabled');
+        if (!_enabled) _enabled       = CVar.GetCVar('spicy_enabled');
+
+        if (!_sampleRate) _sampleRate = CVar.GetCVar('spicy_sample_rate');
 
         // If we can't find the handler, quit.
         let handler = SpicyAirHandler(StaticEventHandler.find('SpicyAirHandler'));
@@ -88,12 +91,12 @@ class SpicyAirTrackerToken : Inventory abstract {
     }
 
     override void Tick() {
-        super.Tick();
+        // super.Tick();
 
         // If Spicy Air is currently disabled, remove tracker
         if (!(_enabled &&_enabled.GetBool())) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Spicy Air Not Enabled"); destroy(); return; }
 
-        amount = GetAmount();
+        if (!(Level.time % (_sampleRate ? _sampleRate.GetInt() : 1))) amount = GetAmount();
     }
 
     abstract int GetAmount();
@@ -137,38 +140,28 @@ class SpicyAirSourceToken : SpicyAirTrackerToken {
 
         if (bDESTROYED) return;
 
-        let maxSpiciness = _maxSpiciness ? _maxSpiciness.GetInt() : 0;
-
-        // If Max Spiciness is below valid amount, don't spawn VFX particles.
-        if (maxSpiciness <= 0) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Max Spiciness below valid value"); return; }
-
-        let particleMult = _particleMult ? _particleMult.GetFloat() : 0.0;
-
-        // If Particle Multiplier is below valid amount, don't spawn VFX particles.
-        if (particleMult <= 0.0) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Particle Multiplier below valid value"); return; }
-
-        let distanceMult = _distanceMult ? _distanceMult.GetFloat() : 0.0;
-
-        // If Distance Multiplier is below valid amount, don't spawn VFX particles.
-        if (distanceMult <= 0.0) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Distance Multiplier below valid value"); return; }
+        // If no amount emitted, don't spawn VFX particles.
+        if (!amount) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "No amount emitted"); return; }
 
         // If Level or owner are frozen, don't spawn VFX particles.
         if (Level.isFrozen() || owner.isFrozen()) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Owner/Level Frozen"); return; }
 
-        // If no amount emitted, don't spawn VFX particles.
-        if (!amount) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "No amount emitted"); return; }
-
         // If owner is dead, don't spawn VFX particles
         if (HDMath.isDead(owner)) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Owner is Dead"); return; }
 
-		// Grab closest playerpawn distance.
-		let dist = int.MAX;
-		for(int i = 0; i < MAXPLAYERS; i++) if (playerInGame[i]) dist = min(dist, owner.distance3D(players[i].mo));
+        // let sampleRate = _sampleRate ? _sampleRate.GetInt() : 1;
+        // if ((Level.time % sampleRate)) { return; }
 
-        // If owner is either outside of or too far from the current player's POV
-        if (dist > (HDCONST_ONEMETRE * 10) && owner.A_CheckSight("null")) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Player cannot see"); return; }
+        // If Particle Multiplier is below valid amount, don't spawn VFX particles.
+        let particleMult = _particleMult ? _particleMult.GetFloat() : 0.0;
+        if (particleMult <= 0.0) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Particle Multiplier below valid value"); return; }
 
-        let cycleLength = TICRATE;
+        // If Max Spiciness is below valid amount, don't spawn VFX particles.
+        let maxSpiciness = _maxSpiciness ? _maxSpiciness.GetInt() : 0;
+        if (maxSpiciness <= 0) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Max Spiciness below valid value"); return; }
+        
+        let sampleRate = _sampleRate ? _sampleRate.GetInt() : 1;
+        let cycleLength = TICRATE * sampleRate;
         let cycleOffset = Level.time % cycleLength;
         let particleCount = (amount * maxSpiciness * particleMult) / cycleLength;
 
@@ -184,22 +177,33 @@ class SpicyAirSourceToken : SpicyAirTrackerToken {
                 particleCount > 255 || random[spicyrand]() < particleCount
             )
         ) {
+
+            // Grab closest playerpawn distance.
+            let dist = int.MAX;
+            for(int i = 0; i < MAXPLAYERS; i++) if (playerInGame[i]) dist = min(dist, owner.distance3D(players[i].mo));
+
+            // If owner is either outside of or too far from the current player's POV
+            if (dist > (HDCONST_ONEMETRE * 10) && owner.A_CheckSight("null")) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Player cannot see"); return; }
+
+            // If Distance Multiplier is below valid amount, don't spawn VFX particles.
+            let distanceMult = _distanceMult ? _distanceMult.GetFloat() : 0.0;
+            if (distanceMult <= 0.0) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, "Distance Multiplier below valid value"); return; }
             
             HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_DEBUG, "particleCount="..particleCount..", cycleOffset="..cycleOffset..", cycleLength="..cycleLength..", particleOffset="..particleOffset);
 
             let i = cycleOffset - particleOffset;
 
-            let dist = HDCONST_ONEMETRE * max(1, ceil(i / distanceMult)) * distanceMult;
+            let pDist = HDCONST_ONEMETRE * max(1, ceil(i / distanceMult)) * distanceMult;
             Vector3 pos = owner.pos + (
-                frandom[spicyrand](-dist, dist),
-                frandom[spicyrand](-dist, dist),
-                frandom[spicyrand](-dist, dist)
+                frandom[spicyrand](-pDist, pDist),
+                frandom[spicyrand](-pDist, pDist),
+                frandom[spicyrand](-pDist, pDist)
             );
 
             // If the spawnPos is outside the level, don't spawn VFX particles.
             if (!Level.isPointInLevel(pos)) { HDCore.log('SpicyAir.SpicyAirTracker', LOGGING_TRACE, pos.." outside of level"); return; }
 
-            let lifetime = random[spicyrand](27, 88) * 2.0;
+            let lifetime = random[spicyrand](27, 88) * 2.0 * sampleRate;
             let vel = (frandom[spicyrand](-0.4, 0.4), frandom[spicyrand](-0.4, 0.4), frandom[spicyrand](-0.4, 0.4));
             let accel = ((frandom[spicyrand](-0.4, 0.4), frandom[spicyrand](-0.4, 0.4), frandom[spicyrand](-0.4, 0.4)) - vel) / lifetime;
 

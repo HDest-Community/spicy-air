@@ -1,5 +1,6 @@
 server bool spicy_enabled                               = true;
 
+server int spicy_sample_rate                            = 1;
 server float spicy_los_factor                           = 33;
 
 server int spicy_dist_calc                              = 3;

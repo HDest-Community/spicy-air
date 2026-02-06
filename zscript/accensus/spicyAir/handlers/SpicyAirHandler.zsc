@@ -25,6 +25,7 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
     private transient CVar _enabled;
 
     private transient CVar _losFactor;
+    private transient CVar _sampleRate;
 
     private transient CVar _actorSectorRatio;
     private transient CVar _distCalc;
@@ -54,6 +55,7 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
         if (!_enabled) _enabled                               = CVar.GetCVar('spicy_enabled');
 
         if (!_losFactor) _losFactor                           = CVar.GetCVar('spicy_los_factor');
+        if (!_sampleRate) _sampleRate                         = CVar.GetCVar('spicy_sample_rate');
 
         if (!_actorSectorRatio) _actorSectorRatio             = CVar.GetCVar('spicy_actor_sector_ratio');
         if (!_distCalc) _distCalc                             = CVar.GetCVar('spicy_dist_calc');
@@ -307,6 +309,11 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
                 }
             }
 
+            let sampleRate = _sampleRate ? _sampleRate.GetInt() : 1;
+
+            // Scale back temporal resolution of spiciness
+            if ((Level.time % sampleRate) != (i % sampleRate)) continue;
+
             // Handle Air Toxicity Logic
             // -------------------------
             // - If the air being breathed in is clean, adjust "breath hold timer" depending if the player is underwater or wearing a respirator providing air
@@ -324,7 +331,7 @@ class SpicyAirHandler : HDCoreStaticEventHandler {
             ) {
                 // TODO: Enhance to track UaS Respirator being filled in spicy air,
                 //   later breathing from same respirator should give roughly percent spiciness from last refill
-                let toAdd = frandom[spicyrand](0.01, 0.1) * abs(AirSpiciness[i] - RealSpiciness[i]);
+                let toAdd = frandom[spicyrand](0.01, 0.1) * abs(AirSpiciness[i] - RealSpiciness[i]) * sampleRate;
                 let filterBonus = _spicyService.getDouble("GetFilterBonus", objectArg: plr);
 
                 if (BreathIndex[i] == -bDelay || BreathIndex[i] == 0) HDCore.log('SpicyAir.SpicyAirHandler', LOGGING_DEBUG, "[Player #"..(i + 1).."] Breathing "..(BreathIndex[i] < 0 ? "in" : "out").." "..toAdd.."x Spiciness");

@@ -1,0 +1,130 @@
+class SpicyAirDrug : HDDrug {
+
+    private transient CVar _damageType;
+    private transient CVar _maxSpiciness;
+
+    private int _processedCounter;
+    private int _spicyLevel;
+
+    override void onHeartbeat(HDPlayerPawn hdp) {
+
+        // If we don't have any in our system, quit.
+        if (amount < 1) return;
+
+        if (!_damageType) _damageType     = CVar.GetCVar('spicy_damage_type');
+        if (!_maxSpiciness) _maxSpiciness = CVar.GetCVar('spicy_max_spiciness');
+
+        let maxSpiciness = _maxSpiciness.getInt();
+
+        amount = clamp(amount, 1, Level.airSupply * maxSpiciness);
+
+        int amt = amount--;
+        _processedCounter++;
+
+        let stims = hdp.countinv("HDStim");
+        if(stims) {
+            hdp.A_TakeInventory("HDStim", 1);
+            amount -= random[spicyrand]() >> 4;
+        }
+
+        let blues = hdp.countinv("HealingMagic");
+        if (blues) {
+            hdp.A_TakeInventory("HealingMagic", 1);
+            amount -= 64 + random[spicyrand]() >> 2;
+        }
+
+        // Increase Heartrate & Blood Pressure, as a sign of infection
+        if (hdp.beatCap > max(15, 30 - (amount >> 6))) hdp.beatcap--;
+        if (hdp.bloodPressure < 14 - (hdp.bloodLoss >> 4)) hdp.bloodPressure += 3;
+
+        _processedCounter = clamp(_processedCounter, 0, Level.airSupply * maxSpiciness);
+        _spicyLevel = clamp(amt / Level.airSupply, 0, maxSpiciness);
+        
+        HDCore.log('SpicyAir.SpicyAirDrug', LOGGING_DEBUG, "Spiciness Level: ".._spicyLevel..", Processed Counter: ".._processedCounter);
+        
+        if (_processedCounter >= 30 && !(hdp.beatcounter % 30) && !(stims && random[spicyrand](0, stims / 4))) {
+            DealSpicyDamage(hdp, _spicyLevel);
+            _processedCounter -= 30;
+        }
+    }
+
+    private void DealSpicyDamage(HDPlayerPawn plr, int amount) {
+        plr.A_SetBlend(0xa7b55e, 0.025 * amount, 2 * amount);
+
+        switch (_damageType.GetInt()) {
+            case SADT_STUN:
+                DealSpicyStun(plr, amount);
+                break;
+            case SADT_FATIGUE:
+                DealSpicyFatigue(plr, amount);
+                break;
+            case SADT_TISSUE:
+                DealSpicyTissueDamage(plr, amount);
+                break;
+            case SADT_BLOOD:
+                DealSpicyBloodLoss(plr, amount);
+                break;
+            case SADT_BURN:
+                DealSpicyBurns(plr, amount);
+                break;
+            case SADT_AGGRO:
+                DealSpicyAggro(plr, amount);
+                break;
+            case SADT_WOUND:
+                DealSpicyWound(plr, amount);
+                break;
+            case SADT_AUTO:
+            default:
+
+                if (amount >= SADT_STUN)    DealSpicyStun(plr, max(1, amount - SADT_STUN));
+                if (amount >= SADT_FATIGUE) DealSpicyFatigue(plr, max(1, amount - SADT_FATIGUE));
+                if (amount >= SADT_TISSUE)  DealSpicyTissueDamage(plr, max(1, amount - SADT_TISSUE));
+                if (amount >= SADT_BLOOD)   DealSpicyBloodLoss(plr, max(1, amount - SADT_BLOOD));
+                if (amount >= SADT_BURN)    DealSpicyBurns(plr, max(1, amount - SADT_BURN));
+                if (amount >= SADT_AGGRO)   DealSpicyAggro(plr, max(1, amount - SADT_AGGRO));
+                if (amount >= SADT_WOUND)   DealSpicyWound(plr, max(1, amount - SADT_WOUND));
+
+                break;
+        }
+    }
+
+    private void DealSpicyStun(HDPlayerPawn plr, int amount) {
+        plr.stunned += 16 * amount;
+    }
+
+    private void DealSpicyFatigue(HDPlayerPawn plr, int amount) {
+        plr.fatigue += 32 * amount;
+    }
+
+    private void DealSpicyTissueDamage(HDPlayerPawn plr, int amount) {
+        plr.oldWoundCount += amount >> 2;
+    }
+
+    private void DealSpicyBloodLoss(HDPlayerPawn plr, int amount) {
+        plr.bloodLoss += 8 << amount;
+    }
+
+    private void DealSpicyBurns(HDPlayerPawn plr, int amount) {
+        plr.burnCount += amount >> 1;
+    }
+
+    private void DealSpicyAggro(HDPlayerPawn plr, int amount) {
+        plr.aggravatedDamage += amount;
+    }
+
+    private void DealSpicyWound(HDPlayerPawn plr, int amount) {
+        let numWounds = random(1, amount);
+        for (let i = 0; i < numWounds; i++) HDBleedingWound.inflict(plr, amount, damageType: 'internal');
+    }
+}
+
+enum SPICY_DAMAGE_TYPES {
+    SADT_AUTO,
+    SADT_STUN,
+    SADT_FATIGUE,
+    SADT_TISSUE,
+    SADT_BLOOD,
+    SADT_BURN,
+    SADT_AGGRO,
+    SADT_WOUND
+}

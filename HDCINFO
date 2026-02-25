@@ -1,0 +1,131 @@
+// Spicy Air Blacklists
+addSpicyMapBlacklist => { "name": "LOTSAGUN" }
+addSpicyMapBlacklist => { "name": "RANGE" }
+addSpicyMapBlacklist => { "name": "RANGE2" }
+addSpicyMapBlacklist => { "name": "ReloadingRoom" }
+
+addSpicyThingBlacklist => { "name": "BarrelGibs" }
+addSpicyThingBlacklist => { "name": "BFGSpark" }
+addSpicyThingBlacklist => { "name": "BloodSplatSilent" }
+addSpicyThingBlacklist => { "name": "BloodTrail" }
+addSpicyThingBlacklist => { "name": "btAdrenaline" }
+addSpicyThingBlacklist => { "name": "CheckPuff" }
+addSpicyThingBlacklist => { "name": "ClusterSpawner" }
+addSpicyThingBlacklist => { "name": "ColonGibs" }
+addSpicyThingBlacklist => { "name": "DecoPusher" }
+addSpicyThingBlacklist => { "name": "DistanceCheckerCeiling" }
+addSpicyThingBlacklist => { "name": "DummySpawner" }
+addSpicyThingBlacklist => { "name": "DustCloud" }
+addSpicyThingBlacklist => { "name": "DynamicLight" }
+addSpicyThingBlacklist => { "name": "FlemoidMonster" }
+addSpicyThingBlacklist => { "name": "FragShard" }
+addSpicyThingBlacklist => { "name": "Gibs" }
+addSpicyThingBlacklist => { "name": "GrenadeSmokeTrail" }
+addSpicyThingBlacklist => { "name": "hasHelmet" }
+addSpicyThingBlacklist => { "name": "HDAIOverride" }
+addSpicyThingBlacklist => { "name": "HDArmourWorn" }
+addSpicyThingBlacklist => { "name": "HDBulletActor" }
+addSpicyThingBlacklist => { "name": "HDBulletPuff" }
+addSpicyThingBlacklist => { "name": "HDDebris" }
+addSpicyThingBlacklist => { "name": "HDExplosion" }
+addSpicyThingBlacklist => { "name": "HDFireball" }
+addSpicyThingBlacklist => { "name": "HDFireballTail" }
+addSpicyThingBlacklist => { "name": "HDFireDouse" }
+addSpicyThingBlacklist => { "name": "HDFlameRedBig" }
+addSpicyThingBlacklist => { "name": "HDFollower" }
+addSpicyThingBlacklist => { "name": "HDLadderSection" }
+addSpicyThingBlacklist => { "name": "HDMagicShield" }
+addSpicyThingBlacklist => { "name": "HDMasterBlood" }
+addSpicyThingBlacklist => { "name": "HDMerchant" }
+addSpicyThingBlacklist => { "name": "HDPickup" }
+addSpicyThingBlacklist => { "name": "HDPlayerCorpse" }
+addSpicyThingBlacklist => { "name": "HDPlayerPawn" }
+addSpicyThingBlacklist => { "name": "HDPuff" }
+addSpicyThingBlacklist => { "name": "HDSmoke" }
+addSpicyThingBlacklist => { "name": "HDSmokeChunk" }
+addSpicyThingBlacklist => { "name": "HDSpent7mm" }
+addSpicyThingBlacklist => { "name": "HDTracerYellow" }
+addSpicyThingBlacklist => { "name": "HDUPK" }
+addSpicyThingBlacklist => { "name": "HDWeapon" }
+addSpicyThingBlacklist => { "name": "HHArmourNerf" }
+addSpicyThingBlacklist => { "name": "HHelmet" }
+addSpicyThingBlacklist => { "name": "HHelmetWorn" }
+addSpicyThingBlacklist => { "name": "HideousBubble" }
+addSpicyThingBlacklist => { "name": "IA_Sound" }
+addSpicyThingBlacklist => { "name": "ImmunityToFire" }
+addSpicyThingBlacklist => { "name": "Inventory" }
+addSpicyThingBlacklist => { "name": "LDLegendaryMonsterChooserHard" }
+addSpicyThingBlacklist => { "name": "MapMarker" }
+addSpicyThingBlacklist => { "name": "ParticleWhiteSmall" }
+addSpicyThingBlacklist => { "name": "RainBase" }
+addSpicyThingBlacklist => { "name": "RainSpawner" }
+addSpicyThingBlacklist => { "name": "REItemGlow" }
+addSpicyThingBlacklist => { "name": "ReverseImpBallTail" }
+addSpicyThingBlacklist => { "name": "RocketSmokeTrail" }
+addSpicyThingBlacklist => { "name": "ScopeCamera" }
+addSpicyThingBlacklist => { "name": "ShieldSpark" }
+addSpicyThingBlacklist => { "name": "SmallBloodPool" }
+addSpicyThingBlacklist => { "name": "SoundEnvironment" }
+addSpicyThingBlacklist => { "name": "SpicyAirSinkToken" }
+addSpicyThingBlacklist => { "name": "SpicyAirSourceToken" }
+addSpicyThingBlacklist => { "name": "TeleFog" }
+addSpicyThingBlacklist => { "name": "TeleportDest" }
+addSpicyThingBlacklist => { "name": "UaS_AI_Handler" }
+addSpicyThingBlacklist => { "name": "UaS_LaserLightModule" }
+addSpicyThingBlacklist => { "name": "UaS_VisWeps_Updater" }
+addSpicyThingBlacklist => { "name": "VerySimpleRainItem" }
+addSpicyThingBlacklist => { "name": "VisualFighterImp_Updater" }
+addSpicyThingBlacklist => { "name": "VisualHealerImp_Updater" }
+addSpicyThingBlacklist => { "name": "VisualJackboot_Updater" }
+addSpicyThingBlacklist => { "name": "VisualMageImp_Updater" }
+addSpicyThingBlacklist => { "name": "VisualOperator_Updater" }
+addSpicyThingBlacklist => { "name": "VisualStormtrooper_Updater" }
+addSpicyThingBlacklist => { "name": "WallChunk" }
+addSpicyThingBlacklist => { "name": "Weapon" }
+addSpicyThingBlacklist => { "name": "BFGNecroShard", "enabled": "@Not", "enabled.value": "#spicy_sources_frage" }
+addSpicyThingBlacklist => { "name": "HDBarrel", "enabled": "@Not", "enabled.value": "#spicy_sources_barrels" }
+addSpicyThingBlacklist => { "name": "HDMobBase", "enabled": "@Not", "enabled.value": "#spicy_sources_monsters" }
+
+// Spicy Air Sources
+addSpicySource => { "name": "SpicyAirSource" }
+addSpicySource => { "name": "BFGNecroShard", "enabled": "#spicy_sources_frage" }
+addSpicySource => { "name": "HDBarrel", "enabled": "#spicy_sources_barrels" }
+addSpicySource => { "name": "HDMobBase", "enabled": "#spicy_sources_monsters" }
+
+// Spicy Air Sinks
+addSpicySink => { "name": "SpicyAirSink" }
+addSpicySink => { "name": "PlantBit" }
+
+// Backpack Spawn Pool Filters
+addBPSpawnPoolFilter => { "name": "Despicyto", "allowed": "#spicy_gasmask_allowBackpacks" }
+addBPSpawnPoolFilter => { "name": "DespicytoFilter", "allowed": "#spicy_gasmaskfilter_allowBackpacks" }
+
+// Ammo Usages
+addAmmoUser => { "ammoName": "DespicytoFilter", "name": "Despicyto" }
+
+// Gas Mask Spawn Entries
+addSpawnTableSingleEntry => { "tableName": "StimpackReplaces", "name": "Despicyto", "weight": "#spicy_gasmask_stimpack_spawn_bias", "persists": "#spicy_gasmask_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "HealthBonusReplaces", "name": "Despicyto", "weight": "#spicy_gasmask_healthbonus_spawn_bias", "persists": "#spicy_gasmask_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "ArmorBonusReplaces", "name": "Despicyto", "weight": "#spicy_gasmask_armorbonus_spawn_bias", "persists": "#spicy_gasmask_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "GreenArmorReplaces", "name": "Despicyto", "weight": "#spicy_gasmask_greenarmour_spawn_bias", "persists": "#spicy_gasmask_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "BlueArmorReplaces", "name": "Despicyto", "weight": "#spicy_gasmask_bluearmour_spawn_bias", "persists": "#spicy_gasmask_persistent_spawning" }
+
+// Gas Mask Filter Spawn Entries
+addSpawnTableSingleEntry => { "tableName": "StimpackReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_stimpack_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "HealthBonusReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_healthbonus_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
+addSpawnTableSingleEntry => { "tableName": "ArmorBonusReplaces", "name": "DespicytoFilter", "weight": "#spicy_gasmaskfilter_armorbonus_spawn_bias", "persists": "#spicy_gasmaskfilter_persistent_spawning" }
+
+// Spicy Air Tracker Sector Spawn Entries
+// addSpawnTableSingleEntry => { "tableName": "HurtfloorSectorSpawnerReplaces", "name": "SpicyAirSink", "replaces": "true", "enabled": "#spicy_sinks_hurtfloors" }
+addSpawnTableSingleEntry => { "tableName": "HurtfloorSectorSpawnerReplaces", "name": "SpicyAirSource", "replaces": "true", "enabled": "#spicy_sources_hurtfloors" }
+
+addSpawnTableSingleEntry => { "tableName": "OutdoorSectorSpawnerReplaces", "name": "SpicyAirSink", "replaces": "true", "enabled": "#spicy_sinks_outdoors" }
+addSpawnTableSingleEntry => { "tableName": "OutdoorSectorSpawnerReplaces", "name": "SpicyAirSource", "replaces": "true", "enabled": "#spicy_sources_outdoors" }
+
+addSpawnTableSingleEntry => { "tableName": "SecretSectorSpawnerReplaces", "name": "SpicyAirSink", "replaces": "true", "enabled": "#spicy_sinks_secrets" }
+addSpawnTableSingleEntry => { "tableName": "SecretSectorSpawnerReplaces", "name": "SpicyAirSource", "replaces": "true", "enabled": "#spicy_sources_secrets" }
+
+// Merchant Store Entries
+newMerchantStoreItem => { "enabled": "#hdm_enable_gasmask", "type": "item", "category": "$MERCH_CAT_GASMASK", "item": "Despicyto", "icon": "DSPGA0", "displayName": "$MERCH_TAG_GASMASK", "basePrice": "120", "flavorText": "$MERCH_FLAVOR_GASMASK" }
+
+newMerchantStoreItem => { "enabled": "#hdm_enable_despfilter", "type": "ammo", "category": "$MERCH_CAT_DESPFILTER", "item": "DespicytoFilter", "icon": "DSPFA0", "displayName": "$MERCH_TAG_DESPFILTER", "basePrice": "50", "flavorText": "$MERCH_FLAVOR_DESPFILTER" }

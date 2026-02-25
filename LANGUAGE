@@ -13,12 +13,16 @@ SPICYAIR_ACTORSECTOR_RATIO               = "Actor-to-Sector Ratio: ";
 SPICYAIR_DISTCALC_TEXT                   = "The formula used when calculating distance from sources/sinks.";
 SPICYAIR_DISTANCE_CALC                   = "Spicy Air Distance Calc: ";
 
+SPICYAIR_SAMPLERATE_TEXT                 = "The relative time between calculating air spiciness.  Higher means more time between samples.";
+SPICYAIR_SAMPLE_RATE                     = "Spicy Air Sample Rate: ";
+
 SPICYAIR_LOS_TEXT                        = "Percentage of Spiciness when calculating sources that aren't in line of sight.";
 SPICYAIR_LOS_FACTOR                      = "Spicy Air Line of Sight Factor: ";
 SPICYAIR_LOS_REQUIRED                    = "Line of Sight Required!";
 
 SPICYAIR_DAMAGE_TYPE                     = "Spicy Air Deals Damage in the form of: ";
 SPICYAIR_MAX_SPICINESS                   = "Maximum Spiciness Level: ";
+SPICYAIR_PARTICLE_MULT                   = "Spicy Particle Multiplier: ";
 
 SPICYAIR_SOURCE_DISTANCE                 = "Spicy Source Distance Multiplier: ";
 SPICYAIR_CLEAN_DISTANCE                  = "Clean Source Distance Multiplier: ";
@@ -27,15 +31,17 @@ SPICYAIR_DAMAGE_THRESHOLD                = "Seconds before air is too spicy: ";
 SPICYAIR_RADSUIT_PROTECTION              = "Radsuit Multiplier to Protection from spicy air: ";
 SPICYAIR_HHELMET_PROTECTION              = "Hideous Helmet Multiplier to protection from spicy air: ";
 
-SPICYAIR_SECRETS_CLEAN                   = "Secret sectors remove spicy air: ";
-SPICYAIR_OUTDOORS_CLEAN                  = "Outdoor sectors remove spicy air: ";
 SPICYAIR_UNDERWATER_CLEAN                = "Being underwater is considered \"clean air\": ";
 
+SPICYAIR_SECRETS_CLEAN                   = "Secret sectors remove spicy air: ";
+SPICYAIR_OUTDOORS_CLEAN                  = "Outdoor sectors remove spicy air: ";
+
 SPICYAIR_MONSTERS_SPICY                  = "Monsters cause spicy air: ";
-SPICYAIR_FRAG_SPICY                      = "Frage causes spicy air: ";
+SPICYAIR_FRAGE_SPICY                     = "Frage causes spicy air: ";
 SPICYAIR_BARRELS_SPICY                   = "Barrels cause spicy air: ";
 SPICYAIR_FRIENDLIES_SPICY                = "Friendly Monsters cause spicy air: ";
 SPICYAIR_BOSSES_SPICY                    = "Boss Monsters cause spicy air: ";
+SPICYAIR_SHIELDS_SPICY                   = "Monsters' Shields cause spicy air: ";
 SPICYAIR_HURTFLOORS_SPICY                = "Damaging Floors cause spicy air: ";
 SPICYAIR_OUTDOORS_SPICY                  = "Outdoor Sectors cause spicy air: ";
 SPICYAIR_SECRETS_SPICY                   = "Secret Sectors cause spicy air: ";
@@ -115,3 +121,16 @@ TAG_GASMASKFILTER                       = "Air Filter";
 // Pickup Messages
 PICKUP_GASMASK                          = "Picked up a gas mask.";
 PICKUP_GASMASKFILTER                    = "Picked up an air filter.";
+
+
+// Merchant Store Entries
+
+// Gas Mask
+MERCH_CAT_GASMASK                 = "AceCorp";
+MERCH_TAG_GASMASK                 = "Gas Mask";
+MERCH_FLAVOR_GASMASK              = "Found this in an abandoned metro next to some dead guy.";
+
+// Air Filter
+MERCH_CAT_DESPFILTER              = "AceCorp";
+MERCH_TAG_DESPFILTER              = "Air Filter";
+MERCH_FLAVOR_DESPFILTER           = "It won't make the air smell any better, but at least it won't kill you.";
